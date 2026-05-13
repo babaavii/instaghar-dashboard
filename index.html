@@ -863,7 +863,7 @@ service cloud.firestore {
 </div>
 
 <!-- LOADER & TOAST -->
-<div id="loader"><div class="spin"></div></div>
+<div id="loader" class="show"><div class="spin"></div></div>
 <div class="toast" id="toast"></div>
 
 
@@ -940,10 +940,19 @@ function showToast(msg,kind) {
 }
 function loading(on) { document.getElementById('loader').classList.toggle('show',on); }
 function showScreen(id) {
-  document.getElementById('loginScreen').classList.remove('show');
+  // Hide login screen
+  var ls = document.getElementById('loginScreen');
+  ls.classList.remove('show');
+  ls.classList.add('hidden');
+  // Hide app shell
   document.getElementById('appShell').classList.add('hidden');
-  if(id==='app'){ document.getElementById('appShell').classList.remove('hidden'); }
-  else { document.getElementById(id).classList.add('show'); }
+  if(id === 'app') {
+    document.getElementById('appShell').classList.remove('hidden');
+  } else {
+    var el = document.getElementById(id);
+    el.classList.remove('hidden');  // remove hidden FIRST
+    el.classList.add('show');       // then show
+  }
 }
 function tsToNum(ts) { return ts&&ts.toDate?ts.toDate().getTime():typeof ts==='number'?ts:Date.now(); }
 
@@ -1043,8 +1052,8 @@ async function doLogout() {
   fbUser=null; userProfile=null; rOrders=[];
   allSettlements=[]; allDeposits=[]; allUsers=[]; allOrders=[];
   ['riderPanel','managerPanel','adminPanel'].forEach(id=>document.getElementById(id).classList.remove('active'));
-  showScreen('loginScreen');
   loading(false);
+  showScreen('loginScreen');
 }
 function friendlyError(code) {
   const map = {
