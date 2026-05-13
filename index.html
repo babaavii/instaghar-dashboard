@@ -1220,10 +1220,10 @@ async function doLogin() {
 }
 async function doLogout() {
   loading(true);
-  await auth.signOut();
+  try { await auth.signOut(); } catch(e){ console.warn('Signout:',e); }
   fbUser=null; userProfile=null; rOrders=[];
-  allSettlements=[]; allDeposits=[]; allUsers=[]; allOrders=[];
-  ['riderPanel','managerPanel','adminPanel'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  allSettlements=[]; allDeposits=[]; allUsers=[]; allOrders=[]; allHandovers=[];
+  ['riderPanel','managerPanel','adminPanel'].forEach(function(id){document.getElementById(id).classList.remove('active');});
   loading(false);
   showScreen('loginScreen');
 }
@@ -1247,31 +1247,36 @@ function friendlyError(code) {
 function boot() {
   loading(true);
   initFirebase();
-  auth.onAuthStateChanged(async user => {
-    if(!user) {
-      loading(false);
-      showScreen('loginScreen');
-      return;
-    }
-    fbUser = user;
-    loading(true);
+  auth.onAuthStateChanged(async function(user) {
     try {
-      const snap = await db.collection('users').doc(user.uid).get();
-      if(!snap.exists){ showToast('Profile not found. Contact admin.','error'); await auth.signOut(); loading(false); return; }
-      var profileData = snap.data();
-      // Block disabled/deleted users
-      if(profileData.active === false || profileData.deleted === true) {
-        showToast('Your account has been disabled. Contact admin.','error');
+      if(!user) {
+        loading(false);
+        showScreen('loginScreen');
+        return;
+      }
+      fbUser = user;
+      loading(true);
+      var snap = await db.collection('users').doc(user.uid).get();
+      if(!snap.exists) {
+        showToast('Profile not found. Contact admin.','error');
         await auth.signOut(); loading(false); return;
       }
-      userProfile = { uid: user.uid, email: user.email, ...profileData };
-      // Track last login
-      db.collection('users').doc(user.uid).update({lastLogin: Date.now()}).catch(function(){});
+      var profileData = snap.data();
+      if(profileData.active===false||profileData.deleted===true) {
+        showToast('Account disabled. Contact admin.','error');
+        await auth.signOut(); loading(false); return;
+      }
+      userProfile = Object.assign({uid:user.uid,email:user.email}, profileData);
+      db.collection('users').doc(user.uid).update({lastLogin:Date.now()}).catch(function(){});
       setupNav();
       showScreen('app');
       await routeToRole();
-    } catch(e) { showToast('Failed to load profile: '+e.message,'error'); loading(false); }
-    loading(false);
+    } catch(e) {
+      console.error('Auth state error:', e);
+      showToast('Error: '+e.message,'error');
+    } finally {
+      loading(false);
+    }
   });
 }
 function setupNav() {
@@ -1318,16 +1323,17 @@ async function initRider() {
   rViewDate = todayISO();
   document.getElementById('rViewDate').value = rViewDate;
   loading(true);
-  rOrders = await fsGetOrders(userProfile.uid);
-  loading(false);
+  try {
+    rOrders = await fsGetOrders(userProfile.uid);
+  } catch(e) { console.warn('Orders load failed:',e); rOrders=[]; }
+  finally { loading(false); }
   renderRider();
-  document.getElementById('rViewDate').addEventListener('change',e=>{rViewDate=e.target.value||todayISO();renderRider();});
+  document.getElementById('rViewDate').addEventListener('change',function(e){rViewDate=e.target.value||todayISO();renderRider();});
   document.getElementById('newOrderBtn').addEventListener('click',openWizard);
   document.getElementById('dayReportBtn').addEventListener('click',openReport);
-  document.getElementById('rhClose').addEventListener('click',()=>document.getElementById('reportOverlay').classList.remove('open'));
+  document.getElementById('rhClose').addEventListener('click',function(){document.getElementById('reportOverlay').classList.remove('open');});
   document.getElementById('exportBtn').addEventListener('click',exportCSV);
-  // Handover section init
-  await initRiderHandover();
+  try { await initRiderHandover(); } catch(e){ console.warn('Handover init failed:',e); }
 }
 function getOrdersForDate(date) {
   return rOrders.filter(o=>o.date===date).sort((a,b)=>tsToNum(b.timestamp)-tsToNum(a.timestamp));
@@ -1744,17 +1750,14 @@ async function initManager() {
   document.getElementById('mgrSettleDate').value=todayISO();
   document.getElementById('depDate').value=todayISO();
   loading(true);
-  allSettlements=await fsGetSettlements(userProfile.uid);
-  allDeposits=await fsGetDeposits(userProfile.uid);
-  allUsers=await fsGetAllUsers();
-  loading(false);
+  try {
+    allSettlements=await fsGetSettlements(userProfile.uid);
+    allDeposits=await fsGetDeposits(userProfile.uid);
+    allUsers=await fsGetAllUsers();
+  } catch(e) { console.warn('Manager data load failed:',e); }
+  finally { loading(false); }
   populateMgrRiderSel();
   setupTabBar('mgrTabBar','mgr-tab-');
-  // Bind approvals tab refresh
-  document.getElementById('mgrTabBar').addEventListener('click',function(e){
-    var btn=e.target.closest('[data-tab]');
-    if(btn&&btn.dataset.tab==='approvals'){initMgrApprovals();}
-  });
   updateMgrHero();
   document.getElementById('mgrRiderSel').addEventListener('change',updatePendingPreview);
   document.getElementById('mgrSettleDate').addEventListener('change',updatePendingPreview);
@@ -1770,8 +1773,7 @@ async function initManager() {
   document.getElementById('settlApply').addEventListener('click',function(){settlFilter.from=document.getElementById('settlFrom').value;settlFilter.to=document.getElementById('settlTo').value;renderSettlHistory();});
   document.getElementById('depSubmitBtn').addEventListener('click',submitDeposit);
   renderSettlHistory();renderDepHistory();updateBankSummary();
-  // Load handovers for this manager
-  await initMgrApprovals();
+  try { await initMgrApprovals(); } catch(e){ console.warn('Approvals init:',e); }
 }
 function populateMgrRiderSel() {
   var riders=allUsers.filter(function(u){return u.role==='rider';});
@@ -2009,12 +2011,15 @@ async function initAdmin() {
   document.getElementById('admTo').value=admTo;
   setupTabBar('admTabBar','adm-tab-');
   loading(true);
-  allUsers=await fsGetAllUsers();
-  allSettlements=await fsGetSettlements(null);
-  allDeposits=await fsGetDeposits(null);
-  var riderIds=allUsers.filter(function(u){return u.role==='rider';}).map(function(u){return u.uid;});
-  allOrders=riderIds.length?await fsGetOrdersForRiders(riderIds):[];
-  loading(false);
+  try {
+    allUsers=await fsGetAllUsers();
+    allSettlements=await fsGetSettlements(null);
+    allDeposits=await fsGetDeposits(null);
+    var riderIds=allUsers.filter(function(u){return u.role==='rider';}).map(function(u){return u.uid;});
+    allOrders=riderIds.length?await fsGetOrdersForRiders(riderIds):[];
+    try { allHandovers=await fsGetAllHandovers(); } catch(e2){ allHandovers=[]; }
+  } catch(e) { console.warn('Admin data load failed:',e); showToast('Some data failed to load','error'); }
+  finally { loading(false); }
   await renderAdmRiders();
   renderAdmManagers();
   renderAudit();
@@ -2276,11 +2281,11 @@ function renderUsersTab() {
     return (a.name||'').localeCompare(b.name||'');
   });
   var avatarColors={rider:'var(--teal-dark)',manager:'linear-gradient(135deg,#1d4ed8,#6366f1)'};
-  c.onclick = function(e) {
+  if(c) c.onclick = function(e) {
     var btn = e.target.closest('[data-uact]');
     if(!btn) return;
     var uid = btn.dataset.uid, act = btn.dataset.uact;
-    if(act==='reset') { _cpwOpen(uid, btn.dataset.email, btn.dataset.name); }
+    if(act==='reset') { _cpwOpen(uid, btn.dataset.email||'', btn.dataset.name||''); }
     else if(act==='disable') { toggleUserStatus(uid, false); }
     else if(act==='enable')  { toggleUserStatus(uid, true); }
   };
@@ -2339,7 +2344,7 @@ function setupTabBar(barId,prefix) {
     var tab=btn.dataset.tab;
     document.querySelectorAll('#'+barId+' .tab-btn').forEach(function(b){b.classList.toggle('active',b===btn);});
     document.querySelectorAll('[id^="'+prefix+'"]').forEach(function(el){el.classList.toggle('active',el.id===prefix+tab);});
-    if(barId==='mgrTabBar'){if(tab==='history')renderSettlHistory();else if(tab==='bank'){renderDepHistory();updateBankSummary();}}
+    if(barId==='mgrTabBar'){if(tab==='history')renderSettlHistory();else if(tab==='bank'){renderDepHistory();updateBankSummary();}else if(tab==='approvals'){try{initMgrApprovals();}catch(e){}}}
     if(barId==='admTabBar'){if(tab==='managers')renderAdmManagers();else if(tab==='audit')renderAudit();else if(tab==='recon')renderRecon();else if(tab==='users')renderUsersTab();}
   });
 }
@@ -2349,13 +2354,24 @@ function setupTabBar(barId,prefix) {
    ══════════════════════════ */
 window.onload = function() {
   if(typeof firebase === 'undefined') {
-    document.getElementById('loginScreen').classList.add('show');
+    document.getElementById('loader').classList.remove('show');
+    var ls=document.getElementById('loginScreen');
+    ls.classList.remove('hidden'); ls.classList.add('show');
     var e = document.getElementById('loginErr');
-    e.textContent = 'Firebase SDK failed to load. Check your internet connection and refresh.';
+    e.textContent = 'Firebase failed to load. Check internet connection and refresh.';
     e.style.display = 'block';
     return;
   }
-  boot();
+  try { boot(); }
+  catch(e) {
+    document.getElementById('loader').classList.remove('show');
+    console.error('Boot error:', e);
+    var ls=document.getElementById('loginScreen');
+    ls.classList.remove('hidden'); ls.classList.add('show');
+    var el=document.getElementById('loginErr');
+    el.textContent='Startup error: '+e.message+'. Please refresh.';
+    el.style.display='block';
+  }
 };
 </script>
 </body>
