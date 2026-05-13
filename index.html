@@ -1900,6 +1900,12 @@ async function initMgrApprovals() {
   loading(false);
   renderMgrApprovals();
   renderMgrApprovalHistory();
+  // Delegated listener for approve/flag buttons
+  var al = document.getElementById('mgrApprovalsList');
+  al.onclick = function(e) {
+    var btn = e.target.closest('[data-hoid]');
+    if(btn) processHandover(btn.dataset.hoid, btn.dataset.act);
+  };
   // Update badge
   var pending = mgrHandovers.filter(function(h){return h.status==='pending';}).length;
   var badge = document.getElementById('mgrPendingCount');
@@ -1929,8 +1935,8 @@ function renderMgrApprovals() {
       +'<label>Remarks <span style="text-transform:none;font-weight:500;letter-spacing:0">(optional)</span></label>'
       +'<input type="text" class="ac-input" id="acRmk-'+esc(h.id)+'" placeholder="Any notes or discrepancy details"/>'
       +'<div class="ac-btns">'
-      +'<button class="ac-btn ac-btn-approve" onclick="processHandover(''+esc(h.id)+'','approved')"><svg><use href="#i-check"/></svg> Approve</button>'
-      +'<button class="ac-btn ac-btn-flag" onclick="processHandover(''+esc(h.id)+'','discrepancy')"><svg><use href="#i-x"/></svg> Flag Discrepancy</button>'
+      +'<button class="ac-btn ac-btn-approve" data-hoid="'+esc(h.id)+'" data-act="approved"><svg><use href="#i-check"/></svg> Approve</button>'
+      +'<button class="ac-btn ac-btn-flag" data-hoid="'+esc(h.id)+'" data-act="discrepancy"><svg><use href="#i-x"/></svg> Flag Discrepancy</button>'
       +'</div>'
       +'</div>'
       +'</div>';
@@ -2270,6 +2276,14 @@ function renderUsersTab() {
     return (a.name||'').localeCompare(b.name||'');
   });
   var avatarColors={rider:'var(--teal-dark)',manager:'linear-gradient(135deg,#1d4ed8,#6366f1)'};
+  c.onclick = function(e) {
+    var btn = e.target.closest('[data-uact]');
+    if(!btn) return;
+    var uid = btn.dataset.uid, act = btn.dataset.uact;
+    if(act==='reset') { _cpwOpen(uid, btn.dataset.email, btn.dataset.name); }
+    else if(act==='disable') { toggleUserStatus(uid, false); }
+    else if(act==='enable')  { toggleUserStatus(uid, true); }
+  };
   c.innerHTML = users.map(function(u){
     var isDisabled = u.active===false||u.deleted===true;
     var lastLogin = u.lastLogin ? 'Last login: '+fmtDateTime(u.lastLogin) : 'Never logged in';
@@ -2290,10 +2304,10 @@ function renderUsersTab() {
       +'<div class="usr-last-login" style="margin-top:5px">'+lastLogin+'</div>'
       +'</div>'
       +'<div class="usr-actions">'
-      +'<button class="usr-btn" onclick="_cpwOpen(''+esc(u.uid)+'',''+esc(u.email||'')+'',''+esc(u.name||'')+'')"><svg><use href="#i-key"/></svg> Reset PW</button>'
+      +'<button class="usr-btn" data-uid="'+esc(u.uid)+'" data-email="'+esc(u.email||'')+'" data-name="'+esc(u.name||'')+'" data-uact="reset"><svg><use href="#i-key"/></svg> Reset PW</button>'
       +(isDisabled
-        ?'<button class="usr-btn enable" onclick="toggleUserStatus(''+esc(u.uid)+'',true)"><svg><use href="#i-circle-check"/></svg> Enable</button>'
-        :'<button class="usr-btn danger" onclick="toggleUserStatus(''+esc(u.uid)+'',false)"><svg><use href="#i-disable"/></svg> Disable</button>'
+        ?'<button class="usr-btn enable" data-uid="'+esc(u.uid)+'" data-uact="enable"><svg><use href="#i-circle-check"/></svg> Enable</button>'
+        :'<button class="usr-btn danger" data-uid="'+esc(u.uid)+'" data-uact="disable"><svg><use href="#i-disable"/></svg> Disable</button>'
       )
       +'</div>'
       +'</div>';
@@ -2302,9 +2316,8 @@ function renderUsersTab() {
 
 async function toggleUserStatus(uid, enable) {
   var action = enable ? 'enable' : 'disable';
-  if(!confirm((enable?'Enable':'Disable')+' this user account?
-
-'+(enable?'They will be able to log in again.':'They will not be able to log in. Historical data is preserved.'))) return;
+  var msg=(enable?'Enable':'Disable')+' this user? '+(enable?'They will be able to log in again.':'Login blocked. Historical data is preserved.');
+  if(!confirm(msg)) return;
   loading(true);
   try {
     await fsSetUserStatus(uid, enable);
