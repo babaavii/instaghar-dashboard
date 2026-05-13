@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#00a89c"/>
+<title>Instaghar — Cloud Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.0/jspdf.plugin.autotable.min.js"></script>
+<!-- Firebase v8 Classic SDK — most compatible, works everywhere -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<style>
+:root{
+  --teal:#00a89c;--teal-deep:#007e76;--teal-dark:#0e2e2b;
+  --green:#34c47b;--green-deep:#1f9d5e;
+  --grad:linear-gradient(135deg,#00a89c 0%,#34c47b 100%);
+  --grad-soft:linear-gradient(135deg,rgba(0,168,156,.10) 0%,rgba(52,196,123,.10) 100%);
+  --blue:#2563eb;--blue-soft:#eff6ff;--blue-deep:#1e40af;
+  --bg:#f3faf8;--card:#fff;--ink:#0e2e2b;--ink-2:#345753;--ink-3:#7a9893;
+  --line:#e0eeec;--line-strong:#c4ddd9;
+  --good:#1f9d5e;--good-soft:#d6f0e2;--bad:#c1361c;--bad-soft:#fde4dd;
+  --warn:#c47200;--warn-soft:#fdebcf;
+  --radius:14px;--radius-lg:20px;
+  --shadow:0 1px 0 rgba(14,46,43,.04),0 6px 20px -10px rgba(14,46,43,.18);
+  --shadow-lift:0 12px 40px -16px rgba(14,46,43,.25);
+  --tap:60px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans','Noto Sans Devanagari',system-ui,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type="number"]{-moz-appearance:textfield}
+.num{font-variant-numeric:tabular-nums}
+.hidden{display:none!important}
+
+/* ── LOADING OVERLAY ── */
+#loader{position:fixed;inset:0;background:rgba(14,46,43,.55);backdrop-filter:blur(4px);z-index:900;display:none;place-items:center}
+#loader.show{display:grid}
+.spin{width:48px;height:48px;border:4px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── SCREENS ── */
+.screen{position:fixed;inset:0;z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.screen.show{display:flex}
+.screen-grad{background:var(--grad)}
+.screen-grad::before{content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,.18),transparent 60%);pointer-events:none}
+.screen-grad::after{content:'';position:absolute;bottom:-80px;left:-60px;width:260px;height:260px;background:radial-gradient(circle,rgba(0,0,0,.12),transparent 60%);pointer-events:none}
+.screen-plain{background:var(--bg)}
+
+/* ── CARDS ── */
+.auth-card{background:white;border-radius:var(--radius-lg);padding:34px 26px 26px;width:100%;max-width:440px;box-shadow:0 30px 80px -20px rgba(0,0,0,.4);position:relative;z-index:1}
+.setup-card{background:white;border-radius:var(--radius-lg);padding:28px 24px 24px;width:100%;max-width:560px;box-shadow:0 30px 80px -20px rgba(0,0,0,.4);position:relative;z-index:1;max-height:95vh;overflow-y:auto}
+
+/* ── BRAND MARK ── */
+.brand-mark{width:68px;height:68px;border-radius:18px;background:var(--grad);margin:0 auto 14px;display:grid;place-items:center;box-shadow:var(--shadow-lift)}
+.brand-mark svg{width:40px;height:40px;color:white}
+.brand-title{font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin:0 0 3px;text-align:center}
+.brand-title .ig-teal{color:var(--teal)}
+.brand-title .ig-deva{color:var(--green-deep);font-family:'Noto Sans Devanagari',sans-serif;font-weight:700}
+.brand-sub{font-size:13px;color:var(--ink-3);font-weight:500;text-align:center;margin-bottom:24px}
+
+/* ── FORM FIELDS ── */
+.lf{margin-bottom:14px}
+.lf label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-2);font-weight:700;margin-bottom:7px}
+.lf label .opt{text-transform:none;letter-spacing:0;color:var(--ink-3);font-weight:500;font-size:10px;margin-left:4px}
+.lf-wrap{display:flex;align-items:center;background:var(--bg);border:2px solid var(--line);border-radius:12px;padding:0 14px;transition:all .15s}
+.lf-wrap:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,168,156,.15)}
+.lf-wrap svg{width:17px;height:17px;color:var(--ink-3);flex-shrink:0}
+.lf-wrap input,.lf-wrap select,.lf-wrap textarea{flex:1;border:none;background:transparent;padding:14px 12px;font-family:inherit;font-size:15px;font-weight:600;color:var(--ink);outline:none;min-width:0}
+.lf-wrap input::placeholder,.lf-wrap textarea::placeholder{color:var(--ink-3);font-weight:500}
+.lf-wrap select{cursor:pointer}
+.fin{width:100%;background:var(--bg);border:2px solid var(--line);border-radius:12px;padding:13px 16px;font-family:inherit;font-size:15px;font-weight:600;color:var(--ink);outline:none;transition:all .15s}
+.fin:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,168,156,.15)}
+.fin::placeholder{color:var(--ink-3);font-weight:500}
+select.fin{cursor:pointer}
+.fin-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ── BUTTONS ── */
+.btn-primary{width:100%;background:var(--ink);color:white;border:none;padding:16px;border-radius:13px;font-family:inherit;font-weight:800;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;min-height:var(--tap);transition:all .15s;letter-spacing:.01em}
+.btn-primary svg{width:18px;height:18px}
+.btn-primary:hover:not(:disabled){background:var(--teal-dark)}
+.btn-primary:active:not(:disabled){transform:scale(.99)}
+.btn-primary:disabled{background:var(--line-strong);color:var(--ink-3);cursor:not-allowed}
+.btn-primary.green{background:var(--grad)}
+.btn-primary.green:hover:not(:disabled){background:var(--green-deep)}
+.btn-primary.blue{background:var(--blue)}
+.btn-primary.blue:hover:not(:disabled){background:var(--blue-deep)}
+.btn-primary.red{background:var(--bad)}
+.err-box{background:var(--bad-soft);color:var(--bad);border-radius:10px;padding:10px 14px;font-size:13px;font-weight:600;margin-bottom:12px;display:none}
+.info-box{background:var(--grad-soft);border:1px solid var(--line-strong);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--ink-2);font-weight:500;margin-bottom:14px;line-height:1.6}
+.info-box strong{font-weight:700;color:var(--ink)}
+.screen-link{text-align:center;margin-top:14px;font-size:12px;color:var(--ink-3);font-weight:500}
+.screen-link a{color:var(--teal);font-weight:700;cursor:pointer;text-decoration:none}
+
+/* ── SETUP STEPS ── */
+.setup-step-header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.step-num{width:32px;height:32px;border-radius:50%;background:var(--grad);color:white;font-weight:800;font-size:13px;display:grid;place-items:center;flex-shrink:0}
+.step-title{font-size:16px;font-weight:800;letter-spacing:-.01em}
+.step-desc{font-size:12px;color:var(--ink-3);font-weight:500}
+.code-block{background:var(--teal-dark);color:#a8f5ed;border-radius:10px;padding:12px 16px;font-family:monospace;font-size:12px;line-height:1.7;overflow-x:auto;margin:10px 0;white-space:pre}
+.step-divider{height:1px;background:var(--line);margin:18px 0}
+.badge-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.bp-rider{background:var(--grad-soft);color:var(--teal-deep)}
+.bp-manager{background:var(--blue-soft);color:var(--blue-deep)}
+.bp-admin{background:#f1f5f9;color:#334155}
+
+/* ── APP SHELL ── */
+#appShell{max-width:800px;margin:0 auto;padding:0 0 100px;min-height:100vh}
+.app-nav{background:white;border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:100;box-shadow:0 1px 0 rgba(14,46,43,.04),0 4px 12px -8px rgba(14,46,43,.1)}
+.nav-brand{display:flex;align-items:center;gap:9px}
+.nav-mark{width:36px;height:36px;border-radius:9px;background:var(--grad);display:grid;place-items:center;flex-shrink:0}
+.nav-mark svg{width:20px;height:20px;color:white}
+.nav-title{font-weight:800;font-size:16px;letter-spacing:-.02em}
+.nav-title .ig-teal{color:var(--teal)}
+.nav-title .ig-deva{color:var(--green-deep);font-family:'Noto Sans Devanagari',sans-serif;font-weight:700}
+.nav-right{display:flex;align-items:center;gap:7px}
+.nav-user{font-size:12px;font-weight:700;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
+.role-badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.role-badge.rider{background:var(--grad-soft);color:var(--teal-deep);border:1px solid var(--line-strong)}
+.role-badge.manager{background:var(--blue-soft);color:var(--blue-deep);border:1px solid #bfdbfe}
+.role-badge.admin{background:#f1f5f9;color:#334155;border:1px solid #cbd5e1}
+.logout-btn{background:var(--bg);border:1px solid var(--line);width:34px;height:34px;border-radius:9px;cursor:pointer;display:grid;place-items:center;color:var(--ink-3);transition:all .15s;flex-shrink:0}
+.logout-btn:hover{color:var(--bad);border-color:var(--bad);background:var(--bad-soft)}
+.logout-btn svg{width:15px;height:15px}
+
+/* ── PANELS ── */
+.panel{padding:14px 14px 20px;display:none}
+.panel.active{display:block}
+
+/* ── TABS ── */
+.tab-bar{display:flex;gap:5px;background:white;border:1px solid var(--line);border-radius:var(--radius);padding:5px;margin-bottom:16px;box-shadow:var(--shadow)}
+.tab-btn{flex:1;padding:9px 6px;border:none;background:transparent;border-radius:9px;font-family:inherit;font-size:11px;font-weight:700;color:var(--ink-3);cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;justify-content:center;gap:4px}
+.tab-btn svg{width:13px;height:13px;flex-shrink:0}
+.tab-btn.active{background:var(--ink);color:white;box-shadow:0 2px 8px -2px rgba(14,46,43,.3)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* ── SECTIONS ── */
+.section{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow)}
+.section-head{padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.section-head h2{margin:0;font-size:15px;font-weight:700;letter-spacing:-.01em}
+.section-head .count-pill{background:var(--teal-dark);color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px}
+.section-head .head-right{font-size:11px;color:var(--ink-3);font-weight:500}
+.section-body{padding:0 14px 14px}
+
+/* ── HERO CARD ── */
+.hero{border-radius:var(--radius-lg);padding:24px 22px 22px;color:white;margin-bottom:14px;position:relative;overflow:hidden;box-shadow:var(--shadow-lift)}
+.hero::before{content:'';position:absolute;top:-60px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(255,255,255,.18),transparent 60%);pointer-events:none}
+.hero-teal{background:var(--grad)}
+.hero-blue{background:linear-gradient(135deg,#1d4ed8,#6366f1)}
+.hero-dark{background:linear-gradient(135deg,#0e2e2b,#1e3a37)}
+.hero-label{font-size:11px;text-transform:uppercase;letter-spacing:.14em;opacity:.8;font-weight:700;margin-bottom:6px;position:relative}
+.hero-amount{font-size:clamp(40px,10vw,56px);font-weight:800;letter-spacing:-.04em;line-height:1;display:flex;align-items:baseline;gap:5px;position:relative}
+.hero-amount .cur{font-size:.45em;opacity:.75;font-weight:600}
+.hero-sub{margin-top:8px;font-size:12px;opacity:.85;position:relative;font-weight:500}
+.hero-sub b{font-weight:700}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:16px;position:relative}
+.hs{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);border-radius:9px;padding:9px 6px;text-align:center;backdrop-filter:blur(10px)}
+.hs-val{font-size:13px;font-weight:700;line-height:1.1}
+.hs-lbl{font-size:9px;opacity:.8;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;font-weight:600}
+
+/* ── METRIC GRID ── */
+.metric-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+.metric-card{background:white;border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.mc-icon{width:38px;height:38px;border-radius:9px;display:grid;place-items:center;margin-bottom:9px}
+.mc-icon svg{width:18px;height:18px}
+.mc-val{font-size:20px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--ink);line-height:1}
+.mc-val .cur{font-size:.6em;opacity:.7;font-weight:600}
+.mc-lbl{font-size:11px;color:var(--ink-3);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+.si-teal{background:var(--teal-dark);color:white}
+.si-green{background:var(--good-soft);color:var(--good)}
+.si-red{background:var(--bad-soft);color:var(--bad)}
+.si-warn{background:var(--warn-soft);color:var(--warn)}
+.si-blue{background:var(--blue-soft);color:var(--blue)}
+.si-dist{background:#f0f0f0;color:var(--ink-2)}
+
+/* ── RECORD CARDS ── */
+.record-list{display:flex;flex-direction:column;gap:9px}
+.record-card{background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:12px}
+.rc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:7px}
+.rc-title{font-weight:700;font-size:13px;color:var(--ink)}
+.rc-time{font-size:11px;color:var(--ink-3);font-weight:500;margin-top:2px}
+.rc-amount{font-weight:800;font-size:17px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--teal-dark);text-align:right}
+.rc-amount .cur{font-size:.65em;opacity:.7;font-weight:600;margin-right:1px}
+.rc-body{display:grid;grid-template-columns:repeat(2,1fr);gap:3px 12px}
+.rc-row{display:flex;align-items:center;justify-content:space-between;font-size:12px}
+.rc-lbl{color:var(--ink-3);font-weight:500}
+.rc-val{font-weight:700;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.rc-badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.rc-badge.ok{background:var(--good-soft);color:var(--good)}
+.rc-badge.pending{background:var(--warn-soft);color:var(--warn)}
+.rc-badge.deposit{background:var(--blue-soft);color:var(--blue-deep)}
+
+/* ── STAT ROWS ── */
+.stat-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line)}
+.stat-row:last-of-type{border-bottom:none}
+.stat-lbl{display:flex;align-items:center;gap:9px;font-weight:600;font-size:13px;color:var(--ink-2)}
+.stat-icon{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex-shrink:0}
+.stat-icon svg{width:15px;height:15px}
+.si-cod{background:var(--teal-dark);color:white}
+.si-online{background:#f5f1e8;color:#8a7140}
+.si-cash{background:var(--good-soft);color:var(--good)}
+.si-qr{background:var(--grad-soft);color:var(--teal)}
+.si-ref{background:var(--bad-soft);color:var(--bad)}
+.si-ext{background:var(--good-soft);color:var(--good)}
+.stat-val{font-weight:800;font-variant-numeric:tabular-nums;font-size:16px;letter-spacing:-.01em;text-align:right;white-space:nowrap;flex-shrink:0}
+.stat-val .cur{font-size:.7em;opacity:.7;font-weight:600;margin-right:1px}
+.stat-meta{font-size:11px;color:var(--ink-3);margin-top:1px;font-weight:500}
+.stat-lbl-block{display:flex;flex-direction:column;gap:1px}
+.stat-total{margin-top:5px;padding:14px;background:var(--grad);color:white;border-radius:11px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between}
+.stat-total .stl{color:white;font-size:14px;font-weight:700}
+.stat-total .stv{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.stat-total .stv .cur{font-size:.65em;opacity:.75;font-weight:600}
+
+/* ── RIDER DASHBOARD ── */
+.topbar-r{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.date-box{display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--line);padding:7px 10px;border-radius:11px;box-shadow:var(--shadow)}
+.date-box svg{width:15px;height:15px;color:var(--teal);flex-shrink:0}
+.date-box input{border:none;background:transparent;font-family:inherit;font-weight:600;font-size:12px;color:var(--ink);outline:none;padding:0;min-width:100px;font-variant-numeric:tabular-nums}
+.day-report-btn{flex:1;background:white;border:1px solid var(--line);border-radius:11px;padding:0 12px;font-family:inherit;font-weight:700;font-size:12px;color:var(--teal-dark);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:var(--shadow);transition:all .15s;min-height:40px}
+.day-report-btn svg{width:14px;height:14px;color:var(--teal)}
+.day-report-btn:hover{border-color:var(--teal)}
+.cta-new{width:100%;background:var(--ink);color:white;border:none;padding:16px;border-radius:var(--radius);font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:var(--shadow-lift);margin-bottom:14px;min-height:var(--tap);transition:all .15s}
+.cta-new:active{transform:scale(.98)}
+.cta-new svg{width:20px;height:20px}
+.cta-new:hover{background:var(--teal-dark)}
+.orders-list{padding:0 12px 12px;display:flex;flex-direction:column;gap:9px}
+.order-card{background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:13px;display:flex;flex-direction:column;gap:10px}
+.oc-head{display:flex;align-items:center;justify-content:space-between;gap:9px}
+.oc-id-block{flex:1;min-width:0}
+.oc-id{font-weight:700;font-size:14px;letter-spacing:-.01em;word-break:break-all;line-height:1.2}
+.oc-time{font-size:11px;color:var(--ink-3);margin-top:2px;font-weight:500}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;flex-shrink:0}
+.badge.cod{background:var(--teal);color:white}
+.badge.prepaid{background:#f5f1e8;color:#8a7140;border:1px solid #ead9b5}
+.badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
+.badge.cod::before{background:white}
+.oc-amounts{display:grid;grid-template-columns:repeat(2,1fr);gap:5px 12px;font-size:12px;padding-top:9px;border-top:1px dashed var(--line-strong)}
+.oc-row{display:flex;align-items:center;justify-content:space-between;gap:7px}
+.oc-row .lbl{color:var(--ink-3);font-weight:500;font-size:11px;display:flex;align-items:center;gap:4px;flex-shrink:0}
+.oc-row .lbl svg{width:12px;height:12px}
+.oc-row .val{font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.val-pos{color:var(--good)}
+.val-neg{color:var(--bad)}
+.val-mute{color:var(--ink-3);font-weight:500}
+.oc-foot{display:flex;justify-content:space-between;align-items:center}
+.oc-distance{font-size:11px;color:var(--ink-3);background:white;padding:4px 8px;border-radius:999px;border:1px solid var(--line);font-weight:600;display:flex;align-items:center;gap:4px}
+.oc-distance svg{width:11px;height:11px}
+.oc-delete{background:transparent;border:1px solid var(--line-strong);color:var(--ink-3);width:30px;height:30px;border-radius:8px;cursor:pointer;display:grid;place-items:center;transition:all .15s}
+.oc-delete:hover{color:var(--bad);border-color:var(--bad);background:var(--bad-soft)}
+.oc-delete svg{width:13px;height:13px}
+.summary{padding:4px 14px 14px}
+.sum-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line)}
+.sum-row:last-of-type{border-bottom:none}
+.sum-row.total{margin-top:5px;padding:14px;background:var(--grad);color:white;border-radius:11px;border-bottom:none;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between}
+.sum-lbl{display:flex;align-items:center;gap:9px;font-weight:600;font-size:13px;color:var(--ink-2)}
+.sum-row.total .sum-lbl{color:white;font-size:14px;font-weight:700}
+.sum-icon{width:30px;height:30px;border-radius:7px;display:grid;place-items:center;flex-shrink:0}
+.sum-icon svg{width:15px;height:15px}
+.sum-row.total .sum-icon{background:rgba(255,255,255,.2);color:white}
+.sum-val{font-weight:800;font-variant-numeric:tabular-nums;font-size:15px;letter-spacing:-.01em;text-align:right;white-space:nowrap;flex-shrink:0}
+.sum-row.total .sum-val{font-size:20px}
+.sum-val .cur{font-size:.7em;opacity:.7;font-weight:600;margin-right:1px}
+.sum-meta{font-size:10px;color:var(--ink-3);margin-top:1px;font-weight:500}
+.sum-row.total .sum-meta{color:rgba(255,255,255,.8)}
+.sum-lbl-block{display:flex;flex-direction:column;gap:1px}
+.day-history-wrap{margin-bottom:14px}
+.day-history-label{font-size:10px;text-transform:uppercase;letter-spacing:.10em;color:var(--ink-3);font-weight:700;margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.day-history-label::before{content:'';width:3px;height:11px;background:var(--grad);border-radius:2px;display:inline-block}
+.day-history-scroll{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.day-history-scroll::-webkit-scrollbar{display:none}
+.day-pill{flex-shrink:0;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:9px 12px;cursor:pointer;font-family:inherit;text-align:left;transition:all .15s;min-width:94px;box-shadow:var(--shadow)}
+.day-pill:hover{border-color:var(--teal);transform:translateY(-1px)}
+.day-pill.active{background:var(--teal-dark);border-color:var(--teal-dark);color:white;box-shadow:0 6px 20px -6px rgba(14,46,43,.4)}
+.dp-date{font-size:11px;font-weight:700;line-height:1.2;margin-bottom:3px;white-space:nowrap}
+.dp-date .dp-sub{display:block;font-size:9px;font-weight:500;opacity:.65;margin-top:1px}
+.dp-stats{display:flex;align-items:center;justify-content:space-between;gap:5px}
+.dp-orders{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:var(--grad-soft);color:var(--teal-deep);padding:2px 5px;border-radius:999px;white-space:nowrap}
+.day-pill.active .dp-orders{background:rgba(255,255,255,.2);color:rgba(255,255,255,.9)}
+.dp-net{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--good);white-space:nowrap}
+.day-pill.active .dp-net{color:#6effa8}
+
+/* ── FILTERS ── */
+.hist-filter{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.filter-pill{background:white;border:1.5px solid var(--line);border-radius:999px;padding:5px 12px;font-family:inherit;font-size:11px;font-weight:700;color:var(--ink-3);cursor:pointer;transition:all .15s;letter-spacing:.03em;white-space:nowrap}
+.filter-pill:hover{border-color:var(--teal);color:var(--teal-deep)}
+.filter-pill.active{background:var(--teal-dark);color:white;border-color:var(--teal-dark)}
+.filter-select{background:white;border:1.5px solid var(--line);border-radius:999px;padding:5px 28px 5px 12px;font-family:inherit;font-size:11px;font-weight:700;color:var(--ink-3);cursor:pointer;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%237a9893'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;background-size:14px}
+.custom-date-row{display:flex;gap:7px;margin-bottom:11px;align-items:center}
+.custom-date-row .fin{flex:1;min-width:110px;padding:9px 13px;font-size:13px}
+
+/* ── PENDING PREVIEW ── */
+.pending-preview{background:var(--grad);color:white;border-radius:11px;padding:16px;margin:12px 0;text-align:center}
+.pp-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.12em;opacity:.8;font-weight:700;margin-bottom:5px}
+.pp-val{font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.pp-val .cur{font-size:.5em;opacity:.7;font-weight:600}
+.pp-sub{font-size:11px;opacity:.8;margin-top:5px;font-weight:500}
+.diff-row{display:flex;justify-content:center;gap:22px;margin-top:9px}
+.diff-cell{text-align:center}
+.diff-cell .dl{font-size:9px;text-transform:uppercase;letter-spacing:.1em;opacity:.75;font-weight:700}
+.diff-cell .dv{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+
+/* ── WIZARD ── */
+.wizard{position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;overflow:hidden}
+.wizard.open{display:flex}
+.wiz-top{padding:12px 14px 7px;background:white;border-bottom:1px solid var(--line);flex-shrink:0}
+.wiz-top-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.wiz-back,.wiz-close{background:var(--bg);border:1px solid var(--line);width:38px;height:38px;border-radius:9px;cursor:pointer;display:grid;place-items:center;color:var(--ink-2);transition:all .15s}
+.wiz-back svg,.wiz-close svg{width:17px;height:17px}
+.wiz-back:hover,.wiz-close:hover{background:var(--line);color:var(--ink)}
+.wiz-title{font-size:12px;font-weight:700;color:var(--teal);letter-spacing:.05em;text-transform:uppercase}
+.wiz-progress{height:4px;background:var(--line);border-radius:999px;overflow:hidden}
+.wiz-progress-bar{height:100%;background:var(--grad);width:0%;transition:width .3s ease;border-radius:999px}
+.wiz-body{flex:1;overflow-y:auto;padding:22px 18px 14px;-webkit-overflow-scrolling:touch}
+.step{max-width:520px;margin:0 auto;animation:stepIn .25s ease}
+@keyframes stepIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.step h3{margin:0 0 5px;font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.step .step-desc{color:var(--ink-3);font-size:13px;margin-bottom:20px;font-weight:500}
+.big-choices{display:flex;flex-direction:column;gap:10px}
+.big-choice{background:white;border:2px solid var(--line);border-radius:var(--radius);padding:16px;cursor:pointer;display:flex;align-items:center;gap:12px;text-align:left;width:100%;font-family:inherit;transition:all .15s;min-height:72px}
+.big-choice:hover{border-color:var(--teal)}
+.big-choice.selected{border-color:var(--teal);background:var(--grad-soft);box-shadow:0 0 0 3px rgba(0,168,156,.12)}
+.bc-icon{width:48px;height:48px;border-radius:11px;display:grid;place-items:center;flex-shrink:0;background:var(--bg)}
+.bc-icon svg{width:24px;height:24px}
+.bc-lbl{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+.bc-sub{font-size:11px;color:var(--ink-3);margin-top:2px;font-weight:500}
+.text-input-big{width:100%;background:white;border:2px solid var(--line);border-radius:var(--radius);padding:17px 18px;font-family:inherit;font-size:17px;font-weight:700;color:var(--ink);outline:none;transition:all .15s}
+.text-input-big:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,168,156,.15)}
+.text-input-big::placeholder{color:var(--ink-3);font-weight:500}
+.amount-display{background:var(--ink);color:white;border-radius:var(--radius);padding:20px 18px;text-align:center;margin-bottom:14px;position:relative;overflow:hidden}
+.amount-display::before{content:'';position:absolute;top:0;right:0;width:130px;height:130px;background:radial-gradient(circle,rgba(0,168,156,.3),transparent 60%);pointer-events:none}
+.ad-label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;opacity:.7;font-weight:700;margin-bottom:5px;position:relative}
+.ad-value{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1;display:flex;align-items:baseline;justify-content:center;gap:4px;position:relative;font-variant-numeric:tabular-nums}
+.ad-value .cur{font-size:.5em;opacity:.6;font-weight:600}
+.ad-value.placeholder{opacity:.3}
+.amount-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}
+.chip{background:white;border:1.5px solid var(--line);border-radius:11px;padding:13px 9px;font-family:inherit;font-size:15px;font-weight:700;color:var(--ink);cursor:pointer;transition:all .15s;font-variant-numeric:tabular-nums;min-height:48px}
+.chip:hover{border-color:var(--teal)}
+.chip.selected{background:var(--teal-dark);color:white;border-color:var(--teal-dark)}
+.custom-input-block{background:white;border:1.5px solid var(--line);border-radius:11px;padding:3px 3px 3px 14px;display:flex;align-items:center;gap:7px}
+.custom-input-block .prefix{color:var(--ink-3);font-weight:700;font-size:17px}
+.custom-input-block input{border:none;outline:none;flex:1;padding:13px 0;font-family:inherit;font-size:17px;font-weight:700;background:transparent;color:var(--ink);min-width:0;font-variant-numeric:tabular-nums}
+.custom-input-block input::placeholder{color:var(--ink-3);font-weight:500}
+.or-divider{text-align:center;color:var(--ink-3);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin:11px 0 9px;position:relative}
+.or-divider::before,.or-divider::after{content:'';display:inline-block;width:55px;height:1px;background:var(--line-strong);vertical-align:middle;margin:0 9px}
+.split-breakdown{margin-top:14px;background:var(--grad-soft);border:1px solid var(--line-strong);border-radius:11px;padding:13px 14px;display:flex;justify-content:space-around}
+.sb-cell{text-align:center}
+.sb-cell .sb-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);font-weight:700;margin-bottom:3px}
+.sb-cell .sb-val{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--teal-dark)}
+.sb-cell .sb-val .cur{font-size:.6em;opacity:.7;font-weight:600}
+.sb-cell.cash .sb-val{color:var(--good)}
+.sb-cell.qr .sb-val{color:var(--teal)}
+.sb-divider{width:1px;background:var(--line-strong)}
+.step-context{background:var(--grad-soft);border:1px solid var(--line-strong);border-radius:11px;padding:11px 13px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:9px}
+.step-context .ctx-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
+.step-context .ctx-val{font-size:17px;font-weight:800;color:var(--teal-dark);font-variant-numeric:tabular-nums}
+.review-card{background:white;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:14px}
+.review-row{padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line)}
+.review-row:last-child{border-bottom:none}
+.review-row .rr-lbl{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--ink-2);font-weight:600}
+.review-row .rr-icon{width:26px;height:26px;border-radius:7px;background:var(--bg);display:grid;place-items:center;color:var(--teal)}
+.review-row .rr-icon svg{width:13px;height:13px}
+.review-row .rr-val{font-weight:700;font-size:14px;text-align:right;font-variant-numeric:tabular-nums}
+.review-row .rr-val.pos{color:var(--good)}
+.review-row .rr-val.neg{color:var(--bad)}
+.review-final{background:var(--grad);color:white;border-radius:var(--radius);padding:20px;text-align:center;box-shadow:var(--shadow-lift)}
+.review-final .rf-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.14em;opacity:.85;font-weight:700;margin-bottom:3px}
+.review-final .rf-val{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.review-final .rf-val .cur{font-size:.5em;opacity:.7;font-weight:600}
+.review-final .rf-formula{font-size:11px;opacity:.85;margin-top:6px;font-weight:500}
+.wiz-foot{flex-shrink:0;padding:11px 14px 16px;background:white;border-top:1px solid var(--line);box-shadow:0 -4px 16px -8px rgba(14,46,43,.1)}
+.wiz-action{width:100%;background:var(--ink);color:white;border:none;padding:16px;border-radius:13px;font-family:inherit;font-weight:800;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;min-height:var(--tap);transition:all .15s}
+.wiz-action svg{width:18px;height:18px}
+.wiz-action:disabled{background:var(--line-strong);color:var(--ink-3);cursor:not-allowed}
+.wiz-action:not(:disabled):hover{background:var(--teal-dark)}
+.wiz-action.save{background:var(--grad)}
+.wiz-action.save:hover{background:var(--green-deep)}
+
+/* ── AUDIT TRAIL ── */
+.audit-entry{background:white;border:1px solid var(--line);border-radius:11px;padding:12px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
+.ae-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.ae-dot.order{background:var(--teal)}
+.ae-dot.settlement{background:var(--blue)}
+.ae-dot.deposit{background:var(--green)}
+.ae-body{flex:1;min-width:0}
+.ae-title{font-weight:700;font-size:12px;color:var(--ink)}
+.ae-meta{font-size:11px;color:var(--ink-3);font-weight:500;margin-top:1px}
+.ae-amount{font-weight:800;font-size:14px;font-variant-numeric:tabular-nums;flex-shrink:0;white-space:nowrap}
+
+/* ── USER TABLE ── */
+.user-table{width:100%;border-collapse:collapse}
+.user-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);font-weight:700;padding:7px 10px;border-bottom:2px solid var(--line)}
+.user-table td{padding:10px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:middle}
+.user-table tr:last-child td{border-bottom:none}
+.ud-name{font-weight:700;color:var(--ink)}
+.ud-sub{font-size:10px;color:var(--ink-3);font-weight:500;margin-top:1px}
+.tbl-btn{background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:4px 7px;cursor:pointer;font-size:10px;font-weight:700;color:var(--ink-2);font-family:inherit;white-space:nowrap;display:inline-flex;align-items:center;gap:3px}
+.tbl-btn svg{width:11px;height:11px}
+.tbl-btn.danger{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+
+/* ── REPORT ── */
+.report-overlay{position:fixed;inset:0;background:rgba(14,46,43,.7);backdrop-filter:blur(6px);z-index:250;display:none;align-items:flex-end;justify-content:center}
+.report-overlay.open{display:flex;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.report-sheet{background:var(--bg);width:100%;max-width:620px;max-height:92vh;border-radius:22px 22px 0 0;overflow:hidden;display:flex;flex-direction:column;animation:slideUp .3s ease;box-shadow:0 -20px 60px -10px rgba(0,0,0,.4)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.report-head{padding:16px 18px;background:white;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0}
+.report-head .rh-title{font-size:17px;font-weight:800;letter-spacing:-.02em}
+.report-head .rh-sub{font-size:11px;color:var(--ink-3);font-weight:500;margin-top:2px}
+.rh-close{background:var(--bg);border:1px solid var(--line);width:34px;height:34px;border-radius:9px;cursor:pointer;display:grid;place-items:center;color:var(--ink-2)}
+.rh-close svg{width:15px;height:15px}
+.report-body{flex:1;overflow-y:auto;padding:18px;-webkit-overflow-scrolling:touch}
+.report-actions{padding:10px 14px 18px;background:white;border-top:1px solid var(--line);display:flex;gap:9px}
+.report-actions button{flex:1;background:var(--ink);color:white;border:none;padding:13px;border-radius:11px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s}
+.report-actions button:hover{background:var(--teal-dark)}
+.report-actions button.sec{background:white;color:var(--ink);border:1px solid var(--line)}
+.report-actions button.sec:hover{border-color:var(--teal);color:var(--teal-deep)}
+.report-actions button svg{width:15px;height:15px}
+@media(min-width:720px){.report-overlay{align-items:center;padding:24px}.report-sheet{border-radius:22px;max-height:90vh}}
+
+/* ── EMPTY STATE ── */
+.empty{padding:36px 22px;text-align:center;color:var(--ink-3)}
+.empty-icon{width:52px;height:52px;margin:0 auto 11px;background:var(--grad-soft);border-radius:50%;display:grid;place-items:center;color:var(--teal)}
+.empty-icon svg{width:26px;height:26px}
+.empty .msg{font-size:14px;font-weight:700;color:var(--ink-2);margin-bottom:3px}
+.empty .sub{font-size:12px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:white;padding:13px 20px;border-radius:11px;font-size:13px;font-weight:600;opacity:0;transition:all .25s;pointer-events:none;box-shadow:var(--shadow-lift);z-index:800;display:flex;align-items:center;gap:7px;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{background:var(--bad)}
+.toast.success{background:var(--good)}
+.toast svg{width:17px;height:17px;flex-shrink:0}
+
+/* ── CHANGE PW MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(14,46,43,.7);backdrop-filter:blur(4px);z-index:350;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex;animation:fadeIn .2s ease}
+.modal-sheet{background:var(--bg);width:100%;max-width:420px;border-radius:22px 22px 0 0;padding:24px 22px 28px;box-shadow:0 -20px 60px -10px rgba(0,0,0,.4);animation:slideUp .3s ease}
+@media(min-width:480px){.modal-overlay{align-items:center;padding:24px}.modal-sheet{border-radius:22px}}
+
+@media(min-width:700px){
+  #appShell{padding:0 0 60px}
+  .amount-chips{grid-template-columns:repeat(4,1fr)}
+  .metric-grid{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:360px){
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .step h3{font-size:20px}
+  .ad-value{font-size:34px}
+  .fin-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- SVG SPRITE -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+<symbol id="i-logo" viewBox="0 0 40 40"><path d="M8 28 L14 12 L20 22 L26 12 L32 28" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="20" cy="12" r="3.5" fill="white"/></symbol>
+<symbol id="i-email" viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z" stroke="currentColor" stroke-width="2" fill="none"/><polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M8 11V7a4 4 0 018 0v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+<symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="i-receipt" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="2" fill="none"/><polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" fill="none"/><line x1="8" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="17" x2="12" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-cash" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+<symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2" fill="none"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2" fill="none"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2" fill="none"/><rect x="5" y="5" width="3" height="3" fill="currentColor" rx=".5"/><rect x="16" y="5" width="3" height="3" fill="currentColor" rx=".5"/><rect x="5" y="16" width="3" height="3" fill="currentColor" rx=".5"/><path d="M14 14h2v2h-2zM18 14h3v3h-3zM14 18h2v3h-2z" fill="currentColor"/></symbol>
+<symbol id="i-card" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><line x1="2" y1="10" x2="22" y2="10" stroke="currentColor" stroke-width="2"/></symbol>
+<symbol id="i-refund" viewBox="0 0 24 24"><path d="M3 12a9 9 0 109 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><polyline points="3,7 3,12 8,12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-distance" viewBox="0 0 24 24"><path d="M3 12h18M17 8l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="i-circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/><polyline points="9,12 11,14 15,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-arrow-back" viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="i-arrow-fwd" viewBox="0 0 24 24"><polyline points="9,6 15,12 9,18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/></symbol>
+<symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v2H3V9z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M5 11v6M9 11v6M15 11v6M19 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="3" y="17" width="18" height="3" rx="1" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2l8 4v5c0 5-4 9-8 11C8 20 4 16 4 11V6l8-4z" stroke="currentColor" stroke-width="2" fill="none"/><polyline points="9,12 11,14 15,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="i-bike" viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="18.5" cy="17.5" r="3.5" stroke="currentColor" stroke-width="2" fill="none"/><path d="M15 6h-3l-3 8h7L13 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M5.5 17.5L9 9h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><rect x="3" y="12" width="4" height="9" fill="currentColor" rx="1"/><rect x="10" y="7" width="4" height="14" fill="currentColor" rx="1"/><rect x="17" y="3" width="4" height="18" fill="currentColor" rx="1"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" fill="none"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="4" cy="6" r="1.5" fill="currentColor"/><circle cx="4" cy="12" r="1.5" fill="currentColor"/><circle cx="4" cy="18" r="1.5" fill="currentColor"/></symbol>
+<symbol id="i-tag" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" stroke="currentColor" stroke-width="2" fill="none"/><line x1="7" y1="7" x2="7.01" y2="7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
+<symbol id="i-key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5" stroke="currentColor" stroke-width="2" fill="none"/><path d="M21 2L11 12M16 7l2 2M18 5l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><polyline points="3,6 5,6 21,6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="i-pdf" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="2" fill="none"/><polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+<symbol id="i-share" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><polyline points="23,4 23,10 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="i-cloud" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .01h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+</svg>
+
+<!-- ═══════════════════════════════════════════════
+     SETUP SCREEN — shown only on first launch
+     ═══════════════════════════════════════════════ -->
+<div id="setupScreen" class="screen screen-grad hidden">
+  <div class="setup-card">
+    <div style="text-align:center;margin-bottom:20px">
+      <div class="brand-mark" style="margin-bottom:12px"><svg><use href="#i-cloud"/></svg></div>
+      <div style="font-size:20px;font-weight:800;letter-spacing:-.02em">Connect Firebase</div>
+      <div style="font-size:12px;color:var(--ink-3);font-weight:500;margin-top:3px">One-time setup to enable cloud storage</div>
+    </div>
+
+    <div class="info-box">
+      <strong>How to get your Firebase config:</strong><br>
+      1. Go to <strong>console.firebase.google.com</strong> → Create a project<br>
+      2. Add a Web App → copy the <strong>firebaseConfig</strong> object<br>
+      3. Enable <strong>Authentication → Email/Password</strong><br>
+      4. Create a <strong>Firestore Database</strong> (start in test mode)<br>
+      5. Paste your values below and click Connect
+    </div>
+
+    <div id="setupErr" class="err-box"></div>
+
+    <div class="fin-row">
+      <div class="lf"><label>API Key</label><div class="lf-wrap"><svg><use href="#i-key"/></svg><input type="text" id="cfg-apiKey" placeholder="AIzaSy…" autocomplete="off" autocapitalize="none"/></div></div>
+      <div class="lf"><label>Project ID</label><div class="lf-wrap"><svg><use href="#i-tag"/></svg><input type="text" id="cfg-projectId" placeholder="my-project" autocomplete="off" autocapitalize="none"/></div></div>
+    </div>
+    <div class="lf"><label>Auth Domain</label><div class="lf-wrap"><svg><use href="#i-cloud"/></svg><input type="text" id="cfg-authDomain" placeholder="my-project.firebaseapp.com" autocomplete="off" autocapitalize="none"/></div></div>
+    <div class="lf"><label>App ID</label><div class="lf-wrap"><svg><use href="#i-tag"/></svg><input type="text" id="cfg-appId" placeholder="1:123…:web:abc…" autocomplete="off" autocapitalize="none"/></div></div>
+
+    <div class="step-divider"></div>
+    <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--ink)">Create Admin Account</div>
+    <div class="info-box">This admin account will be the first user. After setup, add riders and managers from the Admin dashboard.</div>
+    <div class="lf"><label>Admin Email</label><div class="lf-wrap"><svg><use href="#i-email"/></svg><input type="email" id="cfg-adminEmail" placeholder="owner@instaghar.com" autocomplete="email"/></div></div>
+    <div class="fin-row">
+      <div class="lf"><label>Admin Password</label><div class="lf-wrap"><svg><use href="#i-lock"/></svg><input type="password" id="cfg-adminPass" placeholder="Min 6 chars" autocomplete="new-password"/></div></div>
+      <div class="lf"><label>Your Name</label><div class="lf-wrap"><svg><use href="#i-user"/></svg><input type="text" id="cfg-adminName" placeholder="e.g. Owner" autocapitalize="words"/></div></div>
+    </div>
+
+    <div class="step-divider"></div>
+    <div style="font-size:11px;font-weight:700;color:var(--ink-2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Firestore Security Rules</div>
+    <div style="font-size:11px;color:var(--ink-3);margin-bottom:6px">Copy this into Firebase Console → Firestore → Rules:</div>
+    <div class="code-block">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}</div>
+
+    <button class="btn-primary green" id="setupConnectBtn" style="margin-top:6px">
+      <svg><use href="#i-cloud"/></svg> Connect &amp; Create Admin
+    </button>
+    <div class="screen-link">Already set up? <a id="skipSetupLink">Sign in instead</a></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     LOGIN SCREEN
+     ═══════════════════════════════════════════════ -->
+<div id="loginScreen" class="screen screen-grad hidden">
+  <div class="auth-card">
+    <div class="login-brand" style="text-align:center;margin-bottom:24px">
+      <div class="brand-mark"><svg><use href="#i-logo"/></svg></div>
+      <div class="brand-title"><span class="ig-teal">Insta</span><span class="ig-deva">घर</span></div>
+      <div class="brand-sub">Operations Platform · Cloud Edition</div>
+    </div>
+    <div id="loginErr" class="err-box"></div>
+    <div class="lf">
+      <label>Email Address</label>
+      <div class="lf-wrap">
+        <svg><use href="#i-email"/></svg>
+        <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email"/>
+      </div>
+    </div>
+    <div class="lf">
+      <label>Password</label>
+      <div class="lf-wrap">
+        <svg><use href="#i-lock"/></svg>
+        <input type="password" id="loginPass" placeholder="Your password" autocomplete="current-password"/>
+      </div>
+    </div>
+    <button class="btn-primary" id="loginBtn">
+      Sign In <svg><use href="#i-arrow-fwd"/></svg>
+    </button>
+    <div class="screen-link" style="margin-top:16px">Forgot password? Ask your Admin to reset it.</div>
+    
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     APP SHELL
+     ═══════════════════════════════════════════════ -->
+<div id="appShell" class="hidden">
+  <div class="app-nav">
+    <div class="nav-brand">
+      <div class="nav-mark"><svg><use href="#i-logo"/></svg></div>
+      <div class="nav-title"><span class="ig-teal">Insta</span><span class="ig-deva">घर</span></div>
+    </div>
+    <div class="nav-right">
+      <span id="navUser" class="nav-user"></span>
+      <span id="navBadge" class="role-badge"></span>
+      <button class="logout-btn" id="logoutBtn" title="Sign out"><svg><use href="#i-logout"/></svg></button>
+    </div>
+  </div>
+
+  <!-- RIDER PANEL -->
+  <div id="riderPanel" class="panel">
+    <div class="topbar-r">
+      <div class="date-box">
+        <svg><use href="#i-calendar"/></svg>
+        <input type="date" id="rViewDate"/>
+      </div>
+      <button class="day-report-btn" id="dayReportBtn">
+        <svg><use href="#i-pdf"/></svg> Report
+      </button>
+    </div>
+    <div class="day-history-wrap hidden" id="dayHistoryWrap">
+      <div class="day-history-label">History</div>
+      <div class="day-history-scroll" id="dayHistoryScroll"></div>
+    </div>
+    <div class="hero hero-teal">
+      <div class="hero-label">Net Cash with Rider</div>
+      <div class="hero-amount"><span class="cur">₹</span><span id="heroNet" class="num">0</span></div>
+      <div class="hero-sub" id="heroSub">No orders yet · <b>tap below to start</b></div>
+      <div class="hero-stats">
+        <div class="hs"><div class="hs-val num" id="heroCash">0</div><div class="hs-lbl">Cash</div></div>
+        <div class="hs"><div class="hs-val num" id="heroQr">0</div><div class="hs-lbl">QR</div></div>
+        <div class="hs"><div class="hs-val num" id="heroRef">0</div><div class="hs-lbl">Refund</div></div>
+        <div class="hs"><div class="hs-val num" id="heroExt">0</div><div class="hs-lbl">Extra</div></div>
+      </div>
+    </div>
+    <button class="cta-new" id="newOrderBtn"><svg><use href="#i-plus"/></svg> New Order</button>
+    <section class="section">
+      <div class="section-head"><h2>Orders <span class="count-pill" id="orderCount">0</span></h2><div class="head-right" id="rDateLabel">Today</div></div>
+      <div id="ordersWrap"></div>
+    </section>
+    <section class="section">
+      <div class="section-head"><h2>Daily Summary</h2><div class="head-right" id="rDateLabel2">Today</div></div>
+      <div class="summary">
+        <div class="sum-row"><div class="sum-lbl"><div class="sum-icon si-cod"><svg><use href="#i-receipt"/></svg></div><div class="sum-lbl-block"><span>Total COD</span><span class="sum-meta"><span id="sumCodCount">0</span> COD orders</span></div></div><div class="sum-val"><span class="cur">₹</span><span id="sumTotalCod" class="num">0</span></div></div>
+        <div class="sum-row"><div class="sum-lbl"><div class="sum-icon si-online"><svg><use href="#i-card"/></svg></div><div class="sum-lbl-block"><span>Paid online</span><span class="sum-meta"><span id="sumPrepaidCount">0</span> prepaid orders</span></div></div><div class="sum-val"><span class="cur">₹</span><span id="sumOnline" class="num">0</span></div></div>
+        <div class="sum-row"><div class="sum-lbl"><div class="sum-icon si-cash"><svg><use href="#i-cash"/></svg></div><div class="sum-lbl-block"><span>Cash collected</span><span class="sum-meta">physical cash in hand</span></div></div><div class="sum-val"><span class="cur">₹</span><span id="sumCash" class="num">0</span></div></div>
+        <div class="sum-row"><div class="sum-lbl"><div class="sum-icon si-qr"><svg><use href="#i-qr"/></svg></div><div class="sum-lbl-block"><span>QR collected</span><span class="sum-meta">validated separately</span></div></div><div class="sum-val"><span class="cur">₹</span><span id="sumQr" class="num">0</span></div></div>
+        <div class="sum-row"><div class="sum-lbl"><div class="sum-icon si-ref"><svg><use href="#i-refund"/></svg></div><div class="sum-lbl-block"><span>Refunds given</span><span class="sum-meta">paid out from your cash</span></div></div><div class="sum-val"><span class="cur">₹</span><span id="sumRefund" class="num">0</span></div></div>
+        <div class="sum-row"><div class="sum-lbl"><div class="sum-icon si-ext"><svg><use href="#i-plus"/></svg></div><div class="sum-lbl-block"><span>Extra collected</span><span class="sum-meta">added to your cash</span></div></div><div class="sum-val"><span class="cur">₹</span><span id="sumExtra" class="num">0</span></div></div>
+        <div class="sum-row"><div class="sum-lbl"><div class="sum-icon si-dist"><svg><use href="#i-distance"/></svg></div><div class="sum-lbl-block"><span>Total distance</span><span class="sum-meta">across all orders</span></div></div><div class="sum-val num"><span id="sumDist">0</span> <span style="font-size:.7em;opacity:.6">km</span></div></div>
+        <div class="sum-row total"><div class="sum-lbl"><div class="sum-icon"><svg><use href="#i-circle-check"/></svg></div><div class="sum-lbl-block"><span>Net cash with rider</span><span class="sum-meta">cash − refunds</span></div></div><div class="sum-val"><span class="cur">₹</span><span id="sumNet" class="num">0</span></div></div>
+      </div>
+    </section>
+    <div style="text-align:center;padding:0 14px 10px;font-size:12px;color:var(--ink-3)"><svg style="width:12px;height:12px;vertical-align:middle;color:var(--teal)"><use href="#i-cloud"/></svg> Saved to cloud · <a id="exportBtn" style="color:var(--teal);font-weight:600;cursor:pointer">Export CSV</a></div>
+  </div>
+
+  <!-- MANAGER PANEL -->
+  <div id="managerPanel" class="panel">
+    <div class="hero hero-blue">
+      <div class="hero-label">Manager Dashboard</div>
+      <div class="hero-amount"><span class="cur">₹</span><span id="mgrHeroVal" class="num">0</span></div>
+      <div class="hero-sub">Total COD collected today</div>
+      <div class="hero-stats">
+        <div class="hs"><div class="hs-val num" id="mgrHeroRiders">0</div><div class="hs-lbl">Riders</div></div>
+        <div class="hs"><div class="hs-val num" id="mgrHeroSettl">0</div><div class="hs-lbl">Settled</div></div>
+        <div class="hs"><div class="hs-val num" id="mgrHeroDep">0</div><div class="hs-lbl">Deposits</div></div>
+        <div class="hs"><div class="hs-val num" id="mgrHeroPend">0</div><div class="hs-lbl">Pending</div></div>
+      </div>
+    </div>
+    <div class="tab-bar" id="mgrTabBar">
+      <button class="tab-btn active" data-tab="collect"><svg><use href="#i-cash"/></svg> Collect</button>
+      <button class="tab-btn" data-tab="history"><svg><use href="#i-list"/></svg> History</button>
+      <button class="tab-btn" data-tab="bank"><svg><use href="#i-bank"/></svg> Bank</button>
+    </div>
+    <!-- COLLECT TAB -->
+    <div class="tab-content active" id="mgr-tab-collect">
+      <section class="section">
+        <div class="section-head"><h2>COD Collection</h2></div>
+        <div class="section-body">
+          <div class="lf"><label>Select Rider</label><select class="fin" id="mgrRiderSel"><option value="">-- Choose Rider --</option></select></div>
+          <div class="lf"><label>Settlement Date</label><input type="date" class="fin" id="mgrSettleDate"/></div>
+          <div id="pendingPreviewWrap" class="hidden">
+            <div class="pending-preview">
+              <div class="pp-lbl">Pending Cash from Rider</div>
+              <div class="pp-val"><span class="cur">₹</span><span id="pendingAmt">0</span></div>
+              <div class="pp-sub" id="pendingDesc">Net cash for selected date</div>
+              <div class="diff-row">
+                <div class="diff-cell"><div class="dl">Cash</div><div class="dv" id="ppCash">₹0</div></div>
+                <div class="diff-cell"><div class="dl">Refunds</div><div class="dv" id="ppRef">₹0</div></div>
+                <div class="diff-cell"><div class="dl">Orders</div><div class="dv" id="ppOrders">0</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="lf"><label>Amount Physically Received (₹)</label><input type="number" class="fin" id="mgrRecvAmt" placeholder="0" min="0" step="1"/></div>
+          <div class="lf hidden" id="mgrRemarksWrap"><label>Remarks <span class="opt">(optional)</span></label><input type="text" class="fin" id="mgrRemarks" placeholder="Any notes…"/></div>
+          <button class="btn-primary green" id="mgrSubmitBtn" disabled>
+            <svg><use href="#i-circle-check"/></svg> Acknowledge &amp; Record
+          </button>
+        </div>
+      </section>
+    </div>
+    <!-- HISTORY TAB -->
+    <div class="tab-content" id="mgr-tab-history">
+      <section class="section">
+        <div class="section-head"><h2>Settlement History</h2></div>
+        <div class="section-body">
+          <div class="hist-filter" id="settlFilterBar">
+            <button class="filter-pill active" data-range="today">Today</button>
+            <button class="filter-pill" data-range="yesterday">Yesterday</button>
+            <button class="filter-pill" data-range="custom">Custom</button>
+            <select class="filter-select" id="settlRiderFilter"><option value="">All Riders</option></select>
+          </div>
+          <div id="settlCustomDates" class="custom-date-row hidden">
+            <input type="date" class="fin" id="settlFrom"/>
+            <input type="date" class="fin" id="settlTo"/>
+            <button class="filter-pill active" id="settlApply">Apply</button>
+          </div>
+          <div id="settlHistList"></div>
+        </div>
+      </section>
+    </div>
+    <!-- BANK TAB -->
+    <div class="tab-content" id="mgr-tab-bank">
+      <section class="section">
+        <div class="section-head"><h2>Cash Summary</h2></div>
+        <div class="section-body">
+          <div class="metric-grid" style="grid-template-columns:repeat(2,1fr)">
+            <div class="metric-card"><div class="mc-icon si-green"><svg><use href="#i-cash"/></svg></div><div class="mc-val"><span class="cur">₹</span><span id="bankCollected">0</span></div><div class="mc-lbl">Collected</div></div>
+            <div class="metric-card"><div class="mc-icon si-blue"><svg><use href="#i-bank"/></svg></div><div class="mc-val"><span class="cur">₹</span><span id="bankDeposited">0</span></div><div class="mc-lbl">Deposited</div></div>
+            <div class="metric-card" style="grid-column:span 2;border-color:var(--warn-soft)"><div class="mc-icon si-warn"><svg><use href="#i-cash"/></svg></div><div class="mc-val" style="color:var(--warn)"><span class="cur">₹</span><span id="bankPending">0</span></div><div class="mc-lbl">Pending Deposit</div></div>
+          </div>
+        </div>
+      </section>
+      <section class="section">
+        <div class="section-head"><h2>Record Bank Deposit</h2></div>
+        <div class="section-body">
+          <div class="fin-row">
+            <div class="lf"><label>Amount (₹)</label><input type="number" class="fin" id="depAmt" placeholder="0" min="0" step="1"/></div>
+            <div class="lf"><label>Date</label><input type="date" class="fin" id="depDate"/></div>
+          </div>
+          <div class="lf"><label>Remarks / Ref No <span class="opt">(optional)</span></label><input type="text" class="fin" id="depRemarks" placeholder="Transaction ID, bank branch…"/></div>
+          <button class="btn-primary blue" id="depSubmitBtn">
+            <svg><use href="#i-bank"/></svg> Record Deposit
+          </button>
+        </div>
+      </section>
+      <section class="section">
+        <div class="section-head"><h2>Deposit History</h2></div>
+        <div class="section-body"><div id="depHistList"></div></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div id="adminPanel" class="panel">
+    <div class="hero hero-dark">
+      <div class="hero-label">Admin Overview · All Time</div>
+      <div class="hero-amount"><span class="cur">₹</span><span id="admHeroVal" class="num">0</span></div>
+      <div class="hero-sub">Total cash collected across all riders</div>
+      <div class="hero-stats">
+        <div class="hs"><div class="hs-val num" id="admHeroRiders">0</div><div class="hs-lbl">Riders</div></div>
+        <div class="hs"><div class="hs-val num" id="admHeroOrders">0</div><div class="hs-lbl">Orders</div></div>
+        <div class="hs"><div class="hs-val num" id="admHeroSettled">0</div><div class="hs-lbl">Settled</div></div>
+        <div class="hs"><div class="hs-val num" id="admHeroDep">0</div><div class="hs-lbl">Deposited</div></div>
+      </div>
+    </div>
+    <div class="tab-bar" id="admTabBar">
+      <button class="tab-btn active" data-tab="riders"><svg><use href="#i-chart"/></svg> Riders</button>
+      <button class="tab-btn" data-tab="managers"><svg><use href="#i-users"/></svg> Managers</button>
+      <button class="tab-btn" data-tab="audit"><svg><use href="#i-shield"/></svg> Audit</button>
+      <button class="tab-btn" data-tab="users"><svg><use href="#i-key"/></svg> Users</button>
+    </div>
+    <!-- RIDERS TAB -->
+    <div class="tab-content active" id="adm-tab-riders">
+      <div style="display:flex;gap:7px;margin-bottom:12px;align-items:center">
+        <input type="date" class="fin" id="admFrom" style="flex:1;padding:9px 13px;font-size:13px"/>
+        <span style="color:var(--ink-3);font-size:12px;font-weight:600">to</span>
+        <input type="date" class="fin" id="admTo" style="flex:1;padding:9px 13px;font-size:13px"/>
+        <button class="filter-pill active" id="admRefreshBtn" style="flex-shrink:0">Go</button>
+      </div>
+      <div id="admRidersContent"><div class="empty"><div class="empty-icon"><svg><use href="#i-bike"/></svg></div><div class="msg">Loading…</div></div></div>
+    </div>
+    <!-- MANAGERS TAB -->
+    <div class="tab-content" id="adm-tab-managers">
+      <div id="admManagersContent"><div class="empty"><div class="empty-icon"><svg><use href="#i-users"/></svg></div><div class="msg">Loading…</div></div></div>
+    </div>
+    <!-- AUDIT TAB -->
+    <div class="tab-content" id="adm-tab-audit">
+      <div class="hist-filter">
+        <button class="filter-pill active" id="auditToday">Today</button>
+        <button class="filter-pill" id="auditYest">Yesterday</button>
+        <button class="filter-pill" id="auditAll">All Time</button>
+        <select class="filter-select" id="auditType"><option value="">All Types</option><option value="order">Orders</option><option value="settlement">Settlements</option><option value="deposit">Deposits</option></select>
+      </div>
+      <div id="auditList"></div>
+    </div>
+    <!-- USERS TAB -->
+    <div class="tab-content" id="adm-tab-users">
+      <section class="section">
+        <div class="section-head"><h2>Add New User</h2></div>
+        <div class="section-body">
+          <div class="info-box"><strong>Note:</strong> A new Firebase Auth account will be created for this user using the <strong>Firebase REST API</strong> — your admin session stays active.</div>
+          <div id="addUserErr" class="err-box"></div>
+          <div class="fin-row">
+            <div class="lf"><label>Full Name</label><input type="text" class="fin" id="nuName" placeholder="e.g. Ali Hassan" autocapitalize="words"/></div>
+            <div class="lf"><label>Email</label><input type="email" class="fin" id="nuEmail" placeholder="rider@instaghar.com"/></div>
+          </div>
+          <div class="fin-row">
+            <div class="lf"><label>Password</label><input type="password" class="fin" id="nuPass" placeholder="Min 6 characters"/></div>
+            <div class="lf"><label>Role</label><select class="fin" id="nuRole"><option value="rider">Rider</option><option value="manager">Manager</option></select></div>
+          </div>
+          <div id="nuRiderFields">
+            <div class="fin-row">
+              <div class="lf"><label>Rider ID <span class="opt">(optional)</span></label><input type="text" class="fin" id="nuRiderId" placeholder="e.g. RDR-004"/></div>
+              <div class="lf"><label>Phone <span class="opt">(optional)</span></label><input type="tel" class="fin" id="nuPhone" placeholder="9876543210"/></div>
+            </div>
+          </div>
+          <div id="nuManagerFields" class="hidden">
+            <div class="lf"><label>Shift <span class="opt">(optional)</span></label><input type="text" class="fin" id="nuShift" placeholder="e.g. Morning"/></div>
+          </div>
+          <button class="btn-primary" id="addUserBtn"><svg><use href="#i-plus"/></svg> Create User Account</button>
+        </div>
+      </section>
+      <section class="section">
+        <div class="section-head"><h2>All Users</h2></div>
+        <div class="section-body" style="overflow-x:auto"><div id="usersListWrap"></div></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- RIDER WIZARD -->
+<div class="wizard" id="wizard">
+  <div class="wiz-top">
+    <div class="wiz-top-row">
+      <button class="wiz-back" id="wizBack"><svg><use href="#i-arrow-back"/></svg></button>
+      <div class="wiz-title" id="wizTitle">New Order</div>
+      <button class="wiz-close" id="wizClose"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div class="wiz-progress"><div class="wiz-progress-bar" id="wizBar"></div></div>
+  </div>
+  <div class="wiz-body" id="wizBody"></div>
+  <div class="wiz-foot">
+    <button class="wiz-action" id="wizAction">Continue <svg><use href="#i-arrow-fwd"/></svg></button>
+  </div>
+</div>
+
+<!-- REPORT OVERLAY -->
+<div class="report-overlay" id="reportOverlay">
+  <div class="report-sheet">
+    <div class="report-head">
+      <div><div class="rh-title">End of Day Report</div><div class="rh-sub" id="rhSub">—</div></div>
+      <button class="rh-close" id="rhClose"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div class="report-body" id="reportBody"></div>
+    <div class="report-actions" id="reportActions"></div>
+  </div>
+</div>
+
+<!-- CHANGE PASSWORD MODAL (sends reset email) -->
+<div class="modal-overlay" id="cpwModal">
+  <div class="modal-sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <div><div style="font-weight:800;font-size:16px">Reset Password</div><div style="font-size:12px;color:var(--ink-3);font-weight:500" id="cpwUserLabel">—</div></div>
+      <button class="rh-close" id="cpwClose"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div id="cpwErr" class="err-box"></div>
+    <div class="info-box">Firebase will send a <strong>password reset link</strong> to this user's email address. They can click it to set a new password. Your admin session stays active.</div>
+    <button class="btn-primary green" id="cpwSave"><svg><use href="#i-email"/></svg> Send Password Reset Email</button>
+  </div>
+</div>
+
+<!-- LOADER & TOAST -->
+<div id="loader"><div class="spin"></div></div>
+<div class="toast" id="toast"></div>
+
+
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   FIREBASE CONFIG — HARDCODED
+   ══════════════════════════════════════════════════════════ */
+const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyBR9qJWoyAxp2oPQV7HofI5KARlxHyMJpI",
+  authDomain:        "instaghar-rider-dashboard.firebaseapp.com",
+  projectId:         "instaghar-rider-dashboard",
+  storageBucket:     "instaghar-rider-dashboard.firebasestorage.app",
+  messagingSenderId: "846773421821",
+  appId:             "1:846773421821:web:c92c8b863d6e422d9a2094"
+};
+
+/* ══════════════════════════
+   STATE
+   ══════════════════════════ */
+let auth, db;
+let FB = null;
+let fbUser = null;
+let userProfile = null;
+let rOrders = [];
+let rViewDate = todayISO();
+let wizStep = null, wizHistory = [], wizData = {};
+let allSettlements = [], allDeposits = [], allUsers = [], allOrders = [];
+let settlFilter = { range:'today', rider:'', from:'', to:'' };
+let cpwTargetUid = null, cpwTargetEmail = null;
+let admFrom = '', admTo = '';
+
+/* ══════════════════════════
+   UTILS
+   ══════════════════════════ */
+function todayISO() {
+  const d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function yesterdayISO() {
+  const d = new Date(); d.setDate(d.getDate()-1);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function fmtM(n) {
+  n = Number(n)||0;
+  if(Number.isInteger(n)) return n.toLocaleString('en-IN');
+  return n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function fmtMoney(n) { return (Number(n)||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtTime(ts) {
+  const d = typeof ts==='number'?new Date(ts):ts&&ts.toDate?ts.toDate():new Date();
+  let h=d.getHours(),m=String(d.getMinutes()).padStart(2,'0'),ap=h>=12?'pm':'am';
+  h=h%12||12; return h+':'+m+' '+ap;
+}
+function fmtDateTime(ts) {
+  const d=typeof ts==='number'?new Date(ts):ts&&ts.toDate?ts.toDate():new Date();
+  return d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})+' '+fmtTime(ts);
+}
+function fmtDateLabel(s) {
+  const t=todayISO();
+  if(s===t) return 'Today';
+  const dif=Math.round((new Date(t+'T00:00:00')-new Date(s+'T00:00:00'))/86400000);
+  if(dif===1) return 'Yesterday';
+  return new Date(s+'T00:00:00').toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+}
+function esc(s) { return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function showToast(msg,kind) {
+  const t=document.getElementById('toast');
+  t.className='toast'+(kind?' '+kind:'');
+  const ic=kind==='success'?'<svg><use href="#i-check"/></svg>':kind==='error'?'<svg><use href="#i-x"/></svg>':'';
+  t.innerHTML=ic+'<span>'+esc(msg)+'</span>';
+  t.classList.add('show'); clearTimeout(t._t);
+  t._t=setTimeout(()=>t.classList.remove('show'),2600);
+}
+function loading(on) { document.getElementById('loader').classList.toggle('show',on); }
+function showScreen(id) {
+  document.getElementById('loginScreen').classList.remove('show');
+  document.getElementById('appShell').classList.add('hidden');
+  if(id==='app'){ document.getElementById('appShell').classList.remove('hidden'); }
+  else { document.getElementById(id).classList.add('show'); }
+}
+function tsToNum(ts) { return ts&&ts.toDate?ts.toDate().getTime():typeof ts==='number'?ts:Date.now(); }
+
+/* ══════════════════════════
+   FIREBASE INIT
+   ══════════════════════════ */
+function initFirebase() {
+  if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+  auth = firebase.auth();
+  db   = firebase.firestore();
+  FB   = { auth, db, apiKey: FIREBASE_CONFIG.apiKey };
+}
+
+/* ══════════════════════════
+   FIRESTORE HELPERS
+   ══════════════════════════ */
+async function fsGetOrders(riderId) {
+  const snap = await db.collection('orders').where('riderId','==',riderId).get();
+  return snap.docs.map(d=>({id:d.id,...d.data()}));
+}
+async function fsAddOrder(order) {
+  return db.collection('orders').add(order);
+}
+async function fsDeleteOrder(orderId) {
+  return db.collection('orders').doc(orderId).delete();
+}
+async function fsGetSettlements(managerId) {
+  let q = managerId
+    ? db.collection('settlements').where('managerId','==',managerId)
+    : db.collection('settlements');
+  const snap = await q.get();
+  return snap.docs.map(d=>({id:d.id,...d.data()}));
+}
+async function fsAddSettlement(data) {
+  return db.collection('settlements').add(data);
+}
+async function fsGetDeposits(managerId) {
+  let q = managerId
+    ? db.collection('deposits').where('managerId','==',managerId)
+    : db.collection('deposits');
+  const snap = await q.get();
+  return snap.docs.map(d=>({id:d.id,...d.data()}));
+}
+async function fsAddDeposit(data) {
+  return db.collection('deposits').add(data);
+}
+async function fsGetAllUsers() {
+  const snap = await db.collection('users').get();
+  return snap.docs.map(d=>({uid:d.id,...d.data()}));
+}
+async function fsGetOrdersForRiders(riderIds) {
+  const all = [];
+  for(let i=0;i<riderIds.length;i+=10) {
+    const chunk = riderIds.slice(i,i+10);
+    const snap = await db.collection('orders').where('riderId','in',chunk).get();
+    snap.docs.forEach(d=>all.push({id:d.id,...d.data()}));
+  }
+  return all;
+}
+async function fsCreateUserViaREST(email, password) {
+  const r = await fetch(
+    'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+FB.apiKey,
+    { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password, returnSecureToken: true }) }
+  );
+  const data = await r.json();
+  if(data.error) throw new Error(data.error.message);
+  return data.localId;
+}
+
+/* ══════════════════════════
+   AUTH
+   ══════════════════════════ */
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('loginEmail').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('loginPass').focus();});
+document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('logoutBtn').addEventListener('click', doLogout);
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginErr');
+  errEl.style.display='none';
+  if(!email||!pass){ errEl.textContent='Enter email and password.'; errEl.style.display='block'; return; }
+  loading(true);
+  try {
+    await auth.signInWithEmailAndPassword(email, pass);
+  } catch(e) {
+    errEl.textContent = friendlyError(e.code)||e.message;
+    errEl.style.display='block';
+    loading(false);
+  }
+}
+async function doLogout() {
+  loading(true);
+  await auth.signOut();
+  fbUser=null; userProfile=null; rOrders=[];
+  allSettlements=[]; allDeposits=[]; allUsers=[]; allOrders=[];
+  ['riderPanel','managerPanel','adminPanel'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  showScreen('loginScreen');
+  loading(false);
+}
+function friendlyError(code) {
+  const map = {
+    'auth/user-not-found':'No account found with this email.',
+    'auth/wrong-password':'Incorrect password.',
+    'auth/invalid-credential':'Invalid email or password.',
+    'auth/email-already-in-use':'This email is already registered.',
+    'auth/weak-password':'Password must be at least 6 characters.',
+    'auth/invalid-email':'Invalid email address.',
+    'auth/too-many-requests':'Too many attempts. Try again later.',
+    'auth/network-request-failed':'Network error. Check your internet.',
+  };
+  return map[code]||null;
+}
+
+/* ══════════════════════════
+   BOOT
+   ══════════════════════════ */
+function boot() {
+  loading(true);
+  initFirebase();
+  auth.onAuthStateChanged(async user => {
+    if(!user) {
+      loading(false);
+      showScreen('loginScreen');
+      return;
+    }
+    fbUser = user;
+    loading(true);
+    try {
+      const snap = await db.collection('users').doc(user.uid).get();
+      if(!snap.exists){ showToast('Profile not found. Contact admin.','error'); await auth.signOut(); loading(false); return; }
+      userProfile = { uid: user.uid, email: user.email, ...snap.data() };
+      setupNav();
+      showScreen('app');
+      await routeToRole();
+    } catch(e) { showToast('Failed to load profile: '+e.message,'error'); loading(false); }
+    loading(false);
+  });
+}
+function setupNav() {
+  document.getElementById('navUser').textContent = userProfile.name||userProfile.email;
+  const b=document.getElementById('navBadge');
+  b.textContent=userProfile.role.charAt(0).toUpperCase()+userProfile.role.slice(1);
+  b.className='role-badge '+userProfile.role;
+}
+async function routeToRole() {
+  ['riderPanel','managerPanel','adminPanel'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  if(userProfile.role==='rider')        { document.getElementById('riderPanel').classList.add('active');   await initRider(); }
+  else if(userProfile.role==='manager') { document.getElementById('managerPanel').classList.add('active'); await initManager(); }
+  else if(userProfile.role==='admin')   { document.getElementById('adminPanel').classList.add('active');   await initAdmin(); }
+}
+
+/* ══════════════════════════
+   CALCULATION HELPERS
+   ══════════════════════════ */
+function getExtraSplit(o) {
+  const ext=+o.extraCollected||0;
+  if(ext<=0) return{cash:0,qr:0};
+  if(o.extraCash===undefined&&o.extraQr===undefined) return{cash:ext,qr:0};
+  return{cash:+o.extraCash||0,qr:+o.extraQr||0};
+}
+function calcSummary(list) {
+  let totalCod=0,cash=0,qr=0,refunds=0,extra=0,online=0,distance=0,codCount=0,prepaidCount=0;
+  for(const o of list){
+    const es=getExtraSplit(o);
+    if(o.type==='cod'){totalCod+=+o.totalCodAmount||0;codCount++;}
+    else{online+=+o.orderAmount||0;prepaidCount++;}
+    cash+=(+o.cashCollected||0)+es.cash;
+    qr+=(+o.qrCollected||0)+es.qr;
+    refunds+=+o.refund||0; extra+=+o.extraCollected||0;
+    distance+=+o.distance||0;
+  }
+  return{totalCod,cash,qr,refunds,extra,online,distance,netCash:cash-refunds,codCount,prepaidCount};
+}
+function orderDate(o) { return o.date||''; }
+
+/* ══════════════════════════════════════════════════════════
+   RIDER DASHBOARD
+   ══════════════════════════════════════════════════════════ */
+async function initRider() {
+  rViewDate = todayISO();
+  document.getElementById('rViewDate').value = rViewDate;
+  loading(true);
+  rOrders = await fsGetOrders(userProfile.uid);
+  loading(false);
+  renderRider();
+  document.getElementById('rViewDate').addEventListener('change',e=>{rViewDate=e.target.value||todayISO();renderRider();});
+  document.getElementById('newOrderBtn').addEventListener('click',openWizard);
+  document.getElementById('dayReportBtn').addEventListener('click',openReport);
+  document.getElementById('rhClose').addEventListener('click',()=>document.getElementById('reportOverlay').classList.remove('open'));
+  document.getElementById('exportBtn').addEventListener('click',exportCSV);
+}
+function getOrdersForDate(date) {
+  return rOrders.filter(o=>o.date===date).sort((a,b)=>tsToNum(b.timestamp)-tsToNum(a.timestamp));
+}
+function renderRider() {
+  const list=getOrdersForDate(rViewDate);
+  const s=calcSummary(list);
+  document.getElementById('heroNet').textContent=fmtMoney(s.netCash);
+  document.getElementById('heroCash').textContent=fmtM(s.cash);
+  document.getElementById('heroQr').textContent=fmtM(s.qr);
+  document.getElementById('heroRef').textContent=fmtM(s.refunds);
+  document.getElementById('heroExt').textContent=fmtM(s.extra);
+  document.getElementById('heroSub').innerHTML=list.length===0?'No orders yet · <b>tap below to start</b>':'<b>'+list.length+'</b> order'+(list.length>1?'s':'')+' · '+s.distance.toFixed(1)+' km';
+  document.getElementById('sumTotalCod').textContent=fmtMoney(s.totalCod);
+  document.getElementById('sumCodCount').textContent=s.codCount;
+  document.getElementById('sumOnline').textContent=fmtMoney(s.online);
+  document.getElementById('sumPrepaidCount').textContent=s.prepaidCount;
+  document.getElementById('sumCash').textContent=fmtMoney(s.cash);
+  document.getElementById('sumQr').textContent=fmtMoney(s.qr);
+  document.getElementById('sumRefund').textContent=fmtMoney(s.refunds);
+  document.getElementById('sumExtra').textContent=fmtMoney(s.extra);
+  document.getElementById('sumDist').textContent=s.distance.toFixed(1);
+  document.getElementById('sumNet').textContent=fmtMoney(s.netCash);
+  document.getElementById('orderCount').textContent=list.length;
+  const lbl=fmtDateLabel(rViewDate)+' · '+rViewDate;
+  document.getElementById('rDateLabel').textContent=lbl;
+  document.getElementById('rDateLabel2').textContent=lbl;
+  renderOrdersList(list);
+  renderDayStrip();
+}
+function renderOrdersList(list) {
+  const wrap=document.getElementById('ordersWrap');
+  if(!list.length){wrap.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-receipt"/></svg></div><div class="msg">No orders for this day</div><div class="sub">Tap "New Order" to log a delivery.</div></div>';return;}
+  wrap.innerHTML='<div class="orders-list">'+list.map(o=>{
+    const ip=o.type==='prepaid';const base=ip?(+o.orderAmount||0):(+o.totalCodAmount||0);
+    const ext=+o.extraCollected||0;const es=getExtraSplit(o);
+    const cash=(+o.cashCollected||0)+es.cash;const qr=(+o.qrCollected||0)+es.qr;const ref=+o.refund||0;
+    return '<div class="order-card"><div class="oc-head"><div class="oc-id-block"><div class="oc-id">'+esc(o.orderId)+'</div><div class="oc-time">'+fmtTime(o.timestamp)+'</div></div><span class="badge '+o.type+'">'+(o.type==='cod'?'COD':'Prepaid')+'</span></div>'
+      +'<div class="oc-amounts">'
+      +'<div class="oc-row"><span class="lbl"><svg><use href="#i-receipt"/></svg>'+(ip?'Order':'COD')+'</span><span class="val">₹'+fmtM(base)+'</span></div>'
+      +'<div class="oc-row"><span class="lbl"><svg><use href="#i-cash"/></svg>Cash</span><span class="val '+(cash>0?'val-pos':'')+'">'+( cash>0?'₹'+fmtM(cash):'—')+'</span></div>'
+      +'<div class="oc-row"><span class="lbl"><svg><use href="#i-qr"/></svg>QR</span><span class="val">'+(qr>0?'₹'+fmtM(qr):'—')+'</span></div>'
+      +'<div class="oc-row"><span class="lbl"><svg><use href="#i-refund"/></svg>Refund</span><span class="val '+(ref>0?'val-neg':'')+'">'+( ref>0?'-₹'+fmtM(ref):'—')+'</span></div>'
+      +(ext>0?'<div class="oc-row"><span class="lbl"><svg><use href="#i-plus"/></svg>Extra</span><span class="val val-pos">+₹'+fmtM(ext)+'</span></div>':'')
+      +'</div><div class="oc-foot"><div class="oc-distance"><svg><use href="#i-distance"/></svg>'+(+o.distance||0).toFixed(1)+' km</div>'
+      +'<button class="oc-delete" data-id="'+esc(o.id)+'" title="Delete"><svg><use href="#i-trash"/></svg></button></div></div>';
+  }).join('')+'</div>';
+  wrap.querySelectorAll('.oc-delete').forEach(btn=>{
+    btn.addEventListener('click',async()=>{
+      if(!confirm('Delete this order?')) return;
+      loading(true);
+      try{ await fsDeleteOrder(btn.dataset.id); rOrders=rOrders.filter(o=>o.id!==btn.dataset.id); renderRider(); showToast('Deleted','error'); }
+      catch(e){ showToast('Delete failed: '+e.message,'error'); }
+      loading(false);
+    });
+  });
+}
+function renderDayStrip() {
+  const wrap=document.getElementById('dayHistoryWrap');
+  const scroll=document.getElementById('dayHistoryScroll');
+  const dateSet=new Set([todayISO()]);
+  rOrders.forEach(o=>{if(o.date)dateSet.add(o.date);});
+  const dates=[...dateSet].sort((a,b)=>b.localeCompare(a));
+  wrap.classList.toggle('hidden',dates.length===0);
+  scroll.innerHTML=dates.map(d=>{
+    const list=rOrders.filter(o=>o.date===d);
+    const s=calcSummary(list);
+    const isActive=d===rViewDate;
+    let top=d===todayISO()?'Today':d===yesterdayISO()?'Yesterday':new Date(d+'T00:00:00').toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+    return '<button class="day-pill'+(isActive?' active':'')+'" data-date="'+d+'"><div class="dp-date">'+top+'<span class="dp-sub">'+d+'</span></div><div class="dp-stats"><span class="dp-orders">'+list.length+'o</span><span class="dp-net">₹'+fmtM(s.netCash)+'</span></div></button>';
+  }).join('');
+  scroll.querySelectorAll('.day-pill').forEach(btn=>{
+    btn.addEventListener('click',()=>{rViewDate=btn.dataset.date;document.getElementById('rViewDate').value=rViewDate;renderRider();});
+  });
+  const act=scroll.querySelector('.day-pill.active');
+  if(act)setTimeout(()=>act.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'}),50);
+}
+function exportCSV() {
+  const list=getOrdersForDate(rViewDate);
+  if(!list.length){showToast('No orders','error');return;}
+  let csv='#,Order ID,Time,Type,Amount,Cash,QR,Refund,Extra,KM\n';
+  list.forEach((o,i)=>{const ip=o.type==='prepaid';const es=getExtraSplit(o);const cash=(+o.cashCollected||0)+es.cash;const qr=(+o.qrCollected||0)+es.qr;csv+=(i+1)+','+o.orderId+','+fmtTime(o.timestamp)+','+(ip?'Prepaid':'COD')+','+(ip?(+o.orderAmount||0):(+o.totalCodAmount||0))+','+cash+','+qr+','+(+o.refund||0)+','+(+o.extraCollected||0)+','+(+o.distance||0).toFixed(1)+'\n';});
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='instaghar-'+(userProfile.name||'rider').replace(/\s+/g,'-').toLowerCase()+'-'+rViewDate+'.csv';
+  a.click();showToast('CSV downloaded','success');
+}
+
+/* ══════════════════════════════════════════════════════════
+   RIDER WIZARD
+   ══════════════════════════════════════════════════════════ */
+var STEPS={ORDER_ID:'ORDER_ID',ORDER_TYPE:'ORDER_TYPE',COD_AMT:'COD_AMT',PAYMENT:'PAYMENT',CASH_QR:'CASH_QR',ADJUSTMENT:'ADJUSTMENT',ADJ_AMT:'ADJ_AMT',EXTRA_PAY:'EXTRA_PAY',DISTANCE:'DISTANCE',REVIEW:'REVIEW'};
+var CHIPS=[100,200,500,1000,2000,5000];
+function blankWiz(){return{orderId:'',type:null,orderAmount:0,codAmount:0,paymentType:null,cashCollected:0,qrCollected:0,adjustmentType:null,adjustmentAmount:0,extraPayment:null,extraCash:0,extraQr:0,distance:0};}
+function openWizard(){wizData=blankWiz();wizHistory=[];showStep(STEPS.ORDER_ID);document.getElementById('wizard').classList.add('open');}
+function closeWizard(){document.getElementById('wizard').classList.remove('open');}
+function setBar(pct){document.getElementById('wizBar').style.width=pct+'%';}
+function amtSelector(cur,iid){
+  return '<div class="amount-display"><div class="ad-label">Amount (₹)</div><div class="ad-value'+(cur?'':' placeholder')+'" id="'+iid+'_d"><span class="cur">₹</span><span>'+(cur||'0')+'</span></div></div>'
+    +'<div class="amount-chips">'+CHIPS.map(v=>'<button class="chip'+(cur===v?' selected':'')+'" data-chip="'+v+'" data-tgt="'+iid+'">'+v+'</button>').join('')+'</div>'
+    +'<div class="or-divider">or enter</div>'
+    +'<div class="custom-input-block"><span class="prefix">₹</span><input type="number" id="'+iid+'" placeholder="Custom amount" value="'+(cur||'')+'" min="0" step="1"/></div>';
+}
+function showStep(step) {
+  wizStep=step;
+  const body=document.getElementById('wizBody');
+  const action=document.getElementById('wizAction');
+  action.className='wiz-action';action.disabled=false;
+  action.innerHTML='Continue <svg><use href="#i-arrow-fwd"/></svg>';
+  var h='<div class="step">';
+  switch(step){
+    case STEPS.ORDER_ID:
+      setBar(10);document.getElementById('wizTitle').textContent='NEW ORDER';
+      h+='<h3>Order ID</h3><div class="step-desc">Enter the order or shipment ID</div>'
+        +'<input class="text-input-big" id="wOid" placeholder="e.g. ORD-12345" value="'+esc(wizData.orderId)+'" autocapitalize="characters" autocomplete="off"/>';
+      action.disabled=!wizData.orderId;break;
+    case STEPS.ORDER_TYPE:
+      setBar(20);
+      h+='<h3>Order Type</h3><div class="step-desc">COD or prepaid?</div><div class="big-choices">'
+        +'<button class="big-choice'+(wizData.type==='cod'?' selected':'')+'" data-val="cod"><div class="bc-icon" style="color:var(--teal)"><svg><use href="#i-cash"/></svg></div><div><div class="bc-lbl">COD</div><div class="bc-sub">Customer pays on delivery</div></div></button>'
+        +'<button class="big-choice'+(wizData.type==='prepaid'?' selected':'')+'" data-val="prepaid"><div class="bc-icon" style="color:#8a7140"><svg><use href="#i-card"/></svg></div><div><div class="bc-lbl">Prepaid</div><div class="bc-sub">Already paid online</div></div></button></div>';
+      action.disabled=!wizData.type;break;
+    case STEPS.COD_AMT:
+      setBar(35);
+      h+='<h3>'+(wizData.type==='cod'?'COD Amount':'Order Amount')+'</h3><div class="step-desc">'+(wizData.type==='cod'?'How much should the customer pay?':'What is the order value?')+'</div>'
+        +amtSelector(wizData.type==='cod'?wizData.codAmount:wizData.orderAmount,'wCodAmt');
+      action.disabled=!(wizData.type==='cod'?wizData.codAmount:wizData.orderAmount);break;
+    case STEPS.PAYMENT:
+      setBar(50);
+      h+='<h3>Payment Method</h3><div class="step-desc">How did the customer pay?</div>'
+        +'<div class="step-context"><span class="ctx-lbl">COD Amount</span><span class="ctx-val">₹'+fmtM(wizData.codAmount)+'</span></div>'
+        +'<div class="big-choices">'
+        +'<button class="big-choice'+(wizData.paymentType==='full_cash'?' selected':'')+'" data-val="full_cash"><div class="bc-icon" style="color:var(--good)"><svg><use href="#i-cash"/></svg></div><div><div class="bc-lbl">Full Cash</div></div></button>'
+        +'<button class="big-choice'+(wizData.paymentType==='full_qr'?' selected':'')+'" data-val="full_qr"><div class="bc-icon" style="color:var(--teal)"><svg><use href="#i-qr"/></svg></div><div><div class="bc-lbl">Full QR / UPI</div></div></button>'
+        +'<button class="big-choice'+(wizData.paymentType==='split'?' selected':'')+'" data-val="split"><div class="bc-icon" style="color:var(--ink)"><svg><use href="#i-chart"/></svg></div><div><div class="bc-lbl">Split</div><div class="bc-sub">Part cash, part QR</div></div></button></div>';
+      action.disabled=!wizData.paymentType;break;
+    case STEPS.CASH_QR:
+      setBar(60);
+      h+='<h3>Cash Amount</h3><div class="step-desc">How much cash received?</div>'
+        +'<div class="step-context"><span class="ctx-lbl">COD Amount</span><span class="ctx-val">₹'+fmtM(wizData.codAmount)+'</span></div>'
+        +amtSelector(wizData.cashCollected,'wCashAmt')
+        +'<div id="qrWrap" class="'+(wizData.paymentType==='split'?'':'hidden')+'">'
+        +'<div style="margin-top:14px"><h3 style="font-size:18px">QR Amount</h3>'+amtSelector(wizData.qrCollected,'wQrAmt')+'</div>'
+        +'<div class="split-breakdown"><div class="sb-cell cash"><div class="sb-lbl">Cash</div><div class="sb-val"><span class="cur">₹</span><span id="sbC">'+fmtM(wizData.cashCollected)+'</span></div></div>'
+        +'<div class="sb-divider"></div>'
+        +'<div class="sb-cell qr"><div class="sb-lbl">QR</div><div class="sb-val"><span class="cur">₹</span><span id="sbQ">'+fmtM(wizData.qrCollected)+'</span></div></div></div></div>';
+      break;
+    case STEPS.ADJUSTMENT:
+      setBar(70);
+      h+='<h3>Adjustments</h3><div class="step-desc">Any refunds or extra collected?</div><div class="big-choices">'
+        +'<button class="big-choice'+(wizData.adjustmentType==='none'?' selected':'')+'" data-val="none"><div class="bc-icon" style="color:var(--teal)"><svg><use href="#i-circle-check"/></svg></div><div><div class="bc-lbl">No Adjustments</div></div></button>'
+        +'<button class="big-choice'+(wizData.adjustmentType==='refund'?' selected':'')+'" data-val="refund"><div class="bc-icon" style="color:var(--bad)"><svg><use href="#i-refund"/></svg></div><div><div class="bc-lbl">Refund Given</div><div class="bc-sub">You returned money to customer</div></div></button>'
+        +'<button class="big-choice'+(wizData.adjustmentType==='extra'?' selected':'')+'" data-val="extra"><div class="bc-icon" style="color:var(--good)"><svg><use href="#i-plus"/></svg></div><div><div class="bc-lbl">Extra Collected</div><div class="bc-sub">Collected more than COD amount</div></div></button></div>';
+      action.disabled=!wizData.adjustmentType;break;
+    case STEPS.ADJ_AMT:
+      setBar(78);
+      h+='<h3>'+(wizData.adjustmentType==='refund'?'Refund Amount':'Extra Amount')+'</h3><div class="step-desc">'+(wizData.adjustmentType==='refund'?'How much refunded?':'How much extra collected?')+'</div>'
+        +amtSelector(wizData.adjustmentAmount,'wAdjAmt');
+      action.disabled=!wizData.adjustmentAmount;break;
+    case STEPS.EXTRA_PAY:
+      setBar(82);
+      h+='<h3>Extra Payment Method</h3><div class="step-desc">How was extra ₹'+fmtM(wizData.adjustmentAmount)+' paid?</div><div class="big-choices">'
+        +'<button class="big-choice'+(wizData.extraPayment==='full_cash'?' selected':'')+'" data-val="full_cash"><div class="bc-icon" style="color:var(--good)"><svg><use href="#i-cash"/></svg></div><div><div class="bc-lbl">Cash</div></div></button>'
+        +'<button class="big-choice'+(wizData.extraPayment==='full_qr'?' selected':'')+'" data-val="full_qr"><div class="bc-icon" style="color:var(--teal)"><svg><use href="#i-qr"/></svg></div><div><div class="bc-lbl">QR / UPI</div></div></button></div>';
+      action.disabled=!wizData.extraPayment;break;
+    case STEPS.DISTANCE:
+      setBar(88);
+      h+='<h3>Distance</h3><div class="step-desc">How far was this delivery?</div>'
+        +'<div class="amount-display"><div class="ad-label">Kilometers</div><div class="ad-value'+(wizData.distance?'':' placeholder')+'" id="adD"><span class="cur" style="font-size:.6em;opacity:.7">km</span><span>'+(wizData.distance||'0.0')+'</span></div></div>'
+        +'<div class="amount-chips">'+[2,5,10,15,20,25].map(v=>'<button class="chip'+(wizData.distance===v?' selected':'')+'" data-dist="'+v+'">'+v+'</button>').join('')+'</div>'
+        +'<div class="custom-input-block"><span class="prefix">km</span><input type="number" id="wDist" placeholder="Custom" value="'+(wizData.distance||'')+'" min="0" step="0.1"/></div>';
+      break;
+    case STEPS.REVIEW: {
+      setBar(100);
+      var ip=wizData.type==='prepaid';
+      var base=ip?wizData.orderAmount:wizData.codAmount;
+      var extAmt=wizData.adjustmentType==='extra'?wizData.adjustmentAmount:0;
+      var refAmt=wizData.adjustmentType==='refund'?wizData.adjustmentAmount:0;
+      var tc=wizData.cashCollected+wizData.extraCash,tq=wizData.qrCollected+wizData.extraQr;
+      h+='<h3>Review & Save</h3><div class="step-desc">Confirm before saving</div>'
+        +'<div class="review-card">'
+        +'<div class="review-row"><div class="rr-lbl"><div class="rr-icon"><svg><use href="#i-tag"/></svg></div>Order ID</div><div class="rr-val">'+esc(wizData.orderId)+'</div></div>'
+        +'<div class="review-row"><div class="rr-lbl"><div class="rr-icon"><svg><use href="#i-receipt"/></svg></div>Type</div><div class="rr-val">'+(ip?'Prepaid':'COD')+'</div></div>'
+        +'<div class="review-row"><div class="rr-lbl"><div class="rr-icon"><svg><use href="#i-cash"/></svg></div>'+(ip?'Order':'COD')+' Amt</div><div class="rr-val">₹'+fmtM(base)+'</div></div>'
+        +(tc>0?'<div class="review-row"><div class="rr-lbl"><div class="rr-icon"><svg><use href="#i-cash"/></svg></div>Cash</div><div class="rr-val pos">₹'+fmtM(tc)+'</div></div>':'')
+        +(tq>0?'<div class="review-row"><div class="rr-lbl"><div class="rr-icon"><svg><use href="#i-qr"/></svg></div>QR</div><div class="rr-val">₹'+fmtM(tq)+'</div></div>':'')
+        +(refAmt>0?'<div class="review-row"><div class="rr-lbl"><div class="rr-icon"><svg><use href="#i-refund"/></svg></div>Refund</div><div class="rr-val neg">-₹'+fmtM(refAmt)+'</div></div>':'')
+        +(extAmt>0?'<div class="review-row"><div class="rr-lbl"><div class="rr-icon"><svg><use href="#i-plus"/></svg></div>Extra</div><div class="rr-val pos">+₹'+fmtM(extAmt)+'</div></div>':'')
+        +'<div class="review-row"><div class="rr-lbl"><div class="rr-icon"><svg><use href="#i-distance"/></svg></div>Distance</div><div class="rr-val">'+(wizData.distance||0)+' km</div></div></div>'
+        +'<div class="review-final"><div class="rf-lbl">Net Cash Change</div><div class="rf-val"><span class="cur">₹</span>'+fmtM(tc-refAmt)+'</div><div class="rf-formula">cash − refunds</div></div>';
+      action.className='wiz-action save';action.innerHTML='<svg><use href="#i-check"/></svg> Save Order';
+    }break;
+  }
+  h+='</div>';
+  body.innerHTML=h;body.scrollTop=0;
+  bindWizEvents(step);
+}
+function bindWizEvents(step) {
+  var body=document.getElementById('wizBody'),action=document.getElementById('wizAction');
+  body.querySelectorAll('[data-chip]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var v=+btn.dataset.chip,tgt=btn.dataset.tgt;
+      body.querySelectorAll('[data-tgt="'+tgt+'"]').forEach(function(b){b.classList.remove('selected');});
+      btn.classList.add('selected');
+      var inp=document.getElementById(tgt);
+      if(inp){inp.value=v;inp.dispatchEvent(new Event('input'));}
+    });
+  });
+  if(step===STEPS.ORDER_ID){var i=document.getElementById('wOid');i.focus();i.addEventListener('input',function(){wizData.orderId=i.value.trim().toUpperCase();action.disabled=!wizData.orderId;});i.addEventListener('keydown',function(e){if(e.key==='Enter'&&wizData.orderId)wizNext();});}
+  body.querySelectorAll('.big-choice').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      body.querySelectorAll('.big-choice').forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');var v=btn.dataset.val;
+      if(step===STEPS.ORDER_TYPE){wizData.type=v;action.disabled=false;}
+      else if(step===STEPS.PAYMENT){wizData.paymentType=v;if(v==='full_cash'){wizData.cashCollected=wizData.codAmount;wizData.qrCollected=0;}else if(v==='full_qr'){wizData.qrCollected=wizData.codAmount;wizData.cashCollected=0;}action.disabled=false;}
+      else if(step===STEPS.ADJUSTMENT){wizData.adjustmentType=v;action.disabled=false;}
+      else if(step===STEPS.EXTRA_PAY){wizData.extraPayment=v;if(v==='full_cash'){wizData.extraCash=wizData.adjustmentAmount;wizData.extraQr=0;}else{wizData.extraQr=wizData.adjustmentAmount;wizData.extraCash=0;}action.disabled=false;}
+    });
+  });
+  if(step===STEPS.COD_AMT){var ci=document.getElementById('wCodAmt');if(ci){ci.addEventListener('input',function(){var v=+ci.value||0;if(wizData.type==='cod')wizData.codAmount=v;else wizData.orderAmount=v;var d=document.getElementById('wCodAmt_d');if(d){d.classList.toggle('placeholder',!v);d.querySelector('span:last-child').textContent=v||'0';}action.disabled=!v;});}}
+  if(step===STEPS.CASH_QR){
+    var ci2=document.getElementById('wCashAmt'),qi=document.getElementById('wQrAmt');
+    function upd(){wizData.cashCollected=+ci2.value||0;wizData.qrCollected=qi?+qi.value||0:0;var d1=document.getElementById('wCashAmt_d'),d2=document.getElementById('wQrAmt_d');if(d1){d1.classList.toggle('placeholder',!wizData.cashCollected);d1.querySelector('span:last-child').textContent=wizData.cashCollected||'0';}if(d2){d2.classList.toggle('placeholder',!wizData.qrCollected);d2.querySelector('span:last-child').textContent=wizData.qrCollected||'0';}var sb1=document.getElementById('sbC'),sb2=document.getElementById('sbQ');if(sb1)sb1.textContent=fmtM(wizData.cashCollected);if(sb2)sb2.textContent=fmtM(wizData.qrCollected);}
+    if(ci2)ci2.addEventListener('input',upd);if(qi)qi.addEventListener('input',upd);
+  }
+  if(step===STEPS.ADJ_AMT){var ai=document.getElementById('wAdjAmt');if(ai){ai.addEventListener('input',function(){var v=+ai.value||0;wizData.adjustmentAmount=v;var d=document.getElementById('wAdjAmt_d');if(d){d.classList.toggle('placeholder',!v);d.querySelector('span:last-child').textContent=v||'0';}action.disabled=!v;});}}
+  if(step===STEPS.DISTANCE){
+    var di=document.getElementById('wDist');
+    body.querySelectorAll('[data-dist]').forEach(function(btn){btn.addEventListener('click',function(){var v=+btn.dataset.dist;wizData.distance=v;body.querySelectorAll('[data-dist]').forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');var d=document.getElementById('adD');if(d){d.classList.remove('placeholder');d.querySelector('span:last-child').textContent=v;}if(di)di.value=v;});});
+    if(di)di.addEventListener('input',function(){var v=+di.value||0;wizData.distance=v;body.querySelectorAll('[data-dist]').forEach(function(b){b.classList.remove('selected');});var d=document.getElementById('adD');if(d){d.classList.toggle('placeholder',!v);d.querySelector('span:last-child').textContent=v||'0.0';}});
+  }
+}
+function wizNext() {
+  switch(wizStep){
+    case STEPS.ORDER_ID:wizHistory.push(STEPS.ORDER_ID);showStep(STEPS.ORDER_TYPE);break;
+    case STEPS.ORDER_TYPE:wizHistory.push(STEPS.ORDER_TYPE);showStep(STEPS.COD_AMT);break;
+    case STEPS.COD_AMT:wizHistory.push(STEPS.COD_AMT);if(wizData.type==='prepaid')showStep(STEPS.ADJUSTMENT);else showStep(STEPS.PAYMENT);break;
+    case STEPS.PAYMENT:wizHistory.push(STEPS.PAYMENT);if(wizData.paymentType==='split')showStep(STEPS.CASH_QR);else showStep(STEPS.ADJUSTMENT);break;
+    case STEPS.CASH_QR:wizHistory.push(STEPS.CASH_QR);showStep(STEPS.ADJUSTMENT);break;
+    case STEPS.ADJUSTMENT:wizHistory.push(STEPS.ADJUSTMENT);if(wizData.adjustmentType==='none')showStep(STEPS.DISTANCE);else showStep(STEPS.ADJ_AMT);break;
+    case STEPS.ADJ_AMT:wizHistory.push(STEPS.ADJ_AMT);if(wizData.adjustmentType==='extra')showStep(STEPS.EXTRA_PAY);else{wizData.extraCash=0;wizData.extraQr=0;showStep(STEPS.DISTANCE);}break;
+    case STEPS.EXTRA_PAY:wizHistory.push(STEPS.EXTRA_PAY);showStep(STEPS.DISTANCE);break;
+    case STEPS.DISTANCE:wizHistory.push(STEPS.DISTANCE);showStep(STEPS.REVIEW);break;
+    case STEPS.REVIEW:saveOrder();break;
+  }
+}
+async function saveOrder() {
+  var ip=wizData.type==='prepaid';
+  var order={riderId:userProfile.uid,riderName:userProfile.name,riderEmail:userProfile.email,date:rViewDate,timestamp:Date.now(),orderId:wizData.orderId,type:wizData.type,orderAmount:ip?wizData.orderAmount:0,totalCodAmount:wizData.codAmount,cashCollected:wizData.cashCollected,qrCollected:wizData.qrCollected,refund:wizData.adjustmentType==='refund'?wizData.adjustmentAmount:0,extraCollected:wizData.adjustmentType==='extra'?wizData.adjustmentAmount:0,extraCash:wizData.extraCash,extraQr:wizData.extraQr,distance:wizData.distance};
+  loading(true);
+  try {
+    var ref=await fsAddOrder(order);
+    rOrders.unshift(Object.assign({},order,{id:ref.id}));
+    closeWizard();renderRider();showToast('Order saved!','success');
+  } catch(e){showToast('Save failed: '+e.message,'error');}
+  loading(false);
+}
+document.getElementById('wizAction').addEventListener('click',wizNext);
+document.getElementById('wizBack').addEventListener('click',function(){if(wizHistory.length===0)closeWizard();else showStep(wizHistory.pop());});
+document.getElementById('wizClose').addEventListener('click',closeWizard);
+
+/* ══════════════════════════
+   RIDER REPORT PDF
+   ══════════════════════════ */
+function openReport() {
+  var list=getOrdersForDate(rViewDate);
+  var s=calcSummary(list);
+  document.getElementById('rhSub').textContent=fmtDateLabel(rViewDate)+' · '+rViewDate+' · '+list.length+' orders';
+  var rows=[['Total COD','₹'+fmtM(s.totalCod),s.codCount+' COD'],['Paid Online','₹'+fmtM(s.online),s.prepaidCount+' prepaid'],['Cash Collected','₹'+fmtM(s.cash),'physical'],['QR Collected','₹'+fmtM(s.qr),'via QR'],['Refunds','₹'+fmtM(s.refunds),'paid out'],['Extra','₹'+fmtM(s.extra),'added'],['Distance',s.distance.toFixed(1)+' km','total']];
+  document.getElementById('reportBody').innerHTML='<div style="background:white;border-radius:var(--radius);padding:20px;border:1px solid var(--line)">'
+    +'<div style="display:flex;justify-content:space-between;padding-bottom:14px;border-bottom:2px solid var(--ink);margin-bottom:16px"><div style="display:flex;align-items:center;gap:9px"><div style="width:34px;height:34px;background:var(--grad);border-radius:9px;display:grid;place-items:center"><svg width="18" height="18" color="white"><use href="#i-logo"/></svg></div><div><div style="font-weight:800;font-size:14px"><span style="color:var(--teal)">Insta</span><span style="color:var(--green-deep)">घर</span></div><div style="font-size:9px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:700">Rider Report</div></div></div><div style="text-align:right;font-size:11px"><div style="font-weight:700">'+rViewDate+'</div><div style="color:var(--ink-3)">'+userProfile.name+(userProfile.riderId?' · '+userProfile.riderId:'')+'</div></div></div>'
+    +rows.map(function(r){return '<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)"><div style="font-size:12px;color:var(--ink-2);font-weight:600">'+r[0]+'<div style="font-size:10px;color:var(--ink-3)">'+r[2]+'</div></div><div style="font-weight:800;font-size:14px;font-variant-numeric:tabular-nums">'+r[1]+'</div></div>';}).join('')
+    +'<div style="background:var(--grad);color:white;border-radius:11px;padding:16px;margin-top:12px;display:flex;justify-content:space-between;align-items:center"><div style="font-weight:700;font-size:13px">Net Cash with Rider</div><div style="font-weight:800;font-size:22px;font-variant-numeric:tabular-nums">₹'+fmtM(s.netCash)+'</div></div>'
+    +'</div>';
+  var ra=document.getElementById('reportActions');
+  ra.innerHTML='<button class="sec" id="rpDL"><svg><use href="#i-pdf"/></svg> Download PDF</button><button id="rpShare"><svg><use href="#i-share"/></svg> Share</button>';
+  document.getElementById('rpDL').addEventListener('click',function(){genPDF(false);});
+  document.getElementById('rpShare').addEventListener('click',function(){genPDF(true);});
+  document.getElementById('reportOverlay').classList.add('open');
+}
+function genPDF(share) {
+  var list=getOrdersForDate(rViewDate);
+  if(!list.length){showToast('No orders','error');return;}
+  var s=calcSummary(list);
+  var jsPDFLib=window.jspdf&&window.jspdf.jsPDF?window.jspdf.jsPDF:window.jsPDF;
+  if(!jsPDFLib){showToast('PDF library loading, try again','error');return;}
+  var doc=new jsPDFLib({orientation:'portrait',unit:'mm',format:'a4'});
+  var mg=14,pw=doc.internal.pageSize.getWidth();
+  doc.setFillColor(0,168,156);doc.rect(0,0,pw,34,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(15);doc.setTextColor(255,255,255);
+  doc.text('INSTAGHAR — Rider Daily Report',mg,20);
+  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text(rViewDate+' · '+userProfile.name,mg,28);
+  doc.autoTable({startY:44,margin:{left:mg,right:mg},body:[['Total COD',fmtM(s.totalCod),'Distance',s.distance.toFixed(1)+' km'],['Cash Collected',fmtM(s.cash),'QR Collected',fmtM(s.qr)],['Refunds','−'+fmtM(s.refunds),'Extra','+'+fmtM(s.extra)],['COD Orders',s.codCount,'Prepaid Orders',s.prepaidCount]],theme:'plain',styles:{fontSize:10,cellPadding:{top:5,bottom:5,left:8,right:8},lineColor:[224,238,236],lineWidth:.5}});
+  var y=doc.lastAutoTable.finalY+8;
+  doc.setFillColor(0,168,156);doc.roundedRect(mg,y,pw-mg*2,38,5,5,'F');
+  doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text('NET CASH WITH RIDER',mg+10,y+14);
+  doc.setFontSize(18);doc.text('Rs '+fmtM(s.netCash),pw-mg-10,y+24,{align:'right'});
+  y+=48;
+  doc.autoTable({startY:y,margin:{left:mg,right:mg},head:[['#','Order ID','Time','Type','Amount','Cash','QR','Refund','Extra','KM']],body:list.map(function(o,i){var ip=o.type==='prepaid';var es=getExtraSplit(o);var cash=(+o.cashCollected||0)+es.cash;var qr=(+o.qrCollected||0)+es.qr;return[i+1,o.orderId,fmtTime(o.timestamp),ip?'Prepaid':'COD',fmtM(ip?(+o.orderAmount||0):(+o.totalCodAmount||0)),cash>0?fmtM(cash):'—',qr>0?fmtM(qr):'—',(+o.refund||0)>0?'-'+fmtM(o.refund):'—',(+o.extraCollected||0)>0?'+'+fmtM(o.extraCollected):'—',(+o.distance||0).toFixed(1)];}),theme:'striped',headStyles:{fillColor:[14,46,43],textColor:[255,255,255],fontSize:8},bodyStyles:{fontSize:8}});
+  var fn='instaghar-'+(userProfile.name||'rider').replace(/\s+/g,'-').toLowerCase()+'-'+rViewDate+'.pdf';
+  if(share&&navigator.share){var blob=doc.output('blob');var file=new File([blob],fn,{type:'application/pdf'});if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:'Instaghar Rider Report'}).catch(function(){doc.save(fn);});return;}}
+  doc.save(fn);showToast('PDF downloaded','success');
+}
+
+/* ══════════════════════════════════════════════════════════
+   MANAGER DASHBOARD
+   ══════════════════════════════════════════════════════════ */
+async function initManager() {
+  document.getElementById('mgrSettleDate').value=todayISO();
+  document.getElementById('depDate').value=todayISO();
+  loading(true);
+  allSettlements=await fsGetSettlements(userProfile.uid);
+  allDeposits=await fsGetDeposits(userProfile.uid);
+  allUsers=await fsGetAllUsers();
+  loading(false);
+  populateMgrRiderSel();
+  setupTabBar('mgrTabBar','mgr-tab-');
+  updateMgrHero();
+  document.getElementById('mgrRiderSel').addEventListener('change',updatePendingPreview);
+  document.getElementById('mgrSettleDate').addEventListener('change',updatePendingPreview);
+  document.getElementById('mgrRecvAmt').addEventListener('input',validateSettlForm);
+  document.getElementById('settlFilterBar').addEventListener('click',function(e){
+    var p=e.target.closest('[data-range]');if(!p)return;
+    settlFilter.range=p.dataset.range;
+    document.querySelectorAll('#settlFilterBar .filter-pill').forEach(function(b){b.classList.toggle('active',b.dataset.range===p.dataset.range);});
+    document.getElementById('settlCustomDates').classList.toggle('hidden',p.dataset.range!=='custom');
+    if(p.dataset.range!=='custom')renderSettlHistory();
+  });
+  document.getElementById('settlRiderFilter').addEventListener('change',function(e){settlFilter.rider=e.target.value;renderSettlHistory();});
+  document.getElementById('settlApply').addEventListener('click',function(){settlFilter.from=document.getElementById('settlFrom').value;settlFilter.to=document.getElementById('settlTo').value;renderSettlHistory();});
+  document.getElementById('depSubmitBtn').addEventListener('click',submitDeposit);
+  renderSettlHistory();renderDepHistory();updateBankSummary();
+}
+function populateMgrRiderSel() {
+  var riders=allUsers.filter(function(u){return u.role==='rider';});
+  var sel=document.getElementById('mgrRiderSel');
+  sel.innerHTML='<option value="">-- Choose Rider --</option>'+riders.map(function(r){return '<option value="'+esc(r.uid)+'">'+esc(r.name)+(r.riderId?' ('+r.riderId+')':'')+'</option>';}).join('');
+  var sf=document.getElementById('settlRiderFilter');
+  sf.innerHTML='<option value="">All Riders</option>'+riders.map(function(r){return '<option value="'+esc(r.uid)+'">'+esc(r.name)+'</option>';}).join('');
+}
+async function updatePendingPreview() {
+  var rUid=document.getElementById('mgrRiderSel').value;
+  var date=document.getElementById('mgrSettleDate').value;
+  var wrap=document.getElementById('pendingPreviewWrap');
+  var rmW=document.getElementById('mgrRemarksWrap');
+  if(!rUid||!date){wrap.classList.add('hidden');rmW.classList.add('hidden');validateSettlForm();return;}
+  loading(true);
+  try {
+    var orders=await fsGetOrders(rUid);
+    var dayOrders=orders.filter(function(o){return o.date===date;});
+    var s=calcSummary(dayOrders);
+    var alreadySettled=allSettlements.filter(function(st){return st.riderId===rUid&&st.date===date;}).reduce(function(sum,st){return sum+(+st.receivedAmount||0);},0);
+    var pending=Math.max(0,s.netCash-alreadySettled);
+    document.getElementById('pendingAmt').textContent=fmtM(pending);
+    document.getElementById('ppCash').textContent='₹'+fmtM(s.cash);
+    document.getElementById('ppRef').textContent='₹'+fmtM(s.refunds);
+    document.getElementById('ppOrders').textContent=dayOrders.length;
+    document.getElementById('pendingDesc').textContent=alreadySettled>0?'Net cash − ₹'+fmtM(alreadySettled)+' already settled':'Net cash for '+fmtDateLabel(date);
+    wrap.classList.remove('hidden');rmW.classList.remove('hidden');
+  } catch(e){showToast('Could not load rider data','error');}
+  loading(false);validateSettlForm();
+}
+function validateSettlForm() {
+  var r=document.getElementById('mgrRiderSel').value;
+  var d=document.getElementById('mgrSettleDate').value;
+  var a=+document.getElementById('mgrRecvAmt').value;
+  document.getElementById('mgrSubmitBtn').disabled=!r||!d||!a;
+}
+async function submitSettlement() {
+  var rUid=document.getElementById('mgrRiderSel').value;
+  var date=document.getElementById('mgrSettleDate').value;
+  var receivedAmount=+document.getElementById('mgrRecvAmt').value;
+  var remarks=document.getElementById('mgrRemarks').value.trim();
+  if(!rUid||!date||!receivedAmount){showToast('Fill all fields','error');return;}
+  var riderUser=allUsers.find(function(u){return u.uid===rUid;});
+  loading(true);
+  try {
+    var rec={riderId:rUid,riderName:riderUser?riderUser.name:rUid,date:date,receivedAmount:receivedAmount,remarks:remarks,managerId:userProfile.uid,managerName:userProfile.name,timestamp:Date.now()};
+    var ref=await fsAddSettlement(rec);
+    allSettlements.push(Object.assign({},rec,{id:ref.id}));
+    document.getElementById('mgrRiderSel').value='';document.getElementById('mgrRecvAmt').value='';document.getElementById('mgrRemarks').value='';
+    document.getElementById('pendingPreviewWrap').classList.add('hidden');document.getElementById('mgrRemarksWrap').classList.add('hidden');
+    document.getElementById('mgrSubmitBtn').disabled=true;
+    showToast('Collection recorded!','success');
+    updateMgrHero();renderSettlHistory();updateBankSummary();
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  loading(false);
+}
+document.addEventListener('click',function(e){if(e.target&&e.target.id==='mgrSubmitBtn')submitSettlement();});
+function renderSettlHistory() {
+  var filtered=allSettlements.slice();
+  var today=todayISO(),yest=yesterdayISO();
+  if(settlFilter.range==='today')filtered=filtered.filter(function(s){return s.date===today;});
+  else if(settlFilter.range==='yesterday')filtered=filtered.filter(function(s){return s.date===yest;});
+  else if(settlFilter.range==='custom'&&settlFilter.from&&settlFilter.to)filtered=filtered.filter(function(s){return s.date>=settlFilter.from&&s.date<=settlFilter.to;});
+  if(settlFilter.rider)filtered=filtered.filter(function(s){return s.riderId===settlFilter.rider;});
+  filtered.sort(function(a,b){return b.timestamp-a.timestamp;});
+  var c=document.getElementById('settlHistList');
+  if(!filtered.length){c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No settlements found</div><div class="sub">Try a different filter</div></div>';return;}
+  var total=filtered.reduce(function(s,r){return s+(+r.receivedAmount||0);},0);
+  c.innerHTML='<div style="background:var(--grad-soft);border:1px solid var(--line-strong);border-radius:11px;padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center"><div style="font-size:11px;color:var(--ink-3);font-weight:600;text-transform:uppercase">'+filtered.length+' record'+(filtered.length!==1?'s':'')+'</div><div style="font-weight:800;font-size:17px;color:var(--teal-dark);font-variant-numeric:tabular-nums">₹'+fmtM(total)+'</div></div>'
+    +'<div class="record-list">'+filtered.map(function(r){return '<div class="record-card"><div class="rc-head"><div><div class="rc-title">'+esc(r.riderName)+'</div><div class="rc-time">'+fmtDateTime(r.timestamp)+'</div></div><div><div class="rc-amount"><span class="cur">₹</span>'+fmtM(r.receivedAmount)+'</div><span class="rc-badge ok">Settled</span></div></div><div class="rc-body"><div class="rc-row"><span class="rc-lbl">Date</span><span class="rc-val">'+r.date+'</span></div><div class="rc-row"><span class="rc-lbl">Manager</span><span class="rc-val">'+esc(r.managerName)+'</span></div>'+(r.remarks?'<div class="rc-row" style="grid-column:span 2"><span class="rc-lbl">Note</span><span class="rc-val">'+esc(r.remarks)+'</span></div>':'')+'</div></div>';}).join('')+'</div>';
+}
+async function submitDeposit() {
+  var amount=+document.getElementById('depAmt').value;
+  var date=document.getElementById('depDate').value;
+  var remarks=document.getElementById('depRemarks').value.trim();
+  if(!amount||!date){showToast('Enter amount and date','error');return;}
+  loading(true);
+  try {
+    var rec={managerId:userProfile.uid,managerName:userProfile.name,amount:amount,date:date,remarks:remarks,timestamp:Date.now()};
+    var ref=await fsAddDeposit(rec);
+    allDeposits.push(Object.assign({},rec,{id:ref.id}));
+    document.getElementById('depAmt').value='';document.getElementById('depRemarks').value='';
+    showToast('Deposit recorded!','success');
+    updateMgrHero();updateBankSummary();renderDepHistory();
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  loading(false);
+}
+document.getElementById('depSubmitBtn').addEventListener('click',submitDeposit);
+function updateBankSummary() {
+  var collected=allSettlements.reduce(function(s,r){return s+(+r.receivedAmount||0);},0);
+  var deposited=allDeposits.reduce(function(s,r){return s+(+r.amount||0);},0);
+  document.getElementById('bankCollected').textContent=fmtM(collected);
+  document.getElementById('bankDeposited').textContent=fmtM(deposited);
+  document.getElementById('bankPending').textContent=fmtM(Math.max(0,collected-deposited));
+}
+function renderDepHistory() {
+  var deps=allDeposits.slice().sort(function(a,b){return b.timestamp-a.timestamp;});
+  var c=document.getElementById('depHistList');
+  if(!deps.length){c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-bank"/></svg></div><div class="msg">No deposits recorded</div><div class="sub">Record your first bank deposit above</div></div>';return;}
+  c.innerHTML='<div class="record-list">'+deps.map(function(d){return '<div class="record-card"><div class="rc-head"><div><div class="rc-title">Bank Deposit</div><div class="rc-time">'+fmtDateTime(d.timestamp)+'</div></div><div><div class="rc-amount"><span class="cur">₹</span>'+fmtM(d.amount)+'</div><span class="rc-badge deposit">Deposited</span></div></div><div class="rc-body"><div class="rc-row"><span class="rc-lbl">Date</span><span class="rc-val">'+d.date+'</span></div><div class="rc-row"><span class="rc-lbl">By</span><span class="rc-val">'+esc(d.managerName)+'</span></div>'+(d.remarks?'<div class="rc-row" style="grid-column:span 2"><span class="rc-lbl">Ref</span><span class="rc-val">'+esc(d.remarks)+'</span></div>':'')+'</div></div>';}).join('')+'</div>';
+}
+function updateMgrHero() {
+  var today=todayISO();
+  var todayTotal=allSettlements.filter(function(s){return s.date===today;}).reduce(function(s,r){return s+(+r.receivedAmount||0);},0);
+  var allColl=allSettlements.reduce(function(s,r){return s+(+r.receivedAmount||0);},0);
+  var deposited=allDeposits.reduce(function(s,r){return s+(+r.amount||0);},0);
+  var riderSet=new Set(allSettlements.map(function(s){return s.riderId;}));
+  document.getElementById('mgrHeroVal').textContent=fmtM(todayTotal);
+  document.getElementById('mgrHeroRiders').textContent=riderSet.size;
+  document.getElementById('mgrHeroSettl').textContent=allSettlements.length;
+  document.getElementById('mgrHeroDep').textContent=allDeposits.length;
+  document.getElementById('mgrHeroPend').textContent=fmtM(Math.max(0,allColl-deposited));
+}
+
+/* ══════════════════════════════════════════════════════════
+   ADMIN DASHBOARD
+   ══════════════════════════════════════════════════════════ */
+async function initAdmin() {
+  admFrom=new Date(Date.now()-30*86400000).toISOString().slice(0,10);
+  admTo=todayISO();
+  document.getElementById('admFrom').value=admFrom;
+  document.getElementById('admTo').value=admTo;
+  setupTabBar('admTabBar','adm-tab-');
+  loading(true);
+  allUsers=await fsGetAllUsers();
+  allSettlements=await fsGetSettlements(null);
+  allDeposits=await fsGetDeposits(null);
+  var riderIds=allUsers.filter(function(u){return u.role==='rider';}).map(function(u){return u.uid;});
+  allOrders=riderIds.length?await fsGetOrdersForRiders(riderIds):[];
+  loading(false);
+  await renderAdmRiders();
+  renderAdmManagers();
+  renderAudit();
+  renderUsersTab();
+  updateAdmHero();
+  document.getElementById('admRefreshBtn').addEventListener('click',async function(){admFrom=document.getElementById('admFrom').value;admTo=document.getElementById('admTo').value;loading(true);await renderAdmRiders();loading(false);});
+  document.getElementById('admFrom').addEventListener('change',function(e){admFrom=e.target.value;});
+  document.getElementById('admTo').addEventListener('change',function(e){admTo=e.target.value;});
+  ['auditToday','auditYest','auditAll'].forEach(function(id){
+    document.getElementById(id).addEventListener('click',function(){
+      document.querySelectorAll('#adm-tab-audit .filter-pill[id]').forEach(function(p){p.classList.remove('active');});
+      document.getElementById(id).classList.add('active');renderAudit();
+    });
+  });
+  document.getElementById('auditType').addEventListener('change',renderAudit);
+  document.getElementById('addUserBtn').addEventListener('click',addNewUser);
+  document.getElementById('nuRole').addEventListener('change',function(e){
+    document.getElementById('nuRiderFields').style.display=e.target.value==='rider'?'':'none';
+    document.getElementById('nuManagerFields').classList.toggle('hidden',e.target.value!=='manager');
+  });
+}
+async function updateAdmHero() {
+  var riders=allUsers.filter(function(u){return u.role==='rider';});
+  var totalCash=calcSummary(allOrders).cash;
+  var deposited=allDeposits.reduce(function(s,d){return s+(+d.amount||0);},0);
+  document.getElementById('admHeroVal').textContent=fmtM(totalCash);
+  document.getElementById('admHeroRiders').textContent=riders.length;
+  document.getElementById('admHeroOrders').textContent=allOrders.length;
+  document.getElementById('admHeroSettled').textContent=allSettlements.length;
+  document.getElementById('admHeroDep').textContent=fmtM(deposited);
+}
+async function renderAdmRiders() {
+  var riders=allUsers.filter(function(u){return u.role==='rider';});
+  var c=document.getElementById('admRidersContent');
+  if(!riders.length){c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-bike"/></svg></div><div class="msg">No riders yet</div><div class="sub">Add riders in the Users tab</div></div>';return;}
+  var html='';
+  for(var ri=0;ri<riders.length;ri++){
+    var rider=riders[ri];
+    var rOrds=allOrders.filter(function(o){return o.riderId===rider.uid&&(!admFrom||o.date>=admFrom)&&(!admTo||o.date<=admTo);});
+    var s=calcSummary(rOrds);
+    var settled=allSettlements.filter(function(st){return st.riderId===rider.uid;}).reduce(function(sum,st){return sum+(+st.receivedAmount||0);},0);
+    var unsettled=Math.max(0,s.netCash-settled);
+    html+='<div class="section" style="margin-bottom:12px">'
+      +'<div class="section-head"><div style="display:flex;align-items:center;gap:9px"><div style="width:34px;height:34px;border-radius:50%;background:var(--grad);color:white;font-weight:800;font-size:13px;display:grid;place-items:center">'+(rider.name||'?').charAt(0).toUpperCase()+'</div><div><div style="font-weight:700;font-size:14px">'+esc(rider.name)+'</div><div style="font-size:10px;color:var(--ink-3)">'+(rider.riderId||rider.email)+'</div></div></div><span class="rc-badge '+(unsettled>0?'pending':'ok')+'">'+(unsettled>0?'₹'+fmtM(unsettled)+' unsettled':'All settled')+'</span></div>'
+      +'<div class="section-body"><div class="metric-grid">'
+      +'<div class="metric-card"><div class="mc-icon si-teal"><svg><use href="#i-receipt"/></svg></div><div class="mc-val">'+rOrds.length+'</div><div class="mc-lbl">Orders</div></div>'
+      +'<div class="metric-card"><div class="mc-icon si-green"><svg><use href="#i-cash"/></svg></div><div class="mc-val"><span class="cur">₹</span>'+fmtM(s.cash)+'</div><div class="mc-lbl">Cash Coll.</div></div>'
+      +'<div class="metric-card"><div class="mc-icon si-red"><svg><use href="#i-refund"/></svg></div><div class="mc-val"><span class="cur">₹</span>'+fmtM(s.refunds)+'</div><div class="mc-lbl">Refunds</div></div>'
+      +'<div class="metric-card"><div class="mc-icon si-dist"><svg><use href="#i-distance"/></svg></div><div class="mc-val">'+s.distance.toFixed(0)+'<span style="font-size:.5em;opacity:.7">km</span></div><div class="mc-lbl">Distance</div></div>'
+      +'</div><div style="display:flex;justify-content:space-between;background:var(--grad-soft);border-radius:9px;padding:10px 13px;margin-top:2px;flex-wrap:wrap;gap:6px">'
+      +'<div style="font-size:11px;color:var(--ink-3);font-weight:600">COD: <strong style="color:var(--ink)">₹'+fmtM(s.totalCod)+'</strong></div>'
+      +'<div style="font-size:11px;color:var(--ink-3);font-weight:600">Net Cash: <strong style="color:var(--good)">₹'+fmtM(s.netCash)+'</strong></div>'
+      +'<div style="font-size:11px;color:var(--ink-3);font-weight:600">Settled: <strong style="color:var(--teal)">₹'+fmtM(settled)+'</strong></div>'
+      +'</div></div></div>';
+  }
+  c.innerHTML=html;
+}
+function renderAdmManagers() {
+  var mgrs=allUsers.filter(function(u){return u.role==='manager';});
+  var c=document.getElementById('admManagersContent');
+  if(!mgrs.length){c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-users"/></svg></div><div class="msg">No managers yet</div></div>';return;}
+  c.innerHTML=mgrs.map(function(mgr){
+    var settl=allSettlements.filter(function(s){return s.managerId===mgr.uid;});
+    var deps=allDeposits.filter(function(d){return d.managerId===mgr.uid;});
+    var collected=settl.reduce(function(s,r){return s+(+r.receivedAmount||0);},0);
+    var deposited=deps.reduce(function(s,r){return s+(+r.amount||0);},0);
+    var pending=Math.max(0,collected-deposited);
+    var riders=new Set(settl.map(function(s){return s.riderId;})).size;
+    return '<div class="section" style="margin-bottom:12px">'
+      +'<div class="section-head"><div style="display:flex;align-items:center;gap:9px"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1d4ed8,#6366f1);color:white;font-weight:800;font-size:13px;display:grid;place-items:center">'+(mgr.name||'?').charAt(0).toUpperCase()+'</div><div><div style="font-weight:700;font-size:14px">'+esc(mgr.name)+'</div><div style="font-size:10px;color:var(--ink-3)">'+esc(mgr.shift||mgr.email)+'</div></div></div><span class="rc-badge '+(pending>0?'pending':'ok')+'">'+(pending>0?'₹'+fmtM(pending)+' undeposited':'All deposited')+'</span></div>'
+      +'<div class="section-body"><div class="metric-grid">'
+      +'<div class="metric-card"><div class="mc-icon si-green"><svg><use href="#i-cash"/></svg></div><div class="mc-val"><span class="cur">₹</span>'+fmtM(collected)+'</div><div class="mc-lbl">Collected</div></div>'
+      +'<div class="metric-card"><div class="mc-icon si-blue"><svg><use href="#i-bank"/></svg></div><div class="mc-val"><span class="cur">₹</span>'+fmtM(deposited)+'</div><div class="mc-lbl">Deposited</div></div>'
+      +'<div class="metric-card"><div class="mc-icon si-warn"><svg><use href="#i-cash"/></svg></div><div class="mc-val" style="color:var(--warn)"><span class="cur">₹</span>'+fmtM(pending)+'</div><div class="mc-lbl">Pending</div></div>'
+      +'<div class="metric-card"><div class="mc-icon si-teal"><svg><use href="#i-users"/></svg></div><div class="mc-val">'+riders+'</div><div class="mc-lbl">Riders</div></div>'
+      +'</div></div></div>';
+  }).join('');
+}
+function renderAudit() {
+  var activeId=['auditToday','auditYest','auditAll'].find(function(id){return document.getElementById(id).classList.contains('active');})||'auditToday';
+  var range=activeId==='auditToday'?'today':activeId==='auditYest'?'yesterday':'all';
+  var type=document.getElementById('auditType').value;
+  var today=todayISO(),yest=yesterdayISO();
+  var entries=[];
+  if(!type||type==='order'){allOrders.forEach(function(o){var ip=o.type==='prepaid';var es=getExtraSplit(o);var cash=(+o.cashCollected||0)+es.cash;entries.push({type:'order',timestamp:tsToNum(o.timestamp),date:o.date,title:(ip?'Prepaid':'COD')+' · '+o.orderId,meta:(o.riderName||o.riderId)+' · '+fmtDateTime(o.timestamp),amount:ip?(+o.orderAmount||0):(+o.totalCodAmount||0),extra:'Cash ₹'+fmtM(cash)+(+o.refund?'  −Refund ₹'+fmtM(o.refund):'')});});}
+  if(!type||type==='settlement'){allSettlements.forEach(function(s){entries.push({type:'settlement',timestamp:s.timestamp,date:s.date,title:'COD Collection · '+s.riderName,meta:'By '+s.managerName+' · '+fmtDateTime(s.timestamp),amount:+s.receivedAmount||0});});}
+  if(!type||type==='deposit'){allDeposits.forEach(function(d){entries.push({type:'deposit',timestamp:d.timestamp,date:d.date,title:'Bank Deposit',meta:'By '+d.managerName+' · '+fmtDateTime(d.timestamp),amount:+d.amount||0,note:d.remarks||''});});}
+  if(range==='today')entries=entries.filter(function(e){return e.date===today;});
+  else if(range==='yesterday')entries=entries.filter(function(e){return e.date===yest;});
+  entries.sort(function(a,b){return b.timestamp-a.timestamp;});
+  var c=document.getElementById('auditList');
+  if(!entries.length){c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-shield"/></svg></div><div class="msg">No records found</div><div class="sub">Try "All Time" or a different filter</div></div>';return;}
+  var colorMap={order:'var(--teal)',settlement:'var(--blue)',deposit:'var(--good)'};
+  c.innerHTML=entries.map(function(e){return '<div class="audit-entry"><div class="ae-dot '+e.type+'"></div><div class="ae-body"><div class="ae-title">'+esc(e.title)+'</div><div class="ae-meta">'+esc(e.meta)+(e.extra?'<br><span style="color:var(--teal-deep);font-size:10px;font-weight:600">'+esc(e.extra)+'</span>':'')+(e.note?' · '+esc(e.note):'')+'</div></div><div class="ae-amount" style="color:'+(colorMap[e.type]||'var(--ink)')+'">₹'+fmtM(e.amount)+'</div></div>';}).join('');
+}
+function renderUsersTab() {
+  var users=allUsers.filter(function(u){return u.role!=='admin';});
+  var c=document.getElementById('usersListWrap');
+  if(!users.length){c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-users"/></svg></div><div class="msg">No users yet</div><div class="sub">Add riders and managers above</div></div>';return;}
+  c.innerHTML='<table class="user-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Info</th><th>Actions</th></tr></thead><tbody>'
+    +users.map(function(u){return '<tr><td><div class="ud-name">'+esc(u.name)+'</div></td><td style="color:var(--ink-3);font-size:11px;word-break:break-all">'+esc(u.email||'')+'</td><td><span style="display:inline-flex;padding:2px 7px;border-radius:999px;font-size:9px;font-weight:700;text-transform:uppercase;background:'+(u.role==='rider'?'var(--grad-soft)':'var(--blue-soft)')+';color:'+(u.role==='rider'?'var(--teal-deep)':'var(--blue-deep)')+'">'+u.role+'</span></td><td style="font-size:11px;color:var(--ink-3)">'+esc(u.riderId||u.shift||'—')+'</td><td><button class="tbl-btn" onclick="_cpwOpen(\''+esc(u.uid)+'\',\''+esc(u.email||'')+'\',\''+esc(u.name||'')+'\')"><svg><use href="#i-key"/></svg> Reset PW</button></td></tr>';}).join('')
+    +'</tbody></table>';
+}
+async function addNewUser() {
+  var name=document.getElementById('nuName').value.trim();
+  var email=document.getElementById('nuEmail').value.trim();
+  var pass=document.getElementById('nuPass').value;
+  var role=document.getElementById('nuRole').value;
+  var riderId=document.getElementById('nuRiderId').value.trim().toUpperCase();
+  var phone=document.getElementById('nuPhone').value.trim();
+  var shift=document.getElementById('nuShift').value.trim();
+  var errEl=document.getElementById('addUserErr');
+  errEl.style.display='none';
+  if(!name||!email||!pass){errEl.textContent='Name, email, and password are required.';errEl.style.display='block';return;}
+  loading(true);
+  try {
+    var newUid=await fsCreateUserViaREST(email,pass);
+    await db.collection('users').doc(newUid).set({email:email,name:name,role:role,riderId:riderId||'',phone:phone,shift:shift||'',createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:userProfile.uid});
+    allUsers.push({uid:newUid,email:email,name:name,role:role,riderId:riderId||'',phone:phone,shift:shift});
+    document.getElementById('nuName').value='';document.getElementById('nuEmail').value='';document.getElementById('nuPass').value='';document.getElementById('nuRiderId').value='';document.getElementById('nuPhone').value='';document.getElementById('nuShift').value='';
+    showToast('User created: '+name,'success');
+    renderUsersTab();renderAdmManagers();updateAdmHero();
+  } catch(e){errEl.textContent=e.message;errEl.style.display='block';}
+  loading(false);
+}
+function _cpwOpen(uid,email,name) {
+  cpwTargetUid=uid;cpwTargetEmail=email;
+  document.getElementById('cpwUserLabel').textContent=name+' · '+email;
+  document.getElementById('cpwErr').style.display='none';
+  document.getElementById('cpwModal').classList.add('open');
+}
+window._cpwOpen=_cpwOpen;
+document.getElementById('cpwClose').addEventListener('click',function(){document.getElementById('cpwModal').classList.remove('open');});
+document.getElementById('cpwSave').addEventListener('click',async function(){
+  var errEl=document.getElementById('cpwErr');errEl.style.display='none';
+  if(!cpwTargetEmail){errEl.textContent='No email address found.';errEl.style.display='block';return;}
+  loading(true);
+  try {
+    await auth.sendPasswordResetEmail(cpwTargetEmail);
+    showToast('Reset email sent to '+cpwTargetEmail,'success');
+    document.getElementById('cpwModal').classList.remove('open');
+  } catch(e){errEl.textContent=friendlyError(e.code)||e.message;errEl.style.display='block';}
+  loading(false);
+});
+
+/* ══════════════════════════
+   TAB BAR HELPER
+   ══════════════════════════ */
+function setupTabBar(barId,prefix) {
+  document.getElementById(barId).addEventListener('click',function(e){
+    var btn=e.target.closest('[data-tab]');if(!btn)return;
+    var tab=btn.dataset.tab;
+    document.querySelectorAll('#'+barId+' .tab-btn').forEach(function(b){b.classList.toggle('active',b===btn);});
+    document.querySelectorAll('[id^="'+prefix+'"]').forEach(function(el){el.classList.toggle('active',el.id===prefix+tab);});
+    if(barId==='mgrTabBar'){if(tab==='history')renderSettlHistory();else if(tab==='bank'){renderDepHistory();updateBankSummary();}}
+    if(barId==='admTabBar'){if(tab==='managers')renderAdmManagers();else if(tab==='audit')renderAudit();else if(tab==='users')renderUsersTab();}
+  });
+}
+
+/* ══════════════════════════
+   START — wait for all scripts to load
+   ══════════════════════════ */
+window.onload = function() {
+  if(typeof firebase === 'undefined') {
+    document.getElementById('loginScreen').classList.add('show');
+    var e = document.getElementById('loginErr');
+    e.textContent = 'Firebase SDK failed to load. Check your internet connection and refresh.';
+    e.style.display = 'block';
+    return;
+  }
+  boot();
+};
+</script>
+</body>
+</html>
