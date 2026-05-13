@@ -90,6 +90,11 @@ select.fin{cursor:pointer}
 .btn-primary.blue{background:var(--blue)}
 .btn-primary.blue:hover:not(:disabled){background:var(--blue-deep)}
 .btn-primary.red{background:var(--bad)}
+.btn-primary.red:hover:not(:disabled){background:#a02a1a}
+.btn-primary.outline{background:white;color:var(--ink);border:2px solid var(--line)}
+.btn-primary.outline:hover:not(:disabled){border-color:var(--teal);color:var(--teal-deep)}
+.btn-sm{padding:8px 12px;font-size:12px;border-radius:8px;min-height:36px;width:auto;gap:5px}
+.btn-sm svg{width:14px;height:14px}
 .err-box{background:var(--bad-soft);color:var(--bad);border-radius:10px;padding:10px 14px;font-size:13px;font-weight:600;margin-bottom:12px;display:none}
 .info-box{background:var(--grad-soft);border:1px solid var(--line-strong);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--ink-2);font-weight:500;margin-bottom:14px;line-height:1.6}
 .info-box strong{font-weight:700;color:var(--ink)}
@@ -150,9 +155,11 @@ select.fin{cursor:pointer}
 /* ── HERO CARD ── */
 .hero{border-radius:var(--radius-lg);padding:24px 22px 22px;color:white;margin-bottom:14px;position:relative;overflow:hidden;box-shadow:var(--shadow-lift)}
 .hero::before{content:'';position:absolute;top:-60px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(255,255,255,.18),transparent 60%);pointer-events:none}
+.hero::after{content:'';position:absolute;bottom:-60px;left:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(0,0,0,.12),transparent 60%);pointer-events:none}
 .hero-teal{background:var(--grad)}
 .hero-blue{background:linear-gradient(135deg,#1d4ed8,#6366f1)}
 .hero-dark{background:linear-gradient(135deg,#0e2e2b,#1e3a37)}
+.hero-purple{background:linear-gradient(135deg,#7c3aed,#a855f7)}
 .hero-label{font-size:11px;text-transform:uppercase;letter-spacing:.14em;opacity:.8;font-weight:700;margin-bottom:6px;position:relative}
 .hero-amount{font-size:clamp(40px,10vw,56px);font-weight:800;letter-spacing:-.04em;line-height:1;display:flex;align-items:baseline;gap:5px;position:relative}
 .hero-amount .cur{font-size:.45em;opacity:.75;font-weight:600}
@@ -177,6 +184,7 @@ select.fin{cursor:pointer}
 .si-warn{background:var(--warn-soft);color:var(--warn)}
 .si-blue{background:var(--blue-soft);color:var(--blue)}
 .si-dist{background:#f0f0f0;color:var(--ink-2)}
+.si-purple{background:#ede9fe;color:#7c3aed}
 
 /* ── RECORD CARDS ── */
 .record-list{display:flex;flex-direction:column;gap:9px}
@@ -184,7 +192,7 @@ select.fin{cursor:pointer}
 .rc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:7px}
 .rc-title{font-weight:700;font-size:13px;color:var(--ink)}
 .rc-time{font-size:11px;color:var(--ink-3);font-weight:500;margin-top:2px}
-.rc-amount{font-weight:800;font-size:17px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--teal-dark);text-align:right}
+.rc-amount{font-weight:800;font-size:17px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--teal-deep);text-align:right}
 .rc-amount .cur{font-size:.65em;opacity:.7;font-weight:600;margin-right:1px}
 .rc-body{display:grid;grid-template-columns:repeat(2,1fr);gap:3px 12px}
 .rc-row{display:flex;align-items:center;justify-content:space-between;font-size:12px}
@@ -194,6 +202,8 @@ select.fin{cursor:pointer}
 .rc-badge.ok{background:var(--good-soft);color:var(--good)}
 .rc-badge.pending{background:var(--warn-soft);color:var(--warn)}
 .rc-badge.deposit{background:var(--blue-soft);color:var(--blue-deep)}
+.rc-badge.rejected{background:var(--bad-soft);color:var(--bad)}
+.rc-badge.discrepancy{background:#fef3c7;color:#92400e}
 
 /* ── STAT ROWS ── */
 .stat-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line)}
@@ -221,7 +231,7 @@ select.fin{cursor:pointer}
 .date-box{display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--line);padding:7px 10px;border-radius:11px;box-shadow:var(--shadow)}
 .date-box svg{width:15px;height:15px;color:var(--teal);flex-shrink:0}
 .date-box input{border:none;background:transparent;font-family:inherit;font-weight:600;font-size:12px;color:var(--ink);outline:none;padding:0;min-width:100px;font-variant-numeric:tabular-nums}
-.day-report-btn{flex:1;background:white;border:1px solid var(--line);border-radius:11px;padding:0 12px;font-family:inherit;font-weight:700;font-size:12px;color:var(--teal-dark);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:var(--shadow);transition:all .15s;min-height:40px}
+.day-report-btn{flex:1;background:white;border:1px solid var(--line);border-radius:11px;padding:0 12px;font-family:inherit;font-weight:700;font-size:12px;color:var(--teal-deep);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:var(--shadow);transition:all .15s;min-height:40px}
 .day-report-btn svg{width:14px;height:14px;color:var(--teal)}
 .day-report-btn:hover{border-color:var(--teal)}
 .cta-new{width:100%;background:var(--ink);color:white;border:none;padding:16px;border-radius:var(--radius);font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:var(--shadow-lift);margin-bottom:14px;min-height:var(--tap);transition:all .15s}
@@ -350,14 +360,14 @@ select.fin{cursor:pointer}
 .split-breakdown{margin-top:14px;background:var(--grad-soft);border:1px solid var(--line-strong);border-radius:11px;padding:13px 14px;display:flex;justify-content:space-around}
 .sb-cell{text-align:center}
 .sb-cell .sb-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);font-weight:700;margin-bottom:3px}
-.sb-cell .sb-val{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--teal-dark)}
+.sb-cell .sb-val{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--teal-deep)}
 .sb-cell .sb-val .cur{font-size:.6em;opacity:.7;font-weight:600}
 .sb-cell.cash .sb-val{color:var(--good)}
 .sb-cell.qr .sb-val{color:var(--teal)}
 .sb-divider{width:1px;background:var(--line-strong)}
 .step-context{background:var(--grad-soft);border:1px solid var(--line-strong);border-radius:11px;padding:11px 13px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:9px}
 .step-context .ctx-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:700}
-.step-context .ctx-val{font-size:17px;font-weight:800;color:var(--teal-dark);font-variant-numeric:tabular-nums}
+.step-context .ctx-val{font-size:17px;font-weight:800;color:var(--teal-deep);font-variant-numeric:tabular-nums}
 .review-card{background:white;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:14px}
 .review-row{padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line)}
 .review-row:last-child{border-bottom:none}
@@ -401,6 +411,7 @@ select.fin{cursor:pointer}
 .tbl-btn{background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:4px 7px;cursor:pointer;font-size:10px;font-weight:700;color:var(--ink-2);font-family:inherit;white-space:nowrap;display:inline-flex;align-items:center;gap:3px}
 .tbl-btn svg{width:11px;height:11px}
 .tbl-btn.danger{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.tbl-btn.success{background:var(--good-soft);border-color:var(--good);color:var(--good)}
 
 /* ── REPORT ── */
 .report-overlay{position:fixed;inset:0;background:rgba(14,46,43,.7);backdrop-filter:blur(6px);z-index:250;display:none;align-items:flex-end;justify-content:center}
@@ -442,6 +453,71 @@ select.fin{cursor:pointer}
 .modal-sheet{background:var(--bg);width:100%;max-width:420px;border-radius:22px 22px 0 0;padding:24px 22px 28px;box-shadow:0 -20px 60px -10px rgba(0,0,0,.4);animation:slideUp .3s ease}
 @media(min-width:480px){.modal-overlay{align-items:center;padding:24px}.modal-sheet{border-radius:22px}}
 
+/* ── SETTLEMENT CARDS (NEW) ── */
+.settlement-card{background:white;border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}
+.sc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sc-rider{display:flex;align-items:center;gap:8px}
+.sc-avatar{width:32px;height:32px;border-radius:50%;background:var(--grad);color:white;font-weight:800;font-size:12px;display:grid;place-items:center;flex-shrink:0}
+.sc-info{flex:1;min-width:0}
+.sc-name{font-weight:700;font-size:13px;color:var(--ink)}
+.sc-meta{font-size:10px;color:var(--ink-3);font-weight:500}
+.sc-status{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.sc-status.pending{background:var(--warn-soft);color:var(--warn)}
+.sc-status.approved{background:var(--good-soft);color:var(--good)}
+.sc-status.rejected{background:var(--bad-soft);color:var(--bad)}
+.sc-status.discrepancy{background:#fef3c7;color:#92400e}
+.sc-body{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-strong)}
+.sc-cell{text-align:center}
+.sc-cell .scl{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:700;margin-bottom:2px}
+.sc-cell .scv{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ink)}
+.sc-cell .scv .cur{font-size:.65em;opacity:.6;font-weight:600}
+.sc-cell.submitted .scv{color:var(--teal-deep)}
+.sc-cell.received .scv{color:var(--good)}
+.sc-cell.diff .scv{color:var(--bad)}
+.sc-actions{display:flex;gap:6px;margin-top:10px}
+.sc-actions button{flex:1;padding:8px 10px;border-radius:8px;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all .15s;min-height:36px}
+.sc-actions .btn-approve{background:var(--good-soft);color:var(--good);border:1px solid var(--good)}
+.sc-actions .btn-approve:hover{background:var(--good);color:white}
+.sc-actions .btn-reject{background:var(--bad-soft);color:var(--bad);border:1px solid var(--bad)}
+.sc-actions .btn-reject:hover{background:var(--bad);color:white}
+.sc-actions .btn-disc{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.sc-actions .btn-disc:hover{background:var(--warn);color:white}
+
+/* ── RECONCILIATION TABLE (NEW) ── */
+.recon-table{width:100%;border-collapse:collapse;font-size:12px}
+.recon-table th{text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);font-weight:700;padding:8px 6px;border-bottom:2px solid var(--line);background:var(--bg)}
+.recon-table td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+.recon-table tr:hover td{background:var(--grad-soft)}
+.recon-table .rc-match{color:var(--good);font-weight:700}
+.recon-table .rc-pending{color:var(--warn);font-weight:700}
+.recon-table .rc-short{color:var(--bad);font-weight:700}
+.recon-table .rc-excess{color:var(--blue);font-weight:700}
+.recon-table .rc-disc{color:#92400e;font-weight:700}
+
+/* ── USER STATUS BADGE (NEW) ── */
+.status-active{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:999px;font-size:9px;font-weight:700;background:var(--good-soft);color:var(--good)}
+.status-disabled{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:999px;font-size:9px;font-weight:700;background:var(--bad-soft);color:var(--bad)}
+.status-active::before,.status-disabled::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
+
+/* ── SUBMISSION FORM (NEW) ── */
+.submission-form{background:white;border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
+.submission-form .sf-title{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.submission-form .sf-title svg{width:16px;height:16px;color:var(--teal)}
+
+/* ── ORDER TABLE FOR ADMIN (NEW) ── */
+.order-table{width:100%;border-collapse:collapse;font-size:11px}
+.order-table th{text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);font-weight:700;padding:6px 4px;border-bottom:2px solid var(--line);background:var(--bg);white-space:nowrap}
+.order-table td{padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+.order-table tr:hover td{background:var(--grad-soft)}
+.order-table .ot-wrap{white-space:normal;word-break:break-all;max-width:120px}
+.order-table .ot-badge{display:inline-flex;padding:1px 5px;border-radius:999px;font-size:8px;font-weight:700;text-transform:uppercase}
+.order-table .ot-badge.cod{background:var(--teal);color:white}
+.order-table .ot-badge.prepaid{background:#f5f1e8;color:#8a7140}
+.order-table .ot-badge.split{background:var(--blue-soft);color:var(--blue-deep)}
+.order-table .ot-settled{color:var(--good);font-weight:700}
+.order-table .ot-pending{color:var(--warn);font-weight:700}
+.order-table .ot-partial{color:var(--blue);font-weight:700}
+
 @media(min-width:700px){
   #appShell{padding:0 0 60px}
   .amount-chips{grid-template-columns:repeat(4,1fr)}
@@ -452,6 +528,7 @@ select.fin{cursor:pointer}
   .step h3{font-size:20px}
   .ad-value{font-size:34px}
   .fin-row{grid-template-columns:1fr}
+  .sc-body{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -491,6 +568,14 @@ select.fin{cursor:pointer}
 <symbol id="i-refresh" viewBox="0 0 24 24"><polyline points="23,4 23,10 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
 <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
 <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .01h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+<symbol id="i-handshake" viewBox="0 0 24 24"><path d="M20.42 4.58a5.4 5.4 0 00-7.65 0l-.77.78-.77-.78a5.4 5.4 0 00-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 5.36l1.42 1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="2" fill="none"/><line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polygon points="22,2 15,22 11,13 2,9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="i-approve" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><polyline points="22,4 12,14.01 9,11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="i-reject" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-edit" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
 </svg>
 
 <!-- ═══════════════════════════════════════════════
@@ -579,7 +664,7 @@ service cloud.firestore {
       Sign In <svg><use href="#i-arrow-fwd"/></svg>
     </button>
     <div class="screen-link" style="margin-top:16px">Forgot password? Ask your Admin to reset it.</div>
-    
+
   </div>
 </div>
 
@@ -599,7 +684,9 @@ service cloud.firestore {
     </div>
   </div>
 
-  <!-- RIDER PANEL -->
+  <!-- ═══════════════════════════════════════════════
+       RIDER PANEL — ENHANCED WITH CASH HANDOVER
+       ═══════════════════════════════════════════════ -->
   <div id="riderPanel" class="panel">
     <div class="topbar-r">
       <div class="date-box">
@@ -626,6 +713,43 @@ service cloud.firestore {
       </div>
     </div>
     <button class="cta-new" id="newOrderBtn"><svg><use href="#i-plus"/></svg> New Order</button>
+
+    <!-- NEW: Rider Cash Handover Section -->
+    <section class="section">
+      <div class="section-head"><h2>💰 Cash Handover</h2><div class="head-right" id="handoverDateLabel">Today</div></div>
+      <div class="section-body">
+        <div class="submission-form">
+          <div class="sf-title"><svg><use href="#i-handshake"/></svg> Submit Cash to Manager</div>
+          <div class="fin-row">
+            <div class="lf"><label>Business Date</label><input type="date" class="fin" id="rhBusinessDate"/></div>
+            <div class="lf"><label>Select Manager</label><select class="fin" id="rhManagerSel"><option value="">-- Choose Manager --</option></select></div>
+          </div>
+          <div class="lf"><label>Amount to Hand Over (₹)</label><input type="number" class="fin" id="rhAmount" placeholder="0" min="0" step="1"/></div>
+          <div class="lf"><label>Remarks <span class="opt">(optional)</span></label><input type="text" class="fin" id="rhRemarks" placeholder="Any notes..."/></div>
+
+          <!-- Pending amount preview for selected date -->
+          <div id="rhPendingWrap" class="hidden" style="background:var(--grad-soft);border:1px solid var(--line-strong);border-radius:10px;padding:12px;margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <span style="font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase">Settlement Status</span>
+              <span id="rhStatusBadge" class="rc-badge pending">Pending</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center">
+              <div><div style="font-size:9px;color:var(--ink-3);font-weight:700;text-transform:uppercase">Collected</div><div style="font-size:15px;font-weight:800;color:var(--teal-deep)">₹<span id="rhCollected">0</span></div></div>
+              <div><div style="font-size:9px;color:var(--ink-3);font-weight:700;text-transform:uppercase">Submitted</div><div style="font-size:15px;font-weight:800;color:var(--good)">₹<span id="rhSubmitted">0</span></div></div>
+              <div><div style="font-size:9px;color:var(--ink-3);font-weight:700;text-transform:uppercase">Remaining</div><div style="font-size:15px;font-weight:800;color:var(--bad)">₹<span id="rhRemaining">0</span></div></div>
+            </div>
+          </div>
+
+          <button class="btn-primary green" id="rhSubmitBtn" disabled>
+            <svg><use href="#i-send"/></svg> Submit Cash Handover
+          </button>
+        </div>
+
+        <!-- Submission history for rider -->
+        <div id="riderSubmissionsList" style="margin-top:12px"></div>
+      </div>
+    </section>
+
     <section class="section">
       <div class="section-head"><h2>Orders <span class="count-pill" id="orderCount">0</span></h2><div class="head-right" id="rDateLabel">Today</div></div>
       <div id="ordersWrap"></div>
@@ -646,7 +770,9 @@ service cloud.firestore {
     <div style="text-align:center;padding:0 14px 10px;font-size:12px;color:var(--ink-3)"><svg style="width:12px;height:12px;vertical-align:middle;color:var(--teal)"><use href="#i-cloud"/></svg> Saved to cloud · <a id="exportBtn" style="color:var(--teal);font-weight:600;cursor:pointer">Export CSV</a></div>
   </div>
 
-  <!-- MANAGER PANEL -->
+  <!-- ═══════════════════════════════════════════════
+       MANAGER PANEL — ENHANCED WITH APPROVAL WORKFLOW
+       ═══════════════════════════════════════════════ -->
   <div id="managerPanel" class="panel">
     <div class="hero hero-blue">
       <div class="hero-label">Manager Dashboard</div>
@@ -661,6 +787,7 @@ service cloud.firestore {
     </div>
     <div class="tab-bar" id="mgrTabBar">
       <button class="tab-btn active" data-tab="collect"><svg><use href="#i-cash"/></svg> Collect</button>
+      <button class="tab-btn" data-tab="approvals"><svg><use href="#i-handshake"/></svg> Approvals</button>
       <button class="tab-btn" data-tab="history"><svg><use href="#i-list"/></svg> History</button>
       <button class="tab-btn" data-tab="bank"><svg><use href="#i-bank"/></svg> Bank</button>
     </div>
@@ -688,6 +815,21 @@ service cloud.firestore {
           <button class="btn-primary green" id="mgrSubmitBtn" disabled>
             <svg><use href="#i-circle-check"/></svg> Acknowledge &amp; Record
           </button>
+        </div>
+      </section>
+    </div>
+    <!-- APPROVALS TAB (NEW) -->
+    <div class="tab-content" id="mgr-tab-approvals">
+      <section class="section">
+        <div class="section-head"><h2>Rider Submissions</h2><span class="count-pill" id="approvalCount">0</span></div>
+        <div class="section-body">
+          <div class="hist-filter" style="margin-bottom:12px">
+            <button class="filter-pill active" data-appr="pending">Pending</button>
+            <button class="filter-pill" data-appr="approved">Approved</button>
+            <button class="filter-pill" data-appr="rejected">Rejected</button>
+            <button class="filter-pill" data-appr="all">All</button>
+          </div>
+          <div id="mgrApprovalList"></div>
         </div>
       </section>
     </div>
@@ -743,7 +885,9 @@ service cloud.firestore {
     </div>
   </div>
 
-  <!-- ADMIN PANEL -->
+  <!-- ═══════════════════════════════════════════════
+       ADMIN PANEL — ENHANCED WITH RECONCILIATION & USER MGMT
+       ═══════════════════════════════════════════════ -->
   <div id="adminPanel" class="panel">
     <div class="hero hero-dark">
       <div class="hero-label">Admin Overview · All Time</div>
@@ -759,6 +903,8 @@ service cloud.firestore {
     <div class="tab-bar" id="admTabBar">
       <button class="tab-btn active" data-tab="riders"><svg><use href="#i-chart"/></svg> Riders</button>
       <button class="tab-btn" data-tab="managers"><svg><use href="#i-users"/></svg> Managers</button>
+      <button class="tab-btn" data-tab="recon"><svg><use href="#i-handshake"/></svg> Reconcile</button>
+      <button class="tab-btn" data-tab="orders"><svg><use href="#i-receipt"/></svg> Orders</button>
       <button class="tab-btn" data-tab="audit"><svg><use href="#i-shield"/></svg> Audit</button>
       <button class="tab-btn" data-tab="users"><svg><use href="#i-key"/></svg> Users</button>
     </div>
@@ -776,17 +922,111 @@ service cloud.firestore {
     <div class="tab-content" id="adm-tab-managers">
       <div id="admManagersContent"><div class="empty"><div class="empty-icon"><svg><use href="#i-users"/></svg></div><div class="msg">Loading…</div></div></div>
     </div>
+    <!-- RECONCILIATION TAB (NEW) -->
+    <div class="tab-content" id="adm-tab-recon">
+      <section class="section">
+        <div class="section-head"><h2>🔄 Rider ↔ Manager Reconciliation</h2></div>
+        <div class="section-body">
+          <div class="hist-filter" style="margin-bottom:12px">
+            <select class="filter-select" id="reconRiderFilter" style="min-width:140px"><option value="">All Riders</option></select>
+            <select class="filter-select" id="reconManagerFilter" style="min-width:140px"><option value="">All Managers</option></select>
+            <select class="filter-select" id="reconStatusFilter" style="min-width:120px">
+              <option value="">All Status</option>
+              <option value="match">✅ Exact Match</option>
+              <option value="pending">⏳ Pending Approval</option>
+              <option value="partial">⚡ Partial Settled</option>
+              <option value="short">❌ Cash Shortage</option>
+              <option value="excess">💰 Excess Payment</option>
+              <option value="discrepancy">⚠️ Discrepancy</option>
+            </select>
+            <button class="filter-pill active" id="reconRefresh">Refresh</button>
+          </div>
+          <div id="reconSummary" style="margin-bottom:12px"></div>
+          <div style="overflow-x:auto">
+            <table class="recon-table" id="reconTable">
+              <thead>
+                <tr>
+                  <th>Rider</th>
+                  <th>Manager</th>
+                  <th>Date</th>
+                  <th>Rider Says</th>
+                  <th>Mgr Received</th>
+                  <th>Diff</th>
+                  <th>Status</th>
+                  <th>Orders</th>
+                </tr>
+              </thead>
+              <tbody id="reconTbody"></tbody>
+            </table>
+          </div>
+          <div id="reconEmpty" class="empty hidden">
+            <div class="empty-icon"><svg><use href="#i-handshake"/></svg></div>
+            <div class="msg">No reconciliation data</div>
+            <div class="sub">Select filters and click Refresh</div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <!-- ORDERS TAB (NEW) -->
+    <div class="tab-content" id="adm-tab-orders">
+      <section class="section">
+        <div class="section-head"><h2>📋 All Orders</h2><span class="count-pill" id="admOrderCount">0</span></div>
+        <div class="section-body">
+          <div class="hist-filter" style="margin-bottom:12px">
+            <select class="filter-select" id="admOrderRiderFilter" style="min-width:140px"><option value="">All Riders</option></select>
+            <select class="filter-select" id="admOrderTypeFilter" style="min-width:120px">
+              <option value="">All Types</option>
+              <option value="cod">COD</option>
+              <option value="prepaid">Prepaid</option>
+            </select>
+            <select class="filter-select" id="admOrderStatusFilter" style="min-width:140px">
+              <option value="">All Status</option>
+              <option value="settled">Fully Settled</option>
+              <option value="partial">Partially Settled</option>
+              <option value="pending">Pending Settlement</option>
+            </select>
+            <button class="filter-pill active" id="admOrderRefresh">Refresh</button>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="order-table" id="admOrderTable">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Rider</th>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>COD ₹</th>
+                  <th>Cash ₹</th>
+                  <th>QR ₹</th>
+                  <th>Refund ₹</th>
+                  <th>Extra ₹</th>
+                  <th>Net ₹</th>
+                  <th>Status</th>
+                  <th>Manager</th>
+                </tr>
+              </thead>
+              <tbody id="admOrderTbody"></tbody>
+            </table>
+          </div>
+          <div id="admOrderEmpty" class="empty hidden">
+            <div class="empty-icon"><svg><use href="#i-receipt"/></svg></div>
+            <div class="msg">No orders found</div>
+            <div class="sub">Try adjusting filters</div>
+          </div>
+        </div>
+      </section>
+    </div>
     <!-- AUDIT TAB -->
     <div class="tab-content" id="adm-tab-audit">
       <div class="hist-filter">
         <button class="filter-pill active" id="auditToday">Today</button>
         <button class="filter-pill" id="auditYest">Yesterday</button>
         <button class="filter-pill" id="auditAll">All Time</button>
-        <select class="filter-select" id="auditType"><option value="">All Types</option><option value="order">Orders</option><option value="settlement">Settlements</option><option value="deposit">Deposits</option></select>
+        <select class="filter-select" id="auditType"><option value="">All Types</option><option value="order">Orders</option><option value="settlement">Settlements</option><option value="deposit">Deposits</option><option value="submission">Submissions</option></select>
       </div>
       <div id="auditList"></div>
     </div>
-    <!-- USERS TAB -->
+    <!-- USERS TAB — ENHANCED -->
     <div class="tab-content" id="adm-tab-users">
       <section class="section">
         <div class="section-head"><h2>Add New User</h2></div>
@@ -814,8 +1054,10 @@ service cloud.firestore {
         </div>
       </section>
       <section class="section">
-        <div class="section-head"><h2>All Users</h2></div>
-        <div class="section-body" style="overflow-x:auto"><div id="usersListWrap"></div></div>
+        <div class="section-head"><h2>All Users</h2><div class="head-right" id="userCountBadge">0 users</div></div>
+        <div class="section-body" style="overflow-x:auto">
+          <div id="usersListWrap"></div>
+        </div>
       </section>
     </div>
   </div>
@@ -849,7 +1091,7 @@ service cloud.firestore {
   </div>
 </div>
 
-<!-- CHANGE PASSWORD MODAL (sends reset email) -->
+<!-- CHANGE PASSWORD MODAL -->
 <div class="modal-overlay" id="cpwModal">
   <div class="modal-sheet">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
@@ -862,11 +1104,79 @@ service cloud.firestore {
   </div>
 </div>
 
+<!-- DELETE USER CONFIRMATION MODAL (NEW) -->
+<div class="modal-overlay" id="delUserModal">
+  <div class="modal-sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <div><div style="font-weight:800;font-size:16px;color:var(--bad)">Delete User Account</div><div style="font-size:12px;color:var(--ink-3);font-weight:500" id="delUserLabel">—</div></div>
+      <button class="rh-close" id="delUserClose"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div id="delUserErr" class="err-box"></div>
+    <div class="info-box" style="background:var(--bad-soft);border-color:var(--bad);color:var(--bad)">
+      <strong>Warning:</strong> This will permanently disable the user's login access. All historical orders, settlements, and audit data will be preserved for compliance.
+    </div>
+    <div style="margin:14px 0;font-size:13px;color:var(--ink-2)">
+      <div style="margin-bottom:6px"><strong>User:</strong> <span id="delUserName">—</span></div>
+      <div style="margin-bottom:6px"><strong>Email:</strong> <span id="delUserEmail">—</span></div>
+      <div style="margin-bottom:6px"><strong>Role:</strong> <span id="delUserRole">—</span></div>
+      <div><strong>UID:</strong> <span id="delUserUid" style="font-family:monospace;font-size:11px">—</span></div>
+    </div>
+    <div class="lf" style="margin-bottom:14px">
+      <label style="color:var(--bad)">Type DELETE to confirm</label>
+      <input type="text" class="fin" id="delConfirm" placeholder="DELETE" autocomplete="off"/>
+    </div>
+    <button class="btn-primary red" id="delUserConfirmBtn" disabled>
+      <svg><use href="#i-trash"/></svg> Permanently Disable Account
+    </button>
+  </div>
+</div>
+
+<!-- APPROVAL ACTION MODAL (NEW) -->
+<div class="modal-overlay" id="approvalModal">
+  <div class="modal-sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <div><div style="font-weight:800;font-size:16px">Process Submission</div><div style="font-size:12px;color:var(--ink-3);font-weight:500" id="apprModalSub">—</div></div>
+      <button class="rh-close" id="apprModalClose"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div id="apprModalErr" class="err-box"></div>
+    <div class="info-box">
+      Rider submitted cash. Enter the actual amount you physically received to detect any discrepancy.
+    </div>
+    <div style="background:var(--grad-soft);border:1px solid var(--line-strong);border-radius:10px;padding:12px;margin:12px 0">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:11px;font-weight:600;color:var(--ink-3)">Rider Submitted</span>
+        <span style="font-size:14px;font-weight:800;color:var(--teal-deep)">₹<span id="apprSubmittedAmt">0</span></span>
+      </div>
+      <div style="display:flex;justify-content:space-between">
+        <span style="font-size:11px;font-weight:600;color:var(--ink-3)">Business Date</span>
+        <span style="font-size:13px;font-weight:700" id="apprBusinessDate">—</span>
+      </div>
+    </div>
+    <div class="lf">
+      <label>Amount Actually Received (₹)</label>
+      <input type="number" class="fin" id="apprReceivedAmt" placeholder="0" min="0" step="1"/>
+    </div>
+    <div class="lf">
+      <label>Remarks <span class="opt">(optional)</span></label>
+      <input type="text" class="fin" id="apprRemarks" placeholder="Any discrepancy notes..."/>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn-primary green" id="apprApproveBtn" style="flex:1">
+        <svg><use href="#i-approve"/></svg> Approve
+      </button>
+      <button class="btn-primary red" id="apprRejectBtn" style="flex:1">
+        <svg><use href="#i-reject"/></svg> Reject
+      </button>
+    </div>
+    <button class="btn-primary outline" id="apprDiscBtn" style="margin-top:8px;width:100%">
+      <svg><use href="#i-alert"/></svg> Flag Discrepancy
+    </button>
+  </div>
+</div>
+
 <!-- LOADER & TOAST -->
 <div id="loader" class="show"><div class="spin"></div></div>
 <div class="toast" id="toast"></div>
-
-
 
 <script>
 /* ══════════════════════════════════════════════════════════
@@ -892,9 +1202,13 @@ let rOrders = [];
 let rViewDate = todayISO();
 let wizStep = null, wizHistory = [], wizData = {};
 let allSettlements = [], allDeposits = [], allUsers = [], allOrders = [];
+let allSubmissions = []; // NEW: rider submissions
 let settlFilter = { range:'today', rider:'', from:'', to:'' };
 let cpwTargetUid = null, cpwTargetEmail = null;
+let delTargetUid = null, delTargetEmail = null, delTargetName = null; // NEW
 let admFrom = '', admTo = '';
+let apprFilter = 'pending'; // NEW: manager approval filter
+let currentApprId = null; // NEW: current submission being processed
 
 /* ══════════════════════════
    UTILS
@@ -940,18 +1254,16 @@ function showToast(msg,kind) {
 }
 function loading(on) { document.getElementById('loader').classList.toggle('show',on); }
 function showScreen(id) {
-  // Hide login screen
   var ls = document.getElementById('loginScreen');
   ls.classList.remove('show');
   ls.classList.add('hidden');
-  // Hide app shell
   document.getElementById('appShell').classList.add('hidden');
   if(id === 'app') {
     document.getElementById('appShell').classList.remove('hidden');
   } else {
     var el = document.getElementById(id);
-    el.classList.remove('hidden');  // remove hidden FIRST
-    el.classList.add('show');       // then show
+    el.classList.remove('hidden');
+    el.classList.add('show');
   }
 }
 function tsToNum(ts) { return ts&&ts.toDate?ts.toDate().getTime():typeof ts==='number'?ts:Date.now(); }
@@ -1012,6 +1324,48 @@ async function fsGetOrdersForRiders(riderIds) {
   }
   return all;
 }
+
+/* ══════════════════════════════════════════════════════════
+   NEW: RIDER SUBMISSIONS (Cash Handover)
+   ══════════════════════════════════════════════════════════ */
+async function fsGetSubmissions(riderId) {
+  let q = riderId
+    ? db.collection('rider_submissions').where('riderId','==',riderId)
+    : db.collection('rider_submissions');
+  const snap = await q.get();
+  return snap.docs.map(d=>({id:d.id,...d.data()}));
+}
+async function fsAddSubmission(data) {
+  return db.collection('rider_submissions').add(data);
+}
+async function fsUpdateSubmission(submissionId, data) {
+  return db.collection('rider_submissions').doc(submissionId).update(data);
+}
+
+/* ══════════════════════════════════════════════════════════
+   NEW: ADMIN USER MANAGEMENT
+   ══════════════════════════════════════════════════════════ */
+async function fsDeleteUserAuth(uid, email, password) {
+  // Step 1: Sign in as the user to get idToken
+  const signInRes = await fetch(
+    'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + FB.apiKey,
+    { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password, returnSecureToken: true }) }
+  );
+  const signInData = await signInRes.json();
+  if(signInData.error) throw new Error(signInData.error.message);
+
+  // Step 2: Delete account using idToken
+  const delRes = await fetch(
+    'https://identitytoolkit.googleapis.com/v1/accounts:delete?key=' + FB.apiKey,
+    { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ idToken: signInData.idToken }) }
+  );
+  const delData = await delRes.json();
+  if(delData.error) throw new Error(delData.error.message);
+  return true;
+}
+
 async function fsCreateUserViaREST(email, password) {
   const r = await fetch(
     'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+FB.apiKey,
@@ -1050,7 +1404,7 @@ async function doLogout() {
   loading(true);
   await auth.signOut();
   fbUser=null; userProfile=null; rOrders=[];
-  allSettlements=[]; allDeposits=[]; allUsers=[]; allOrders=[];
+  allSettlements=[]; allDeposits=[]; allUsers=[]; allOrders=[]; allSubmissions=[];
   ['riderPanel','managerPanel','adminPanel'].forEach(id=>document.getElementById(id).classList.remove('active'));
   loading(false);
   showScreen('loginScreen');
@@ -1065,6 +1419,7 @@ function friendlyError(code) {
     'auth/invalid-email':'Invalid email address.',
     'auth/too-many-requests':'Too many attempts. Try again later.',
     'auth/network-request-failed':'Network error. Check your internet.',
+    'auth/user-disabled':'This account has been disabled. Contact admin.',
   };
   return map[code]||null;
 }
@@ -1087,6 +1442,11 @@ function boot() {
       const snap = await db.collection('users').doc(user.uid).get();
       if(!snap.exists){ showToast('Profile not found. Contact admin.','error'); await auth.signOut(); loading(false); return; }
       userProfile = { uid: user.uid, email: user.email, ...snap.data() };
+      // Check if user is disabled
+      if(userProfile.disabled) {
+        showToast('Your account has been disabled. Contact admin.','error');
+        await auth.signOut(); loading(false); return;
+      }
       setupNav();
       showScreen('app');
       await routeToRole();
@@ -1132,21 +1492,149 @@ function calcSummary(list) {
 function orderDate(o) { return o.date||''; }
 
 /* ══════════════════════════════════════════════════════════
-   RIDER DASHBOARD
+   RIDER DASHBOARD — ENHANCED WITH CASH HANDOVER
    ══════════════════════════════════════════════════════════ */
 async function initRider() {
   rViewDate = todayISO();
   document.getElementById('rViewDate').value = rViewDate;
+  document.getElementById('rhBusinessDate').value = rViewDate;
   loading(true);
   rOrders = await fsGetOrders(userProfile.uid);
+  allSubmissions = await fsGetSubmissions(userProfile.uid);
   loading(false);
   renderRider();
+  populateRiderManagerSel();
+  renderRiderSubmissions();
+
   document.getElementById('rViewDate').addEventListener('change',e=>{rViewDate=e.target.value||todayISO();renderRider();});
   document.getElementById('newOrderBtn').addEventListener('click',openWizard);
   document.getElementById('dayReportBtn').addEventListener('click',openReport);
   document.getElementById('rhClose').addEventListener('click',()=>document.getElementById('reportOverlay').classList.remove('open'));
   document.getElementById('exportBtn').addEventListener('click',exportCSV);
+
+  // Cash handover events
+  document.getElementById('rhBusinessDate').addEventListener('change', updateRiderHandoverPreview);
+  document.getElementById('rhManagerSel').addEventListener('change', validateRiderHandover);
+  document.getElementById('rhAmount').addEventListener('input', validateRiderHandover);
+  document.getElementById('rhSubmitBtn').addEventListener('click', submitRiderHandover);
 }
+
+function populateRiderManagerSel() {
+  var mgrs = allUsers.filter(u => u.role === 'manager' && !u.disabled);
+  var sel = document.getElementById('rhManagerSel');
+  sel.innerHTML = '<option value="">-- Choose Manager --</option>' + 
+    mgrs.map(m => '<option value="'+esc(m.uid)+'">'+esc(m.name)+'</option>').join('');
+}
+
+function updateRiderHandoverPreview() {
+  var date = document.getElementById('rhBusinessDate').value;
+  var wrap = document.getElementById('rhPendingWrap');
+  if(!date) { wrap.classList.add('hidden'); validateRiderHandover(); return; }
+
+  var dayOrders = rOrders.filter(o => o.date === date);
+  var s = calcSummary(dayOrders);
+
+  // Calculate already submitted for this date
+  var submitted = allSubmissions
+    .filter(sub => sub.businessDate === date && sub.status !== 'rejected')
+    .reduce((sum, sub) => sum + (+sub.amount || 0), 0);
+
+  var remaining = Math.max(0, s.netCash - submitted);
+
+  document.getElementById('rhCollected').textContent = fmtM(s.netCash);
+  document.getElementById('rhSubmitted').textContent = fmtM(submitted);
+  document.getElementById('rhRemaining').textContent = fmtM(remaining);
+
+  // Update status badge
+  var badge = document.getElementById('rhStatusBadge');
+  if(remaining <= 0) {
+    badge.className = 'rc-badge ok';
+    badge.textContent = 'Fully Submitted';
+  } else if(submitted > 0) {
+    badge.className = 'rc-badge pending';
+    badge.textContent = 'Partially Submitted';
+  } else {
+    badge.className = 'rc-badge pending';
+    badge.textContent = 'Pending Submission';
+  }
+
+  wrap.classList.remove('hidden');
+  validateRiderHandover();
+}
+
+function validateRiderHandover() {
+  var mgr = document.getElementById('rhManagerSel').value;
+  var amt = +document.getElementById('rhAmount').value;
+  document.getElementById('rhSubmitBtn').disabled = !mgr || !amt || amt <= 0;
+}
+
+async function submitRiderHandover() {
+  var businessDate = document.getElementById('rhBusinessDate').value;
+  var managerId = document.getElementById('rhManagerSel').value;
+  var amount = +document.getElementById('rhAmount').value;
+  var remarks = document.getElementById('rhRemarks').value.trim();
+
+  if(!businessDate || !managerId || !amount) {
+    showToast('Please fill all required fields','error');
+    return;
+  }
+
+  var manager = allUsers.find(u => u.uid === managerId);
+
+  loading(true);
+  try {
+    var rec = {
+      riderId: userProfile.uid,
+      riderName: userProfile.name,
+      riderEmail: userProfile.email,
+      businessDate: businessDate,
+      managerId: managerId,
+      managerName: manager ? manager.name : managerId,
+      amount: amount,
+      remarks: remarks,
+      status: 'pending',
+      submittedAt: Date.now(),
+      timestamp: Date.now()
+    };
+    var ref = await fsAddSubmission(rec);
+    allSubmissions.unshift(Object.assign({}, rec, {id: ref.id}));
+
+    document.getElementById('rhAmount').value = '';
+    document.getElementById('rhRemarks').value = '';
+    updateRiderHandoverPreview();
+    renderRiderSubmissions();
+    showToast('Cash handover submitted! Waiting for manager approval.','success');
+  } catch(e) {
+    showToast('Submit failed: '+e.message,'error');
+  }
+  loading(false);
+}
+
+function renderRiderSubmissions() {
+  var c = document.getElementById('riderSubmissionsList');
+  var subs = allSubmissions.slice().sort((a,b) => b.timestamp - a.timestamp);
+
+  if(!subs.length) {
+    c.innerHTML = '<div class="empty" style="padding:20px"><div class="empty-icon" style="width:40px;height:40px"><svg><use href="#i-handshake"/></svg></div><div class="msg" style="font-size:12px">No submissions yet</div></div>';
+    return;
+  }
+
+  c.innerHTML = '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-3);font-weight:700;margin-bottom:8px">Your Submission History</div>' +
+    '<div class="record-list">' + subs.map(function(sub) {
+      var statusClass = sub.status === 'approved' ? 'ok' : sub.status === 'rejected' ? 'rejected' : 'pending';
+      var statusText = sub.status === 'approved' ? 'Approved' : sub.status === 'rejected' ? 'Rejected' : 'Pending';
+      var received = sub.receivedAmount !== undefined ? '<div class="rc-row"><span class="rc-lbl">Mgr Received</span><span class="rc-val">₹'+fmtM(sub.receivedAmount)+'</span></div>' : '';
+      var diff = sub.discrepancy ? '<div class="rc-row"><span class="rc-lbl">Discrepancy</span><span class="rc-val" style="color:var(--bad)">₹'+fmtM(sub.discrepancy)+'</span></div>' : '';
+
+      return '<div class="record-card"><div class="rc-head"><div><div class="rc-title">₹'+fmtM(sub.amount)+' to '+esc(sub.managerName)+'</div><div class="rc-time">'+fmtDateTime(sub.submittedAt)+'</div></div><span class="rc-badge '+statusClass+'">'+statusText+'</span></div>'
+        + '<div class="rc-body"><div class="rc-row"><span class="rc-lbl">Business Date</span><span class="rc-val">'+sub.businessDate+'</span></div>'
+        + '<div class="rc-row"><span class="rc-lbl">Manager</span><span class="rc-val">'+esc(sub.managerName)+'</span></div>'
+        + received + diff
+        + (sub.approvalRemarks ? '<div class="rc-row" style="grid-column:span 2"><span class="rc-lbl">Note</span><span class="rc-val">'+esc(sub.approvalRemarks)+'</span></div>' : '')
+        + '</div></div>';
+    }).join('') + '</div>';
+}
+
 function getOrdersForDate(date) {
   return rOrders.filter(o=>o.date===date).sort((a,b)=>tsToNum(b.timestamp)-tsToNum(a.timestamp));
 }
@@ -1173,6 +1661,7 @@ function renderRider() {
   const lbl=fmtDateLabel(rViewDate)+' · '+rViewDate;
   document.getElementById('rDateLabel').textContent=lbl;
   document.getElementById('rDateLabel2').textContent=lbl;
+  document.getElementById('handoverDateLabel').textContent = fmtDateLabel(rViewDate);
   renderOrdersList(list);
   renderDayStrip();
 }
@@ -1226,8 +1715,10 @@ function renderDayStrip() {
 function exportCSV() {
   const list=getOrdersForDate(rViewDate);
   if(!list.length){showToast('No orders','error');return;}
-  let csv='#,Order ID,Time,Type,Amount,Cash,QR,Refund,Extra,KM\n';
-  list.forEach((o,i)=>{const ip=o.type==='prepaid';const es=getExtraSplit(o);const cash=(+o.cashCollected||0)+es.cash;const qr=(+o.qrCollected||0)+es.qr;csv+=(i+1)+','+o.orderId+','+fmtTime(o.timestamp)+','+(ip?'Prepaid':'COD')+','+(ip?(+o.orderAmount||0):(+o.totalCodAmount||0))+','+cash+','+qr+','+(+o.refund||0)+','+(+o.extraCollected||0)+','+(+o.distance||0).toFixed(1)+'\n';});
+  let csv='#,Order ID,Time,Type,Amount,Cash,QR,Refund,Extra,KM
+';
+  list.forEach((o,i)=>{const ip=o.type==='prepaid';const es=getExtraSplit(o);const cash=(+o.cashCollected||0)+es.cash;const qr=(+o.qrCollected||0)+es.qr;csv+=(i+1)+','+o.orderId+','+fmtTime(o.timestamp)+','+(ip?'Prepaid':'COD')+','+(ip?(+o.orderAmount||0):(+o.totalCodAmount||0))+','+cash+','+qr+','+(+o.refund||0)+','+(+o.extraCollected||0)+','+(+o.distance||0).toFixed(1)+'
+';});
   const a=document.createElement('a');
   a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
   a.download='instaghar-'+(userProfile.name||'rider').replace(/\s+/g,'-').toLowerCase()+'-'+rViewDate+'.csv';
@@ -1235,7 +1726,7 @@ function exportCSV() {
 }
 
 /* ══════════════════════════════════════════════════════════
-   RIDER WIZARD
+   RIDER WIZARD (UNCHANGED)
    ══════════════════════════════════════════════════════════ */
 var STEPS={ORDER_ID:'ORDER_ID',ORDER_TYPE:'ORDER_TYPE',COD_AMT:'COD_AMT',PAYMENT:'PAYMENT',CASH_QR:'CASH_QR',ADJUSTMENT:'ADJUSTMENT',ADJ_AMT:'ADJ_AMT',EXTRA_PAY:'EXTRA_PAY',DISTANCE:'DISTANCE',REVIEW:'REVIEW'};
 var CHIPS=[100,200,500,1000,2000,5000];
@@ -1407,7 +1898,7 @@ document.getElementById('wizBack').addEventListener('click',function(){if(wizHis
 document.getElementById('wizClose').addEventListener('click',closeWizard);
 
 /* ══════════════════════════
-   RIDER REPORT PDF
+   RIDER REPORT PDF (UNCHANGED)
    ══════════════════════════ */
 function openReport() {
   var list=getOrdersForDate(rViewDate);
@@ -1450,7 +1941,7 @@ function genPDF(share) {
 }
 
 /* ══════════════════════════════════════════════════════════
-   MANAGER DASHBOARD
+   MANAGER DASHBOARD — ENHANCED WITH APPROVAL WORKFLOW
    ══════════════════════════════════════════════════════════ */
 async function initManager() {
   document.getElementById('mgrSettleDate').value=todayISO();
@@ -1459,10 +1950,22 @@ async function initManager() {
   allSettlements=await fsGetSettlements(userProfile.uid);
   allDeposits=await fsGetDeposits(userProfile.uid);
   allUsers=await fsGetAllUsers();
+  allSubmissions = await fsGetSubmissions(null); // Get all submissions for approval
   loading(false);
   populateMgrRiderSel();
   setupTabBar('mgrTabBar','mgr-tab-');
   updateMgrHero();
+
+  // Approval tab filter
+  document.getElementById('mgr-tab-approvals').querySelectorAll('[data-appr]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      apprFilter = this.dataset.appr;
+      document.querySelectorAll('#mgr-tab-approvals .filter-pill').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      renderMgrApprovals();
+    });
+  });
+
   document.getElementById('mgrRiderSel').addEventListener('change',updatePendingPreview);
   document.getElementById('mgrSettleDate').addEventListener('change',updatePendingPreview);
   document.getElementById('mgrRecvAmt').addEventListener('input',validateSettlForm);
@@ -1476,10 +1979,129 @@ async function initManager() {
   document.getElementById('settlRiderFilter').addEventListener('change',function(e){settlFilter.rider=e.target.value;renderSettlHistory();});
   document.getElementById('settlApply').addEventListener('click',function(){settlFilter.from=document.getElementById('settlFrom').value;settlFilter.to=document.getElementById('settlTo').value;renderSettlHistory();});
   document.getElementById('depSubmitBtn').addEventListener('click',submitDeposit);
-  renderSettlHistory();renderDepHistory();updateBankSummary();
+  renderSettlHistory();renderDepHistory();updateBankSummary();renderMgrApprovals();
 }
+
+/* ── Manager Approval System ── */
+function renderMgrApprovals() {
+  var c = document.getElementById('mgrApprovalList');
+  var myId = userProfile.uid;
+
+  var filtered = allSubmissions.filter(function(s) {
+    if(s.managerId !== myId) return false;
+    if(apprFilter === 'all') return true;
+    return s.status === apprFilter;
+  }).sort(function(a,b) { return b.timestamp - a.timestamp; });
+
+  document.getElementById('approvalCount').textContent = filtered.length;
+
+  if(!filtered.length) {
+    c.innerHTML = '<div class="empty"><div class="empty-icon"><svg><use href="#i-handshake"/></svg></div><div class="msg">No '+apprFilter+' submissions</div><div class="sub">Rider submissions will appear here</div></div>';
+    return;
+  }
+
+  c.innerHTML = '<div class="record-list">' + filtered.map(function(sub) {
+    var statusClass = sub.status === 'approved' ? 'ok' : sub.status === 'rejected' ? 'rejected' : 'pending';
+    var statusText = sub.status === 'approved' ? 'Approved' : sub.status === 'rejected' ? 'Rejected' : 'Pending';
+    var diff = sub.receivedAmount !== undefined ? sub.amount - sub.receivedAmount : null;
+    var diffHtml = diff !== null ? '<div class="rc-row"><span class="rc-lbl">Difference</span><span class="rc-val" style="color:'+(diff>0?'var(--bad)':diff<0?'var(--blue)':'var(--good)')+'">'+(diff>0?'+':'')+fmtM(diff)+'</span></div>' : '';
+    var actionBtn = sub.status === 'pending' ? 
+      '<div class="sc-actions"><button class="btn-approve" onclick="_openApprovalModal(''+esc(sub.id)+'')">Process</button></div>' : '';
+
+    return '<div class="settlement-card">'
+      + '<div class="sc-head"><div class="sc-rider"><div class="sc-avatar">'+(sub.riderName||'?').charAt(0).toUpperCase()+'</div><div class="sc-info"><div class="sc-name">'+esc(sub.riderName)+'</div><div class="sc-meta">'+sub.businessDate+' · ₹'+fmtM(sub.amount)+'</div></div></div><span class="sc-status '+statusClass+'">'+statusText+'</span></div>'
+      + '<div class="sc-body"><div class="sc-cell submitted"><div class="scl">Rider Submitted</div><div class="scv"><span class="cur">₹</span>'+fmtM(sub.amount)+'</div></div>'
+      + '<div class="sc-cell received"><div class="scl">Mgr Received</div><div class="scv"><span class="cur">₹</span>'+(sub.receivedAmount!==undefined?fmtM(sub.receivedAmount):'—')+'</div></div>'
+      + '<div class="sc-cell diff"><div class="scl">Difference</div><div class="scv" style="color:'+(diff>0?'var(--bad)':diff<0?'var(--blue)':diff===0?'var(--good)':'var(--ink-3)')+'">'+(diff!==null?(diff>0?'+':'')+fmtM(diff):'—')+'</div></div></div>'
+      + (sub.approvalRemarks ? '<div style="margin-top:8px;font-size:11px;color:var(--ink-3);padding:8px;background:var(--bg);border-radius:8px"><strong>Note:</strong> '+esc(sub.approvalRemarks)+'</div>' : '')
+      + actionBtn + '</div>';
+  }).join('') + '</div>';
+}
+
+window._openApprovalModal = function(submissionId) {
+  var sub = allSubmissions.find(function(s) { return s.id === submissionId; });
+  if(!sub) return;
+  currentApprId = submissionId;
+  document.getElementById('apprModalSub').textContent = sub.riderName + ' · ₹' + fmtM(sub.amount);
+  document.getElementById('apprSubmittedAmt').textContent = fmtM(sub.amount);
+  document.getElementById('apprBusinessDate').textContent = sub.businessDate;
+  document.getElementById('apprReceivedAmt').value = sub.amount;
+  document.getElementById('apprRemarks').value = '';
+  document.getElementById('apprModalErr').style.display = 'none';
+  document.getElementById('approvalModal').classList.add('open');
+};
+
+async function processApproval(action) {
+  if(!currentApprId) return;
+  var receivedAmt = +document.getElementById('apprReceivedAmt').value;
+  var remarks = document.getElementById('apprRemarks').value.trim();
+  var errEl = document.getElementById('apprModalErr');
+  errEl.style.display = 'none';
+
+  if(action !== 'reject' && !receivedAmt && receivedAmt !== 0) {
+    errEl.textContent = 'Enter the amount received'; errEl.style.display = 'block'; return;
+  }
+
+  var sub = allSubmissions.find(function(s) { return s.id === currentApprId; });
+  if(!sub) return;
+
+  loading(true);
+  try {
+    var updateData = {
+      status: action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : 'discrepancy',
+      receivedAmount: action === 'reject' ? 0 : receivedAmt,
+      discrepancy: action === 'discrepancy' ? sub.amount - receivedAmt : action === 'approve' && sub.amount !== receivedAmt ? sub.amount - receivedAmt : 0,
+      approvalRemarks: remarks,
+      approvedAt: Date.now(),
+      approvedBy: userProfile.uid,
+      approvedByName: userProfile.name
+    };
+
+    await fsUpdateSubmission(currentApprId, updateData);
+
+    // Also create a settlement record for approved submissions
+    if(action === 'approve' || action === 'discrepancy') {
+      var settlementRec = {
+        riderId: sub.riderId,
+        riderName: sub.riderName,
+        date: sub.businessDate,
+        receivedAmount: receivedAmt,
+        remarks: remarks || 'Via submission approval',
+        managerId: userProfile.uid,
+        managerName: userProfile.name,
+        timestamp: Date.now(),
+        submissionId: currentApprId
+      };
+      var settlRef = await fsAddSettlement(settlementRec);
+      allSettlements.unshift(Object.assign({}, settlementRec, {id: settlRef.id}));
+    }
+
+    // Update local state
+    var idx = allSubmissions.findIndex(function(s) { return s.id === currentApprId; });
+    if(idx >= 0) {
+      Object.assign(allSubmissions[idx], updateData);
+    }
+
+    document.getElementById('approvalModal').classList.remove('open');
+    showToast(action === 'approve' ? 'Submission approved!' : action === 'reject' ? 'Submission rejected' : 'Discrepancy flagged','success');
+    renderMgrApprovals();
+    updateMgrHero();
+    updateBankSummary();
+  } catch(e) {
+    errEl.textContent = 'Failed: ' + e.message; errEl.style.display = 'block';
+  }
+  loading(false);
+}
+
+document.getElementById('apprModalClose').addEventListener('click', function() {
+  document.getElementById('approvalModal').classList.remove('open');
+});
+document.getElementById('apprApproveBtn').addEventListener('click', function() { processApproval('approve'); });
+document.getElementById('apprRejectBtn').addEventListener('click', function() { processApproval('reject'); });
+document.getElementById('apprDiscBtn').addEventListener('click', function() { processApproval('discrepancy'); });
+
 function populateMgrRiderSel() {
-  var riders=allUsers.filter(function(u){return u.role==='rider';});
+  var riders=allUsers.filter(function(u){return u.role==='rider' && !u.disabled;});
   var sel=document.getElementById('mgrRiderSel');
   sel.innerHTML='<option value="">-- Choose Rider --</option>'+riders.map(function(r){return '<option value="'+esc(r.uid)+'">'+esc(r.name)+(r.riderId?' ('+r.riderId+')':'')+'</option>';}).join('');
   var sf=document.getElementById('settlRiderFilter');
@@ -1545,7 +2167,7 @@ function renderSettlHistory() {
   var c=document.getElementById('settlHistList');
   if(!filtered.length){c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No settlements found</div><div class="sub">Try a different filter</div></div>';return;}
   var total=filtered.reduce(function(s,r){return s+(+r.receivedAmount||0);},0);
-  c.innerHTML='<div style="background:var(--grad-soft);border:1px solid var(--line-strong);border-radius:11px;padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center"><div style="font-size:11px;color:var(--ink-3);font-weight:600;text-transform:uppercase">'+filtered.length+' record'+(filtered.length!==1?'s':'')+'</div><div style="font-weight:800;font-size:17px;color:var(--teal-dark);font-variant-numeric:tabular-nums">₹'+fmtM(total)+'</div></div>'
+  c.innerHTML='<div style="background:var(--grad-soft);border:1px solid var(--line-strong);border-radius:11px;padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center"><div style="font-size:11px;color:var(--ink-3);font-weight:600;text-transform:uppercase">'+filtered.length+' record'+(filtered.length!==1?'s':'')+'</div><div style="font-weight:800;font-size:17px;color:var(--teal-deep);font-variant-numeric:tabular-nums">₹'+fmtM(total)+'</div></div>'
     +'<div class="record-list">'+filtered.map(function(r){return '<div class="record-card"><div class="rc-head"><div><div class="rc-title">'+esc(r.riderName)+'</div><div class="rc-time">'+fmtDateTime(r.timestamp)+'</div></div><div><div class="rc-amount"><span class="cur">₹</span>'+fmtM(r.receivedAmount)+'</div><span class="rc-badge ok">Settled</span></div></div><div class="rc-body"><div class="rc-row"><span class="rc-lbl">Date</span><span class="rc-val">'+r.date+'</span></div><div class="rc-row"><span class="rc-lbl">Manager</span><span class="rc-val">'+esc(r.managerName)+'</span></div>'+(r.remarks?'<div class="rc-row" style="grid-column:span 2"><span class="rc-lbl">Note</span><span class="rc-val">'+esc(r.remarks)+'</span></div>':'')+'</div></div>';}).join('')+'</div>';
 }
 async function submitDeposit() {
@@ -1564,7 +2186,6 @@ async function submitDeposit() {
   } catch(e){showToast('Failed: '+e.message,'error');}
   loading(false);
 }
-document.getElementById('depSubmitBtn').addEventListener('click',submitDeposit);
 function updateBankSummary() {
   var collected=allSettlements.reduce(function(s,r){return s+(+r.receivedAmount||0);},0);
   var deposited=allDeposits.reduce(function(s,r){return s+(+r.amount||0);},0);
@@ -1592,7 +2213,7 @@ function updateMgrHero() {
 }
 
 /* ══════════════════════════════════════════════════════════
-   ADMIN DASHBOARD
+   ADMIN DASHBOARD — ENHANCED WITH RECONCILIATION & USER MGMT
    ══════════════════════════════════════════════════════════ */
 async function initAdmin() {
   admFrom=new Date(Date.now()-30*86400000).toISOString().slice(0,10);
@@ -1604,6 +2225,7 @@ async function initAdmin() {
   allUsers=await fsGetAllUsers();
   allSettlements=await fsGetSettlements(null);
   allDeposits=await fsGetDeposits(null);
+  allSubmissions = await fsGetSubmissions(null);
   var riderIds=allUsers.filter(function(u){return u.role==='rider';}).map(function(u){return u.uid;});
   allOrders=riderIds.length?await fsGetOrdersForRiders(riderIds):[];
   loading(false);
@@ -1612,6 +2234,11 @@ async function initAdmin() {
   renderAudit();
   renderUsersTab();
   updateAdmHero();
+  renderReconciliation();
+  renderAdminOrders();
+  populateReconFilters();
+  populateOrderFilters();
+
   document.getElementById('admRefreshBtn').addEventListener('click',async function(){admFrom=document.getElementById('admFrom').value;admTo=document.getElementById('admTo').value;loading(true);await renderAdmRiders();loading(false);});
   document.getElementById('admFrom').addEventListener('change',function(e){admFrom=e.target.value;});
   document.getElementById('admTo').addEventListener('change',function(e){admTo=e.target.value;});
@@ -1627,7 +2254,213 @@ async function initAdmin() {
     document.getElementById('nuRiderFields').style.display=e.target.value==='rider'?'':'none';
     document.getElementById('nuManagerFields').classList.toggle('hidden',e.target.value!=='manager');
   });
+
+  // Reconciliation filters
+  document.getElementById('reconRefresh').addEventListener('click', renderReconciliation);
+  document.getElementById('reconRiderFilter').addEventListener('change', renderReconciliation);
+  document.getElementById('reconManagerFilter').addEventListener('change', renderReconciliation);
+  document.getElementById('reconStatusFilter').addEventListener('change', renderReconciliation);
+
+  // Order filters
+  document.getElementById('admOrderRefresh').addEventListener('click', renderAdminOrders);
+  document.getElementById('admOrderRiderFilter').addEventListener('change', renderAdminOrders);
+  document.getElementById('admOrderTypeFilter').addEventListener('change', renderAdminOrders);
+  document.getElementById('admOrderStatusFilter').addEventListener('change', renderAdminOrders);
+
+  // Delete user modal
+  document.getElementById('delUserClose').addEventListener('click', function() {
+    document.getElementById('delUserModal').classList.remove('open');
+  });
+  document.getElementById('delConfirm').addEventListener('input', function() {
+    document.getElementById('delUserConfirmBtn').disabled = this.value !== 'DELETE';
+  });
+  document.getElementById('delUserConfirmBtn').addEventListener('click', confirmDeleteUser);
 }
+
+/* ── Admin Orders View ── */
+function populateOrderFilters() {
+  var riders = allUsers.filter(u => u.role === 'rider');
+  var sel = document.getElementById('admOrderRiderFilter');
+  sel.innerHTML = '<option value="">All Riders</option>' + riders.map(r => '<option value="'+esc(r.uid)+'">'+esc(r.name)+'</option>').join('');
+}
+
+function renderAdminOrders() {
+  var riderFilter = document.getElementById('admOrderRiderFilter').value;
+  var typeFilter = document.getElementById('admOrderTypeFilter').value;
+  var statusFilter = document.getElementById('admOrderStatusFilter').value;
+
+  var filtered = allOrders.slice();
+  if(riderFilter) filtered = filtered.filter(o => o.riderId === riderFilter);
+  if(typeFilter) filtered = filtered.filter(o => o.type === typeFilter);
+
+  // Calculate settlement status per order
+  filtered = filtered.map(function(o) {
+    var riderSettlements = allSettlements.filter(s => s.riderId === o.riderId && s.date === o.date);
+    var totalSettled = riderSettlements.reduce((sum, s) => sum + (+s.receivedAmount || 0), 0);
+    var dayOrders = allOrders.filter(ord => ord.riderId === o.riderId && ord.date === o.date);
+    var daySummary = calcSummary(dayOrders);
+    var status = totalSettled >= daySummary.netCash ? 'settled' : totalSettled > 0 ? 'partial' : 'pending';
+    var managerName = riderSettlements.length > 0 ? riderSettlements[0].managerName : '—';
+    return Object.assign({}, o, {settlementStatus: status, settledAmount: totalSettled, managerName: managerName});
+  });
+
+  if(statusFilter) {
+    filtered = filtered.filter(o => o.settlementStatus === statusFilter);
+  }
+
+  filtered.sort((a,b) => tsToNum(b.timestamp) - tsToNum(a.timestamp));
+
+  document.getElementById('admOrderCount').textContent = filtered.length;
+
+  var tbody = document.getElementById('admOrderTbody');
+  var empty = document.getElementById('admOrderEmpty');
+  var table = document.getElementById('admOrderTable');
+
+  if(!filtered.length) {
+    tbody.innerHTML = '';
+    empty.classList.remove('hidden');
+    table.classList.add('hidden');
+    return;
+  }
+
+  empty.classList.add('hidden');
+  table.classList.remove('hidden');
+
+  tbody.innerHTML = filtered.map(function(o) {
+    var es = getExtraSplit(o);
+    var cash = (+o.cashCollected || 0) + es.cash;
+    var qr = (+o.qrCollected || 0) + es.qr;
+    var net = cash - (+o.refund || 0);
+    var statusClass = o.settlementStatus === 'settled' ? 'ot-settled' : o.settlementStatus === 'partial' ? 'ot-partial' : 'ot-pending';
+    var statusText = o.settlementStatus === 'settled' ? 'Settled' : o.settlementStatus === 'partial' ? 'Partial' : 'Pending';
+
+    return '<tr>'
+      + '<td class="ot-wrap"><strong>'+esc(o.orderId)+'</strong></td>'
+      + '<td>'+esc(o.riderName)+'</td>'
+      + '<td>'+o.date+'</td>'
+      + '<td><span class="ot-badge '+o.type+'">'+(o.type==='cod'?'COD':'Prepaid')+'</span></td>'
+      + '<td>₹'+fmtM(o.type==='cod'?(+o.totalCodAmount||0):(+o.orderAmount||0))+'</td>'
+      + '<td>₹'+fmtM(cash)+'</td>'
+      + '<td>₹'+fmtM(qr)+'</td>'
+      + '<td style="color:var(--bad)">₹'+fmtM(+o.refund||0)+'</td>'
+      + '<td style="color:var(--good)">₹'+fmtM(+o.extraCollected||0)+'</td>'
+      + '<td><strong>₹'+fmtM(net)+'</strong></td>'
+      + '<td class="'+statusClass+'">'+statusText+'</td>'
+      + '<td>'+esc(o.managerName)+'</td>'
+      + '</tr>';
+  }).join('');
+}
+
+/* ── Admin Reconciliation ── */
+function populateReconFilters() {
+  var riders = allUsers.filter(u => u.role === 'rider');
+  var managers = allUsers.filter(u => u.role === 'manager');
+  document.getElementById('reconRiderFilter').innerHTML = '<option value="">All Riders</option>' + riders.map(r => '<option value="'+esc(r.uid)+'">'+esc(r.name)+'</option>').join('');
+  document.getElementById('reconManagerFilter').innerHTML = '<option value="">All Managers</option>' + managers.map(m => '<option value="'+esc(m.uid)+'">'+esc(m.name)+'</option>').join('');
+}
+
+function renderReconciliation() {
+  var riderFilter = document.getElementById('reconRiderFilter').value;
+  var managerFilter = document.getElementById('reconManagerFilter').value;
+  var statusFilter = document.getElementById('reconStatusFilter').value;
+
+  // Build reconciliation rows from submissions
+  var rows = [];
+  allSubmissions.forEach(function(sub) {
+    if(riderFilter && sub.riderId !== riderFilter) return;
+    if(managerFilter && sub.managerId !== managerFilter) return;
+
+    var riderSubmitted = +sub.amount || 0;
+    var mgrReceived = sub.receivedAmount !== undefined ? +sub.receivedAmount : 0;
+    var diff = sub.status === 'pending' ? null : riderSubmitted - mgrReceived;
+
+    var status, statusClass;
+    if(sub.status === 'pending') { status = 'Pending'; statusClass = 'rc-pending'; }
+    else if(sub.status === 'rejected') { status = 'Rejected'; statusClass = 'rc-short'; }
+    else if(diff === 0) { status = 'Exact Match'; statusClass = 'rc-match'; }
+    else if(diff > 0) { status = 'Shortage'; statusClass = 'rc-short'; }
+    else { status = 'Excess'; statusClass = 'rc-excess'; }
+
+    if(sub.discrepancy) { status = 'Discrepancy'; statusClass = 'rc-disc'; }
+
+    if(statusFilter) {
+      var match = false;
+      if(statusFilter === 'match' && status === 'Exact Match') match = true;
+      if(statusFilter === 'pending' && status === 'Pending') match = true;
+      if(statusFilter === 'partial' && (status === 'Shortage' || status === 'Excess')) match = true;
+      if(statusFilter === 'short' && status === 'Shortage') match = true;
+      if(statusFilter === 'excess' && status === 'Excess') match = true;
+      if(statusFilter === 'discrepancy' && status === 'Discrepancy') match = true;
+      if(!match) return;
+    }
+
+    // Count orders for this rider/date
+    var dayOrders = allOrders.filter(o => o.riderId === sub.riderId && o.date === sub.businessDate);
+
+    rows.push({
+      riderName: sub.riderName,
+      managerName: sub.managerName,
+      date: sub.businessDate,
+      submitted: riderSubmitted,
+      received: mgrReceived,
+      diff: diff,
+      status: status,
+      statusClass: statusClass,
+      orders: dayOrders.length,
+      submittedAt: sub.submittedAt,
+      approvedAt: sub.approvedAt
+    });
+  });
+
+  rows.sort((a,b) => b.submittedAt - a.submittedAt);
+
+  // Summary stats
+  var stats = {total:0, match:0, pending:0, short:0, excess:0, disc:0};
+  rows.forEach(function(r) {
+    stats.total++;
+    if(r.status === 'Exact Match') stats.match++;
+    else if(r.status === 'Pending') stats.pending++;
+    else if(r.status === 'Shortage') stats.short++;
+    else if(r.status === 'Excess') stats.excess++;
+    else if(r.status === 'Discrepancy') stats.disc++;
+  });
+
+  document.getElementById('reconSummary').innerHTML = '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    + '<div style="background:white;border:1px solid var(--line);border-radius:9px;padding:8px 12px;text-align:center;flex:1;min-width:80px"><div style="font-size:18px;font-weight:800;color:var(--ink)">'+stats.total+'</div><div style="font-size:9px;color:var(--ink-3);font-weight:700;text-transform:uppercase">Total</div></div>'
+    + '<div style="background:var(--good-soft);border:1px solid var(--good);border-radius:9px;padding:8px 12px;text-align:center;flex:1;min-width:80px"><div style="font-size:18px;font-weight:800;color:var(--good)">'+stats.match+'</div><div style="font-size:9px;color:var(--good);font-weight:700;text-transform:uppercase">Match</div></div>'
+    + '<div style="background:var(--warn-soft);border:1px solid var(--warn);border-radius:9px;padding:8px 12px;text-align:center;flex:1;min-width:80px"><div style="font-size:18px;font-weight:800;color:var(--warn)">'+stats.pending+'</div><div style="font-size:9px;color:var(--warn);font-weight:700;text-transform:uppercase">Pending</div></div>'
+    + '<div style="background:var(--bad-soft);border:1px solid var(--bad);border-radius:9px;padding:8px 12px;text-align:center;flex:1;min-width:80px"><div style="font-size:18px;font-weight:800;color:var(--bad)">'+stats.short+'</div><div style="font-size:9px;color:var(--bad);font-weight:700;text-transform:uppercase">Short</div></div>'
+    + '<div style="background:var(--blue-soft);border:1px solid var(--blue);border-radius:9px;padding:8px 12px;text-align:center;flex:1;min-width:80px"><div style="font-size:18px;font-weight:800;color:var(--blue)">'+stats.excess+'</div><div style="font-size:9px;color:var(--blue);font-weight:700;text-transform:uppercase">Excess</div></div>'
+    + '</div>';
+
+  var tbody = document.getElementById('reconTbody');
+  var empty = document.getElementById('reconEmpty');
+  var table = document.getElementById('reconTable');
+
+  if(!rows.length) {
+    tbody.innerHTML = '';
+    empty.classList.remove('hidden');
+    table.classList.add('hidden');
+    return;
+  }
+
+  empty.classList.add('hidden');
+  table.classList.remove('hidden');
+
+  tbody.innerHTML = rows.map(function(r) {
+    return '<tr>'
+      + '<td><strong>'+esc(r.riderName)+'</strong></td>'
+      + '<td>'+esc(r.managerName)+'</td>'
+      + '<td>'+r.date+'</td>'
+      + '<td style="color:var(--teal-deep);font-weight:700">₹'+fmtM(r.submitted)+'</td>'
+      + '<td style="color:var(--good);font-weight:700">₹'+fmtM(r.received)+'</td>'
+      + '<td style="color:'+(r.diff>0?'var(--bad)':r.diff<0?'var(--blue)':'var(--good)')+'">'+(r.diff!==null?(r.diff>0?'+':'')+fmtM(r.diff):'—')+'</td>'
+      + '<td class="'+r.statusClass+'">'+r.status+'</td>'
+      + '<td>'+r.orders+'</td>'
+      + '</tr>';
+  }).join('');
+}
+
 async function updateAdmHero() {
   var riders=allUsers.filter(function(u){return u.role==='rider';});
   var totalCash=calcSummary(allOrders).cash;
@@ -1694,22 +2527,135 @@ function renderAudit() {
   if(!type||type==='order'){allOrders.forEach(function(o){var ip=o.type==='prepaid';var es=getExtraSplit(o);var cash=(+o.cashCollected||0)+es.cash;entries.push({type:'order',timestamp:tsToNum(o.timestamp),date:o.date,title:(ip?'Prepaid':'COD')+' · '+o.orderId,meta:(o.riderName||o.riderId)+' · '+fmtDateTime(o.timestamp),amount:ip?(+o.orderAmount||0):(+o.totalCodAmount||0),extra:'Cash ₹'+fmtM(cash)+(+o.refund?'  −Refund ₹'+fmtM(o.refund):'')});});}
   if(!type||type==='settlement'){allSettlements.forEach(function(s){entries.push({type:'settlement',timestamp:s.timestamp,date:s.date,title:'COD Collection · '+s.riderName,meta:'By '+s.managerName+' · '+fmtDateTime(s.timestamp),amount:+s.receivedAmount||0});});}
   if(!type||type==='deposit'){allDeposits.forEach(function(d){entries.push({type:'deposit',timestamp:d.timestamp,date:d.date,title:'Bank Deposit',meta:'By '+d.managerName+' · '+fmtDateTime(d.timestamp),amount:+d.amount||0,note:d.remarks||''});});}
+  if(!type||type==='submission'){allSubmissions.forEach(function(s){entries.push({type:'submission',timestamp:s.submittedAt,date:s.businessDate,title:'Rider Submission · '+s.riderName,meta:'To '+s.managerName+' · '+fmtDateTime(s.submittedAt),amount:+s.amount||0,note:s.status+' · ₹'+(s.receivedAmount!==undefined?fmtM(s.receivedAmount):'pending')});});}
   if(range==='today')entries=entries.filter(function(e){return e.date===today;});
   else if(range==='yesterday')entries=entries.filter(function(e){return e.date===yest;});
   entries.sort(function(a,b){return b.timestamp-a.timestamp;});
   var c=document.getElementById('auditList');
   if(!entries.length){c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-shield"/></svg></div><div class="msg">No records found</div><div class="sub">Try "All Time" or a different filter</div></div>';return;}
-  var colorMap={order:'var(--teal)',settlement:'var(--blue)',deposit:'var(--good)'};
+  var colorMap={order:'var(--teal)',settlement:'var(--blue)',deposit:'var(--good)',submission:'var(--purple)'};
   c.innerHTML=entries.map(function(e){return '<div class="audit-entry"><div class="ae-dot '+e.type+'"></div><div class="ae-body"><div class="ae-title">'+esc(e.title)+'</div><div class="ae-meta">'+esc(e.meta)+(e.extra?'<br><span style="color:var(--teal-deep);font-size:10px;font-weight:600">'+esc(e.extra)+'</span>':'')+(e.note?' · '+esc(e.note):'')+'</div></div><div class="ae-amount" style="color:'+(colorMap[e.type]||'var(--ink)')+'">₹'+fmtM(e.amount)+'</div></div>';}).join('');
 }
+
+/* ══════════════════════════════════════════════════════════
+   ENHANCED USER MANAGEMENT (Admin)
+   ══════════════════════════════════════════════════════════ */
 function renderUsersTab() {
   var users=allUsers.filter(function(u){return u.role!=='admin';});
+  document.getElementById('userCountBadge').textContent = users.length + ' users';
   var c=document.getElementById('usersListWrap');
   if(!users.length){c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-users"/></svg></div><div class="msg">No users yet</div><div class="sub">Add riders and managers above</div></div>';return;}
-  c.innerHTML='<table class="user-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Info</th><th>Actions</th></tr></thead><tbody>'
-    +users.map(function(u){return '<tr><td><div class="ud-name">'+esc(u.name)+'</div></td><td style="color:var(--ink-3);font-size:11px;word-break:break-all">'+esc(u.email||'')+'</td><td><span style="display:inline-flex;padding:2px 7px;border-radius:999px;font-size:9px;font-weight:700;text-transform:uppercase;background:'+(u.role==='rider'?'var(--grad-soft)':'var(--blue-soft)')+';color:'+(u.role==='rider'?'var(--teal-deep)':'var(--blue-deep)')+'">'+u.role+'</span></td><td style="font-size:11px;color:var(--ink-3)">'+esc(u.riderId||u.shift||'—')+'</td><td><button class="tbl-btn" onclick="_cpwOpen(\''+esc(u.uid)+'\',\''+esc(u.email||'')+'\',\''+esc(u.name||'')+'\')"><svg><use href="#i-key"/></svg> Reset PW</button></td></tr>';}).join('')
+
+  c.innerHTML='<table class="user-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Info</th><th>Last Login</th><th>Actions</th></tr></thead><tbody>'
+    +users.map(function(u){
+      var statusBadge = u.disabled 
+        ? '<span class="status-disabled">Disabled</span>' 
+        : '<span class="status-active">Active</span>';
+      var lastLogin = u.lastLoginAt ? fmtDateTime(u.lastLoginAt) : '<span style="color:var(--ink-3)">Never</span>';
+      var info = u.role==='rider' ? (u.riderId||u.phone||'—') : (u.shift||'—');
+      var disabledClass = u.disabled ? ' style="opacity:.5"' : '';
+
+      return '<tr'+disabledClass+'><td><div class="ud-name">'+esc(u.name)+'</div></td>'
+        +'<td style="color:var(--ink-3);font-size:11px;word-break:break-all">'+esc(u.email||'')+'</td>'
+        +'<td><span style="display:inline-flex;padding:2px 7px;border-radius:999px;font-size:9px;font-weight:700;text-transform:uppercase;background:'+(u.role==='rider'?'var(--grad-soft)':'var(--blue-soft)')+';color:'+(u.role==='rider'?'var(--teal-deep)':'var(--blue-deep)')+'">'+u.role+'</span></td>'
+        +'<td>'+statusBadge+'</td>'
+        +'<td style="font-size:11px;color:var(--ink-3)">'+esc(info)+'</td>'
+        +'<td style="font-size:10px;color:var(--ink-3)">'+lastLogin+'</td>'
+        +'<td><div style="display:flex;gap:4px;flex-wrap:wrap">'
+        +'<button class="tbl-btn" onclick="_cpwOpen(''+esc(u.uid)+'',''+esc(u.email||'')+'',''+esc(u.name||'')+'')"><svg><use href="#i-key"/></svg> Reset PW</button>'
+        +(u.disabled 
+          ? '<button class="tbl-btn success" onclick="_toggleUser(''+esc(u.uid)+'',false)"><svg><use href="#i-check"/></svg> Enable</button>'
+          : '<button class="tbl-btn danger" onclick="_openDelUser(''+esc(u.uid)+'',''+esc(u.email||'')+'',''+esc(u.name||'')+'',''+esc(u.role)+'')"><svg><use href="#i-trash"/></svg> Delete</button>'
+        )
+        +'</div></td></tr>';
+    }).join('')
     +'</tbody></table>';
 }
+
+window._toggleUser = async function(uid, enable) {
+  loading(true);
+  try {
+    await db.collection('users').doc(uid).update({
+      disabled: !enable,
+      disabledAt: !enable ? Date.now() : firebase.firestore.FieldValue.delete(),
+      disabledBy: !enable ? userProfile.uid : firebase.firestore.FieldValue.delete(),
+      enabledAt: enable ? Date.now() : firebase.firestore.FieldValue.delete(),
+      enabledBy: enable ? userProfile.uid : firebase.firestore.FieldValue.delete()
+    });
+    var idx = allUsers.findIndex(u => u.uid === uid);
+    if(idx >= 0) {
+      if(enable) {
+        delete allUsers[idx].disabled;
+        delete allUsers[idx].disabledAt;
+        delete allUsers[idx].disabledBy;
+        allUsers[idx].enabledAt = Date.now();
+        allUsers[idx].enabledBy = userProfile.uid;
+      } else {
+        allUsers[idx].disabled = true;
+        allUsers[idx].disabledAt = Date.now();
+        allUsers[idx].disabledBy = userProfile.uid;
+      }
+    }
+    showToast(enable ? 'User enabled' : 'User disabled','success');
+    renderUsersTab();
+  } catch(e) {
+    showToast('Failed: '+e.message,'error');
+  }
+  loading(false);
+};
+
+window._openDelUser = function(uid, email, name, role) {
+  delTargetUid = uid;
+  delTargetEmail = email;
+  delTargetName = name;
+  document.getElementById('delUserLabel').textContent = name + ' · ' + email;
+  document.getElementById('delUserName').textContent = name;
+  document.getElementById('delUserEmail').textContent = email;
+  document.getElementById('delUserRole').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+  document.getElementById('delUserUid').textContent = uid;
+  document.getElementById('delConfirm').value = '';
+  document.getElementById('delUserConfirmBtn').disabled = true;
+  document.getElementById('delUserErr').style.display = 'none';
+  document.getElementById('delUserModal').classList.add('open');
+};
+
+async function confirmDeleteUser() {
+  if(!delTargetUid || !delTargetEmail) return;
+  var errEl = document.getElementById('delUserErr');
+  errEl.style.display = 'none';
+
+  loading(true);
+  try {
+    // Soft delete: mark user as disabled in Firestore
+    await db.collection('users').doc(delTargetUid).update({
+      disabled: true,
+      disabledAt: Date.now(),
+      disabledBy: userProfile.uid,
+      disabledByName: userProfile.name
+    });
+
+    // Try to delete from Firebase Auth (requires password)
+    // Since we don't have the password, we just disable in Firestore
+    // The auth check in boot() will prevent login
+
+    var idx = allUsers.findIndex(u => u.uid === delTargetUid);
+    if(idx >= 0) {
+      allUsers[idx].disabled = true;
+      allUsers[idx].disabledAt = Date.now();
+    }
+
+    document.getElementById('delUserModal').classList.remove('open');
+    showToast('User account disabled. Historical data preserved.','success');
+    renderUsersTab();
+    renderAdmRiders();
+    renderAdmManagers();
+  } catch(e) {
+    errEl.textContent = 'Failed: ' + e.message;
+    errEl.style.display = 'block';
+  }
+  loading(false);
+}
+
 async function addNewUser() {
   var name=document.getElementById('nuName').value.trim();
   var email=document.getElementById('nuEmail').value.trim();
@@ -1724,14 +2670,22 @@ async function addNewUser() {
   loading(true);
   try {
     var newUid=await fsCreateUserViaREST(email,pass);
-    await db.collection('users').doc(newUid).set({email:email,name:name,role:role,riderId:riderId||'',phone:phone,shift:shift||'',createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:userProfile.uid});
-    allUsers.push({uid:newUid,email:email,name:name,role:role,riderId:riderId||'',phone:phone,shift:shift});
+    await db.collection('users').doc(newUid).set({
+      email:email,name:name,role:role,riderId:riderId||'',phone:phone,shift:shift||'',
+      createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+      createdBy:userProfile.uid,
+      disabled: false
+    });
+    allUsers.push({uid:newUid,email:email,name:name,role:role,riderId:riderId||'',phone:phone,shift:shift,disabled:false});
     document.getElementById('nuName').value='';document.getElementById('nuEmail').value='';document.getElementById('nuPass').value='';document.getElementById('nuRiderId').value='';document.getElementById('nuPhone').value='';document.getElementById('nuShift').value='';
     showToast('User created: '+name,'success');
     renderUsersTab();renderAdmManagers();updateAdmHero();
+    populateMgrRiderSel();
+    populateRiderManagerSel();
   } catch(e){errEl.textContent=e.message;errEl.style.display='block';}
   loading(false);
 }
+
 function _cpwOpen(uid,email,name) {
   cpwTargetUid=uid;cpwTargetEmail=email;
   document.getElementById('cpwUserLabel').textContent=name+' · '+email;
@@ -1761,8 +2715,8 @@ function setupTabBar(barId,prefix) {
     var tab=btn.dataset.tab;
     document.querySelectorAll('#'+barId+' .tab-btn').forEach(function(b){b.classList.toggle('active',b===btn);});
     document.querySelectorAll('[id^="'+prefix+'"]').forEach(function(el){el.classList.toggle('active',el.id===prefix+tab);});
-    if(barId==='mgrTabBar'){if(tab==='history')renderSettlHistory();else if(tab==='bank'){renderDepHistory();updateBankSummary();}}
-    if(barId==='admTabBar'){if(tab==='managers')renderAdmManagers();else if(tab==='audit')renderAudit();else if(tab==='users')renderUsersTab();}
+    if(barId==='mgrTabBar'){if(tab==='history')renderSettlHistory();else if(tab==='approvals')renderMgrApprovals();else if(tab==='bank'){renderDepHistory();updateBankSummary();}}
+    if(barId==='admTabBar'){if(tab==='managers')renderAdmManagers();else if(tab==='audit')renderAudit();else if(tab==='users')renderUsersTab();else if(tab==='recon')renderReconciliation();else if(tab==='orders')renderAdminOrders();}
   });
 }
 
