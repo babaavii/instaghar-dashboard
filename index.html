@@ -653,6 +653,68 @@ select.fin{cursor:pointer}
 .tp-val.red{color:#ff8a7a}
 .incoming-badge{background:var(--teal);color:white;font-size:9px;padding:1px 5px;border-radius:999px;font-weight:700;margin-left:4px}
 
+
+/* ── REFRESH BUTTON ── */
+.refresh-btn{background:var(--bg);border:1px solid var(--line);width:34px;height:34px;border-radius:9px;cursor:pointer;display:grid;place-items:center;color:var(--ink-3);transition:all .15s;flex-shrink:0}
+.refresh-btn:hover{color:var(--teal);border-color:var(--teal)}
+.refresh-btn svg{width:15px;height:15px}
+.refresh-btn.spinning svg{animation:spin .7s linear infinite}
+.refresh-time{font-size:9px;color:var(--ink-3);font-weight:500;white-space:nowrap}
+
+/* ── DAY CLOSURE ── */
+.end-day-btn{background:var(--warn-soft);border:1.5px solid var(--warn);color:var(--warn);border-radius:11px;padding:11px 16px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;width:100%;transition:all .15s}
+.end-day-btn:hover{background:var(--warn);color:white}
+.end-day-btn svg{width:15px;height:15px}
+.day-closed-banner{background:var(--warn-soft);border:1.5px solid var(--warn);border-radius:11px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700;color:var(--warn)}
+.day-closed-banner svg{width:16px;height:16px;flex-shrink:0}
+.day-closed-banner .dcb-unlock{margin-left:auto;font-size:11px;color:var(--teal);cursor:pointer;font-weight:700;text-decoration:underline}
+
+/* ── WALLET TAB ── */
+.wallet-hero{background:linear-gradient(135deg,#0e2e2b,#1a4a45);color:white;border-radius:var(--radius-lg);padding:20px;margin-bottom:14px;box-shadow:var(--shadow-lift)}
+.wh-title{font-size:10px;text-transform:uppercase;letter-spacing:.12em;opacity:.65;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.wh-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+.wh-cell{background:rgba(255,255,255,.1);border-radius:10px;padding:11px}
+.wh-val{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
+.wh-val.green{color:#6effa8}.wh-val.warn{color:#ffd080}.wh-val.red{color:#ff8a7a}
+.wh-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.08em;opacity:.7;font-weight:700;margin-top:3px}
+.wh-balance{background:rgba(52,196,123,.25);border:1px solid rgba(52,196,123,.4);border-radius:11px;padding:14px;display:flex;justify-content:space-between;align-items:center}
+.wh-bal-lbl{font-size:13px;font-weight:700}
+.wh-bal-val{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;color:#6effa8}
+.tx-log-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.tx-log-item:last-child{border-bottom:none}
+.tx-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.tx-dot.in{background:var(--good)}.tx-dot.out{background:var(--bad)}.tx-dot.dep{background:var(--blue)}
+.tx-desc{flex:1;font-size:12px;color:var(--ink-2);font-weight:500;line-height:1.4}
+.tx-desc strong{color:var(--ink);font-weight:700}
+.tx-amt{font-weight:800;font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tx-amt.in{color:var(--good)}.tx-amt.out{color:var(--bad)}.tx-amt.dep{color:var(--blue-deep)}
+
+/* ── REJECTION ── */
+.reject-reason{font-size:11px;background:var(--bad-soft);color:var(--bad);border-radius:8px;padding:8px 10px;margin-top:6px;border-left:3px solid var(--bad)}
+.resubmit-form{background:var(--bg);border-radius:9px;padding:12px;margin-top:8px}
+.resubmit-form label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);font-weight:700;display:block;margin-bottom:5px}
+.resubmit-input{width:100%;background:white;border:1.5px solid var(--line);border-radius:9px;padding:10px 12px;font-family:inherit;font-size:14px;font-weight:600;color:var(--ink);outline:none;margin-bottom:8px;box-sizing:border-box}
+.resubmit-input:focus{border-color:var(--teal)}
+.reject-btn{flex:1;padding:10px;border:1.5px solid var(--bad);border-radius:9px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer;background:var(--bad-soft);color:var(--bad);display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s}
+.reject-btn:hover{background:var(--bad);color:white}
+.reject-btn svg{width:13px;height:13px}
+.resubmit-btn{width:100%;padding:11px;border:none;border-radius:9px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;background:var(--teal-dark);color:white;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.resubmit-btn:hover{background:var(--teal)}
+.resubmit-btn svg{width:14px;height:14px}
+
+/* ── ADMIN EDIT ── */
+.edit-modal-overlay{position:fixed;inset:0;background:rgba(14,46,43,.7);backdrop-filter:blur(4px);z-index:400;display:none;align-items:center;justify-content:center;padding:20px}
+.edit-modal-overlay.open{display:flex;animation:fadeIn .2s ease}
+.edit-modal{background:var(--bg);border-radius:var(--radius-lg);padding:24px 22px 22px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;box-shadow:0 30px 80px -20px rgba(0,0,0,.5)}
+.em-title{font-size:17px;font-weight:800;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.em-close{background:var(--bg);border:1px solid var(--line);width:30px;height:30px;border-radius:8px;cursor:pointer;display:grid;place-items:center;color:var(--ink-3)}
+.em-close svg{width:14px;height:14px}
+.tbl-btn.edit{border-color:var(--teal);color:var(--teal-deep)}
+.tbl-btn.edit:hover{background:var(--teal);border-color:var(--teal);color:white}
+
+/* ── COLLECTION DATE ── */
+.dep-dates-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
 </style>
 </head>
 <body>
@@ -695,6 +757,9 @@ select.fin{cursor:pointer}
 <symbol id="i-swap" viewBox="0 0 24 24"><polyline points="17,1 21,5 17,9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M3 11V9a4 4 0 014-4h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><polyline points="7,23 3,19 7,15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M21 13v2a4 4 0 01-4 4H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
 <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="2" fill="none"/><line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
 <symbol id="i-orders" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="currentColor" stroke-width="2" fill="none"/><rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" stroke-width="2" fill="none"/><line x1="9" y1="12" x2="15" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="9" y1="16" x2="13" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-lock-day" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M16 13h.01" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M20 7V5a2 2 0 00-2-2H6a2 2 0 00-2 2v2" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+<symbol id="i-edit" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" fill="none"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
 <symbol id="i-transfer" viewBox="0 0 24 24"><path d="M5 9l4-4-4-4M9 5H3M19 15l-4 4-4-4M15 19h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
 <symbol id="i-handshake" viewBox="0 0 24 24"><path d="M20.42 4.58a5.4 5.4 0 00-7.65 0l-.77.78-.77-.78a5.4 5.4 0 00-7.65 7.65l1.06 1.06L12 21.23l7.36-7.94 1.06-1.06a5.4 5.4 0 000-7.65z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></symbol>
 <symbol id="i-people" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" fill="none"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
@@ -804,6 +869,7 @@ service cloud.firestore {
     <div class="nav-right">
       <span id="navUser" class="nav-user"></span>
       <span id="navBadge" class="role-badge"></span>
+      <button class="refresh-btn" id="navRefreshBtn" title="Refresh data"><svg><use href="#i-refresh"/></svg></button>
       <button class="logout-btn" id="logoutBtn" title="Sign out"><svg><use href="#i-logout"/></svg></button>
     </div>
   </div>
@@ -873,6 +939,10 @@ service cloud.firestore {
         <div id="riderHandoverList" style="margin-top:16px"></div>
       </div>
     </section>
+    <div id="riderDayClosedBanner" class="hidden" style="padding:0 14px 10px"></div>
+    <div style="padding:0 14px 10px">
+      <button class="end-day-btn" id="riderEndDayBtn"><svg><use href="#i-lock-day"/></svg> Close My Day</button>
+    </div>
     <div style="text-align:center;padding:0 14px 10px;font-size:12px;color:var(--ink-3)"><svg style="width:12px;height:12px;vertical-align:middle;color:var(--teal)"><use href="#i-cloud"/></svg> Saved to cloud · <a id="exportBtn" style="color:var(--teal);font-weight:600;cursor:pointer">Export CSV</a></div>
   </div>
 
@@ -890,17 +960,15 @@ service cloud.firestore {
       </div>
     </div>
     <div class="tab-bar" id="mgrTabBar">
-      <button class="tab-btn active" data-tab="collect"><svg><use href="#i-cash"/></svg> Collect</button>
+      <button class="tab-btn active" data-tab="wallet"><svg><use href="#i-wallet"/></svg> Wallet</button>
+      <button class="tab-btn" data-tab="approvals" id="mgrApprovalsTabBtn"><svg><use href="#i-circle-check"/></svg> Approvals</button>
       <button class="tab-btn" data-tab="history"><svg><use href="#i-list"/></svg> History</button>
       <button class="tab-btn" data-tab="bank"><svg><use href="#i-bank"/></svg> Bank</button>
-      <button class="tab-btn" data-tab="approvals" id="mgrApprovalsTabBtn"><svg><use href="#i-circle-check"/></svg> Approvals</button>
-      <button class="tab-btn" data-tab="cash"><svg><use href="#i-cash"/></svg> Cash</button>
       <button class="tab-btn" data-tab="transfer" id="mgrTransferTabBtn"><svg><use href="#i-transfer"/></svg> Transfer <span id="mgrIncomingBadge" class="incoming-badge hidden">0</span></button>
-      <button class="tab-btn" data-tab="shift"><svg><use href="#i-swap"/></svg> Shift</button>
       <button class="tab-btn" data-tab="incidents"><svg><use href="#i-alert"/></svg> Incidents</button>
     </div>
-    <!-- COLLECT TAB — simplified approval-only workflow -->
-    <div class="tab-content active" id="mgr-tab-collect">
+    <!-- WALLET TAB — unified cash control -->
+    <div class="tab-content active" id="mgr-tab-wallet">
       <!-- Cash position summary -->
       <div class="ho-status-bar" id="collectCashBar">
         <div class="ho-stat"><div class="ho-stat-val ok" id="collectTotalApproved">₹0</div><div class="ho-stat-lbl">Total Received</div></div>
@@ -919,6 +987,32 @@ service cloud.firestore {
         <div class="section-head"><h2>Collection History</h2></div>
         <div class="section-body" id="collectHistoryList"></div>
       </section>
+      <!-- Wallet position hero -->
+      <div class="wallet-hero">
+        <div class="wh-title">Cash Position — Today <button onclick="try{initMgrWallet();}catch(e){}" style="background:rgba(255,255,255,.15);border:none;color:white;border-radius:7px;padding:3px 8px;font-size:10px;font-weight:700;cursor:pointer">↻ Refresh</button></div>
+        <div class="wh-grid">
+          <div class="wh-cell"><div class="wh-val green">₹0</div><div class="wh-lbl">From Riders</div></div>
+          <div class="wh-cell"><div class="wh-val green">₹0</div><div class="wh-lbl">Mgr Incoming</div></div>
+          <div class="wh-cell"><div class="wh-val warn">₹0</div><div class="wh-lbl">Mgr Outgoing</div></div>
+          <div class="wh-cell"><div class="wh-val warn">₹0</div><div class="wh-lbl">Deposited</div></div>
+        </div>
+        <div class="wh-balance"><div class="wh-bal-lbl">Net Cash in Hand</div><div class="wh-bal-val">₹0</div></div>
+      </div>
+      <!-- Pending approvals from riders -->
+      <section class="section">
+        <div class="section-head"><h2>Pending from Riders</h2><span class="count-pill" id="collectPendingBadge">0</span></div>
+        <div class="section-body" id="collectPendingList"></div>
+      </section>
+      <!-- Today's transaction log -->
+      <section class="section">
+        <div class="section-head"><h2>Today's Transactions</h2></div>
+        <div class="section-body"><div id="walletTxLog"></div></div>
+      </section>
+      <!-- Collection history -->
+      <section class="section">
+        <div class="section-head"><h2>Collection History</h2></div>
+        <div class="section-body"><div id="collectHistoryList"></div></div>
+      </section>
       <!-- Hidden inputs kept for JS compatibility -->
       <input type="hidden" id="mgrRiderSel"/>
       <input type="hidden" id="mgrSettleDate"/>
@@ -927,6 +1021,9 @@ service cloud.firestore {
       <div id="pendingPreviewWrap" class="hidden"><span id="pendingAmt">0</span><span id="pendingDesc"></span><span id="ppCash"></span><span id="ppRef"></span><span id="ppOrders"></span></div>
       <div id="mgrRemarksWrap" class="hidden"></div>
       <button id="mgrSubmitBtn" class="hidden" disabled></button>
+      <!-- End Day button in Wallet tab -->
+      <div id="mgrDayClosedBanner" class="hidden" style="margin:10px 0"></div>
+      <div style="margin:10px 0"><button class="end-day-btn" id="mgrEndDayBtn"><svg><use href="#i-lock-day"/></svg> End My Shift</button></div>
     </div>
     <!-- HISTORY TAB -->
     <div class="tab-content" id="mgr-tab-history">
@@ -966,8 +1063,9 @@ service cloud.firestore {
           <div class="info-box">Enter the cash you deposited into the company bank account.</div>
           <div class="fin-row">
             <div class="lf"><label>Deposit Amount (₹)</label><input type="number" class="fin" id="depAmt" placeholder="0" min="0" step="1"/></div>
-            <div class="lf"><label>Deposit Date</label><input type="date" class="fin" id="depDate"/></div>
+            <div class="lf"><label>Deposit Date <span class="opt">(bank deposit date)</span></label><input type="date" class="fin" id="depDate"/></div>
           </div>
+          <div class="lf"><label>Collection Date <span class="opt">(when cash was collected)</span></label><input type="date" class="fin" id="depCollectionDate"/></div>
           <div class="lf"><label>Transaction / Reference No <span class="opt">(optional)</span></label><input type="text" class="fin" id="depRefNo" placeholder="UTR / bank ref number"/></div>
           <div class="lf"><label>Remarks <span class="opt">(optional)</span></label><input type="text" class="fin" id="depRemarks" placeholder="Bank name, branch, notes…"/></div>
           <!-- Hidden for compatibility -->
@@ -999,8 +1097,8 @@ service cloud.firestore {
     </div>
 
 
-    <!-- CASH CONTROL TAB -->
-    <div class="tab-content" id="mgr-tab-cash">
+    <!-- CASH CONTROL TAB (removed - merged into Wallet) -->
+    <div class="tab-content hidden" id="mgr-tab-cash" style="display:none!important">
       <div class="cash-ledger" id="cashLedger">
         <div class="cl-title">Live Cash Position · <span id="cashLedgerDate"></span></div>
         <div class="cl-grid">
@@ -1073,8 +1171,8 @@ service cloud.firestore {
 
     </div>
 
-    <!-- SHIFT HANDOVER TAB -->
-    <div class="tab-content" id="mgr-tab-shift">
+    <!-- SHIFT HANDOVER TAB (removed - use Transfer instead) -->
+    <div class="tab-content hidden" id="mgr-tab-shift" style="display:none!important">
       <section class="section">
         <div class="section-head"><h2>Shift Handover</h2><div class="head-right">Transfer cash to next shift</div></div>
         <div class="section-body">
@@ -1374,6 +1472,23 @@ service cloud.firestore {
   </div>
 </div>
 
+
+<!-- ADMIN EDIT MODAL -->
+<div class="edit-modal-overlay" id="adminEditModal">
+  <div class="edit-modal">
+    <div class="em-title">
+      <span id="editModalTitle">Edit Record</span>
+      <button class="em-close" id="editModalClose"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div id="editModalErr" class="err-box"></div>
+    <div id="editModalBody"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn-primary green" id="editModalSave"><svg><use href="#i-check"/></svg> Save Changes</button>
+      <button class="btn-primary" id="editModalCancel" style="background:var(--line-strong);color:var(--ink)">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- LOADER & TOAST -->
 <div id="loader" class="show"><div class="spin"></div></div>
 <div class="toast" id="toast"></div>
@@ -1579,6 +1694,7 @@ document.getElementById('loginBtn').addEventListener('click', doLogin);
 document.getElementById('loginEmail').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('loginPass').focus();});
 document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 document.getElementById('logoutBtn').addEventListener('click', doLogout);
+document.getElementById('navRefreshBtn').addEventListener('click', doRefresh);
 
 async function doLogin() {
   const email = document.getElementById('loginEmail').value.trim();
@@ -1711,6 +1827,13 @@ async function initRider() {
   document.getElementById('rhClose').addEventListener('click',function(){document.getElementById('reportOverlay').classList.remove('open');});
   document.getElementById('exportBtn').addEventListener('click',exportCSV);
   try { await initRiderHandover(); } catch(e){ console.warn('Handover init failed:',e); }
+  // End day button
+  var edb=document.getElementById('riderEndDayBtn');
+  if(edb&&!edb.dataset.bound){edb.dataset.bound='1';edb.addEventListener('click',riderCloseDay);}
+  // Load day closures
+  try{await loadRiderDayClosures();}catch(e){}
+  checkAndShowDayClosedBanner(userProfile.uid,rViewDate,'riderDayClosedBanner');
+  setupRealtimeListeners();
 }
 function getOrdersForDate(date) {
   return rOrders.filter(o=>o.date===date).sort((a,b)=>tsToNum(b.timestamp)-tsToNum(a.timestamp));
@@ -2126,6 +2249,7 @@ async function submitRiderHandover() {
 async function initManager() {
   document.getElementById('mgrSettleDate').value=todayISO();
   document.getElementById('depDate').value=todayISO();
+  var dcd=document.getElementById('depCollectionDate');if(dcd)dcd.value=todayISO();
   loading(true);
   try {
     allSettlements=await fsGetSettlements(userProfile.uid);
@@ -2156,7 +2280,13 @@ async function initManager() {
   renderSettlHistory();renderDepHistory();updateBankSummary();
   try { await initMgrApprovals(); } catch(e){ console.warn('Approvals init:',e); }
   try { await initMgrCollect(); } catch(e){ console.warn('Collect init:',e); }
+  try { initMgrWallet(); } catch(e){ console.warn('Wallet init:',e); }
   try { updateIncomingBadge(); } catch(e){}
+  try { await loadMgrDayClosures(); } catch(e){}
+  var medb=document.getElementById('mgrEndDayBtn');
+  if(medb&&!medb.dataset.bound){medb.dataset.bound='1';medb.addEventListener('click',mgrCloseDay);}
+  setupRealtimeListeners();
+  applyDefaultTodayFilters();
 }
 function populateMgrRiderSel() {
   var riders=allUsers.filter(function(u){return u.role==='rider';});
@@ -2287,11 +2417,11 @@ async function initMgrApprovals() {
   loading(false);
   renderMgrApprovals();
   renderMgrApprovalHistory();
-  // Delegated listener for approve/flag buttons
+  // Delegated listener for approve/reject buttons
   var al = document.getElementById('mgrApprovalsList');
   al.onclick = function(e) {
     var btn = e.target.closest('[data-hoid]');
-    if(btn) processHandover(btn.dataset.hoid, btn.dataset.act);
+    if(btn) processHandoverWithReason(btn.dataset.hoid, btn.dataset.act);
   };
   // Update badge
   var pending = mgrHandovers.filter(function(h){return h.status==='pending';}).length;
@@ -2323,7 +2453,7 @@ function renderMgrApprovals() {
       +'<input type="text" class="ac-input" id="acRmk-'+esc(h.id)+'" placeholder="Any notes or discrepancy details"/>'
       +'<div class="ac-btns">'
       +'<button class="ac-btn ac-btn-approve" data-hoid="'+esc(h.id)+'" data-act="approved"><svg><use href="#i-check"/></svg> Approve</button>'
-      +'<button class="ac-btn ac-btn-flag" data-hoid="'+esc(h.id)+'" data-act="discrepancy"><svg><use href="#i-x"/></svg> Flag Discrepancy</button>'
+      +'<button class="reject-btn" data-hoid="'+esc(h.id)+'" data-act="rejected"><svg><use href="#i-x"/></svg> Reject</button>'
       +'</div>'
       +'</div>'
       +'</div>';
@@ -2420,6 +2550,12 @@ async function initAdmin() {
   finally { loading(false); }
   try { initAdmAnalytics(); } catch(e){ renderAdmAnalytics(); }
   initRidersQuickFilter();
+  applyDefaultTodayFilters();
+  setupRealtimeListeners();
+  // Admin edit modal bindings
+  document.getElementById('editModalClose').addEventListener('click',function(){document.getElementById('adminEditModal').classList.remove('open');editTarget=null;});
+  document.getElementById('editModalCancel').addEventListener('click',function(){document.getElementById('adminEditModal').classList.remove('open');editTarget=null;});
+  document.getElementById('editModalSave').addEventListener('click',saveEditModal);
   await renderAdmRiders();
   renderAdmManagers();
   renderAudit();
@@ -2646,7 +2782,7 @@ function renderRecon() {
             +'<td style="text-align:right;font-variant-numeric:tabular-nums;color:var(--good)">'+(cash?'₹'+fmtM(cash):'—')+'</td>'
             +'<td style="text-align:right;font-variant-numeric:tabular-nums">'+(qr?'₹'+fmtM(qr):'—')+'</td>'
             +'<td style="text-align:right;font-variant-numeric:tabular-nums;color:var(--bad)">'+(+o.refund?'-₹'+fmtM(o.refund):'—')+'</td>'
-            +'<td>'+(settled?'<span class="di-match">Settled</span>':'<span class="di-pending">Pending</span>')+'</td>'
+            +'<td>'+(settled?'<span class="di-match">Settled</span>':'<span class="di-pending">Pending</span>')+'</td>'+'<td style="white-space:nowrap"><button class="tbl-btn edit" onclick="adminEditOrder(\''+o.id+'\')" style="margin-right:3px"><svg><use href="#i-edit"/></svg></button><button class="tbl-btn danger" onclick="adminDeleteOrder(\''+o.id+'\')" ><svg><use href="#i-trash"/></svg></button></td>'
             +'</tr>';
         }).join('')
       +'</tbody></table>'+(filtOrders.length>200?'<div style="padding:8px 12px;font-size:11px;color:var(--ink-3)">Showing first 200 orders</div>':'');
@@ -3189,7 +3325,7 @@ function renderAdmOrders() {
   if(!filtered.length){wrap.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-orders"/></svg></div><div class="msg">No orders found</div></div>';return;}
 
   wrap.innerHTML='<table class="order-tbl"><thead><tr>'
-    +'<th>Order ID</th><th>Rider</th><th>Date</th><th>Time</th><th>Type</th><th>COD/Amt</th><th>Cash</th><th>QR</th><th>Refund</th><th>Extra</th><th>KM</th><th>Settlement</th>'
+    +'<th>Order ID</th><th>Rider</th><th>Date</th><th>Time</th><th>Type</th><th>COD/Amt</th><th>Cash</th><th>QR</th><th>Refund</th><th>Extra</th><th>KM</th><th>Settlement</th><th>Admin</th>'
     +'</tr></thead><tbody>'
     +filtered.slice(0,500).map(function(o){
       var ip=o.type==='prepaid';
@@ -3573,6 +3709,551 @@ function updateIncomingBadge() {
 }
 
 /* ════════════════════════════════════════════════════════════
+   FIRESTORE — DAY CLOSURES
+   ════════════════════════════════════════════════════════════ */
+var dayClosures = {}; // {uid_date: closureObj}
+
+async function fsAddDayClosure(userId, role, date) {
+  var rec={userId:userId,role:role,date:date,closedAt:Date.now(),closedByUid:userProfile.uid};
+  return db.collection('dayClosures').add(rec);
+}
+async function fsDeleteDayClosure(closureId) {
+  return db.collection('dayClosures').doc(closureId).delete();
+}
+async function fsGetDayClosures(userId) {
+  var snap=await db.collection('dayClosures').where('userId','==',userId).get();
+  return snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+}
+async function fsGetAllDayClosures() {
+  var snap=await db.collection('dayClosures').get();
+  return snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+}
+function isDayClosed(userId,date) {
+  var key=userId+'_'+date;
+  return !!dayClosures[key];
+}
+function getDayClosure(userId,date) {
+  return dayClosures[userId+'_'+date]||null;
+}
+
+/* ════════════════════════════════════════════════════════════
+   REAL-TIME REFRESH
+   ════════════════════════════════════════════════════════════ */
+var rtListeners = [];
+var lastRefreshed = null;
+
+function setupRealtimeListeners() {
+  // Clear existing listeners
+  rtListeners.forEach(function(unsub){try{unsub();}catch(e){}});
+  rtListeners=[];
+  if(!userProfile||!FB) return;
+
+  if(userProfile.role==='manager') {
+    // Listen for new pending handovers addressed to this manager
+    var q=db.collection('handovers').where('managerId','==',userProfile.uid).where('status','==','pending');
+    var unsub=q.onSnapshot(function(snap){
+      var count=snap.docs.length;
+      var badge=document.getElementById('mgrApprovalsTabBtn');
+      if(badge){
+        var existing=badge.querySelector('.count-pill');
+        if(count>0){
+          if(!existing){var sp=document.createElement('span');sp.className='count-pill';sp.style.cssText='background:var(--bad);color:white;margin-left:4px';badge.appendChild(sp);}
+          badge.querySelector('.count-pill').textContent=count;
+        } else if(existing) existing.remove();
+      }
+      // Also update incoming transfer badge
+      updateIncomingBadge();
+    },function(e){console.warn('RT listener error:',e);});
+    rtListeners.push(unsub);
+  }
+}
+
+async function doRefresh() {
+  var btn=document.getElementById('navRefreshBtn');
+  if(btn)btn.classList.add('spinning');
+  loading(true);
+  try {
+    if(userProfile.role==='rider'){
+      rOrders=await fsGetOrders(userProfile.uid);
+      riderHandovers=await fsGetHandoversForRider(userProfile.uid);
+      await loadRiderDayClosures();
+      renderRider();
+      renderRiderHandoverStatus();
+      renderRiderHandoverList();
+      showToast('Data refreshed','success');
+    } else if(userProfile.role==='manager'){
+      allSettlements=await fsGetSettlements(userProfile.uid);
+      allDeposits=await fsGetDeposits(userProfile.uid);
+      allUsers=await fsGetAllUsers();
+      mgrHandovers=await fsGetHandoversByManager(userProfile.uid);
+      mgrTransfers=await fsGetTransfersForManager(userProfile.uid);
+      allTransfers=mgrTransfers;
+      await loadMgrDayClosures();
+      initMgrWallet();
+      renderSettlHistory();
+      renderDepHistory();
+      updateBankSummary();
+      updateMgrHero();
+      showToast('Data refreshed','success');
+    } else if(userProfile.role==='admin'){
+      allUsers=await fsGetAllUsers();
+      allSettlements=await fsGetSettlements(null);
+      allDeposits=await fsGetDeposits(null);
+      var rIds=allUsers.filter(function(u){return u.role==='rider';}).map(function(u){return u.uid;});
+      allOrders=rIds.length?await fsGetOrdersForRiders(rIds):[];
+      try{allHandovers=await fsGetAllHandovers();}catch(e){allHandovers=[];}
+      try{allTransfers=await fsGetAllTransfers();}catch(e){allTransfers=[];}
+      updateAdmHero();
+      renderAdmAnalytics();
+      renderRecon();
+      showToast('Data refreshed','success');
+    }
+    lastRefreshed=Date.now();
+  } catch(e){showToast('Refresh failed: '+e.message,'error');}
+  finally{loading(false);if(btn)btn.classList.remove('spinning');}
+}
+
+/* ════════════════════════════════════════════════════════════
+   DAY CLOSURE MODULE
+   ════════════════════════════════════════════════════════════ */
+async function loadRiderDayClosures() {
+  try {
+    var closures=await fsGetDayClosures(userProfile.uid);
+    dayClosures={};
+    closures.forEach(function(c){dayClosures[c.userId+'_'+c.date]=c;});
+  } catch(e){}
+}
+async function loadMgrDayClosures() {
+  try {
+    var closures=await fsGetDayClosures(userProfile.uid);
+    dayClosures={};
+    closures.forEach(function(c){dayClosures[c.userId+'_'+c.date]=c;});
+  } catch(e){}
+}
+
+function checkAndShowDayClosedBanner(userId, date, bannerId, unlockFn) {
+  var banner=document.getElementById(bannerId);
+  if(!banner)return;
+  var closure=getDayClosure(userId,date);
+  if(closure){
+    banner.classList.remove('hidden');
+    banner.innerHTML='<div class="day-closed-banner"><svg><use href="#i-lock-day"/></svg>Day closed for '+date+'. New entries are locked.'
+      +(userProfile.role==='admin'?'<span class="dcb-unlock" data-closure-id="'+esc(closure.id)+'" onclick="unlockDay(this.dataset.closureId)">Unlock</span>':'')
+      +'</div>';
+  } else {
+    banner.classList.add('hidden');
+    banner.innerHTML='';
+  }
+}
+
+async function riderCloseDay() {
+  var date=rViewDate||todayISO();
+  if(isDayClosed(userProfile.uid,date)){showToast('Day already closed for '+date,'error');return;}
+  if(!confirm('Close your day for '+date+'? You will not be able to add, edit, or delete entries for this date.')) return;
+  loading(true);
+  try {
+    var ref=await fsAddDayClosure(userProfile.uid,'rider',date);
+    dayClosures[userProfile.uid+'_'+date]={id:ref.id,userId:userProfile.uid,role:'rider',date:date,closedAt:Date.now()};
+    checkAndShowDayClosedBanner(userProfile.uid,date,'riderDayClosedBanner');
+    showToast('Day closed for '+date,'success');
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  finally{loading(false);}
+}
+async function mgrCloseDay() {
+  var date=todayISO();
+  if(isDayClosed(userProfile.uid,date)){showToast('Shift already closed for '+date,'error');return;}
+  if(!confirm('Close your shift for '+date+'? No new cash entries will be allowed for this date.')) return;
+  loading(true);
+  try {
+    var ref=await fsAddDayClosure(userProfile.uid,'manager',date);
+    dayClosures[userProfile.uid+'_'+date]={id:ref.id,userId:userProfile.uid,role:'manager',date:date,closedAt:Date.now()};
+    checkAndShowDayClosedBanner(userProfile.uid,date,'mgrDayClosedBanner');
+    showToast('Shift closed for '+date,'success');
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  finally{loading(false);}
+}
+async function unlockDay(closureId) {
+  if(userProfile.role!=='admin'){showToast('Admin only','error');return;}
+  if(!confirm('Unlock this day? Records can be edited again.')) return;
+  loading(true);
+  try {
+    await fsDeleteDayClosure(closureId);
+    // Remove from local
+    Object.keys(dayClosures).forEach(function(k){if(dayClosures[k].id===closureId)delete dayClosures[k];});
+    showToast('Day unlocked','success');
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  finally{loading(false);}
+}
+window.unlockDay=unlockDay;
+
+/* ════════════════════════════════════════════════════════════
+   MANAGER — UNIFIED WALLET TAB
+   ════════════════════════════════════════════════════════════ */
+async function initMgrWallet() {
+  var pos=calcManagerCashPosition(userProfile.uid);
+  // Update wallet hero
+  var wh=document.querySelector('.wh-grid');
+  if(wh) {
+    var cells=wh.querySelectorAll('.wh-cell');
+    var vals=[pos.fromRiders,pos.incoming,pos.outgoing,pos.deposited];
+    var lbls=['From Riders','Mgr Incoming','Mgr Outgoing','Deposited'];
+    cells.forEach(function(c,i){
+      c.innerHTML='<div class="wh-val'+(i===2||i===3?' warn':'green')+'">₹'+fmtM(vals[i])+'</div><div class="wh-lbl">'+lbls[i]+'</div>';
+    });
+  }
+  var balEl=document.querySelector('.wh-bal-val');
+  if(balEl)balEl.textContent='₹'+fmtM(pos.net);
+  // Wallet content is rendered by collectPending + txLog
+  renderCollectPending();
+  renderCollectHistory();
+  renderWalletTxLog();
+  checkAndShowDayClosedBanner(userProfile.uid,todayISO(),'mgrDayClosedBanner');
+}
+
+function renderWalletTxLog() {
+  var c=document.getElementById('walletTxLog');
+  if(!c)return;
+  var today=todayISO();
+  var entries=[];
+  allSettlements.filter(function(s){return s.managerId===userProfile.uid;}).forEach(function(s){
+    entries.push({type:'in',ts:s.timestamp,desc:'<strong>'+esc(s.riderName)+'</strong> handed over cash',date:s.date,amount:+s.receivedAmount||0});
+  });
+  allDeposits.filter(function(d){return d.managerId===userProfile.uid;}).forEach(function(d){
+    entries.push({type:'dep',ts:d.timestamp,desc:'Bank deposit',date:d.date,amount:+d.amount||0});
+  });
+  allTransfers.filter(function(t){return t.toManagerId===userProfile.uid&&t.status==='acknowledged';}).forEach(function(t){
+    entries.push({type:'in',ts:t.timestamp,desc:'Transfer from <strong>'+esc(t.fromManagerName)+'</strong>',date:t.transferDate,amount:+t.amount||0});
+  });
+  allTransfers.filter(function(t){return t.fromManagerId===userProfile.uid;}).forEach(function(t){
+    entries.push({type:'out',ts:t.timestamp,desc:'Transfer to <strong>'+esc(t.toManagerName)+'</strong>',date:t.transferDate,amount:+t.amount||0});
+  });
+  entries.sort(function(a,b){return b.ts-a.ts;});
+  var todayEntries=entries.filter(function(e){return e.date===today;});
+  if(!todayEntries.length){c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No transactions today</div></div>';return;}
+  c.innerHTML=todayEntries.map(function(e){
+    return '<div class="tx-log-item"><div class="tx-dot '+e.type+'"></div><div class="tx-desc">'+e.desc+'<div style="font-size:10px;color:var(--ink-3);margin-top:2px">'+fmtDateTime(e.ts)+'</div></div><div class="tx-amt '+e.type+'">'+(e.type==='out'?'-':'+')+' ₹'+fmtM(e.amount)+'</div></div>';
+  }).join('');
+}
+
+/* ════════════════════════════════════════════════════════════
+   RIDER — HANDOVER VALIDATION + REJECTION RESUBMIT
+   ════════════════════════════════════════════════════════════ */
+// Override submitRiderHandover to add validation
+var _origSubmitRiderHandover = null;
+async function submitRiderHandover() {
+  var bizDate=document.getElementById('hoBizDate').value;
+  var mgrVal=document.getElementById('hoManagerSel').value;
+  var amount=+document.getElementById('hoAmount').value;
+  var remarks=document.getElementById('hoRemarks').value.trim();
+  if(!bizDate){showToast('Select business date','error');return;}
+  if(!mgrVal){showToast('Select a manager','error');return;}
+  if(!amount||amount<=0){showToast('Enter valid amount','error');return;}
+
+  // VALIDATION 1: Day closure check
+  if(isDayClosed(userProfile.uid,bizDate)){
+    showToast('Day is closed for '+bizDate+'. Contact admin to unlock.','error');return;
+  }
+
+  // VALIDATION 2: Amount cannot exceed available balance
+  var dayOrders=rOrders.filter(function(o){return o.date===bizDate;});
+  var s=calcSummary(dayOrders);
+  var alreadySubmitted=riderHandovers
+    .filter(function(h){return h.businessDate===bizDate&&h.status!=='rejected';})
+    .reduce(function(sum,h){return sum+(+h.submittedAmount||0);},0);
+  var available=s.netCash-alreadySubmitted;
+  if(amount>available&&available>=0){
+    showToast('Cannot submit ₹'+fmtM(amount)+'. Available: ₹'+fmtM(available),'error');
+    renderRiderHandoverStatus();return;
+  }
+
+  // VALIDATION 3: Duplicate check (same manager, same date, same amount within 3 minutes)
+  var recent=Date.now()-180000;
+  var dup=riderHandovers.find(function(h){
+    return h.businessDate===bizDate&&h.submittedAmount===amount
+      &&h.status==='pending'&&h.riderTimestamp>recent;
+  });
+  if(dup){showToast('Duplicate: same amount already submitted recently','error');return;}
+
+  var parts=mgrVal.split('|');
+  var mgrId=parts[0],mgrName=parts.slice(1).join('|');
+  loading(true);
+  try {
+    var rec={riderId:userProfile.uid,riderName:userProfile.name,riderEmail:userProfile.email,
+      managerId:mgrId,managerName:mgrName,businessDate:bizDate,
+      submittedAmount:amount,receivedAmount:0,status:'pending',
+      riderTimestamp:Date.now(),managerTimestamp:null,
+      riderRemarks:remarks,managerRemarks:'',rejectionReason:''};
+    var ref=await fsAddHandover(rec);
+    riderHandovers.push(Object.assign({},rec,{id:ref.id}));
+    document.getElementById('hoAmount').value='';
+    document.getElementById('hoRemarks').value='';
+    showToast('Handover submitted! Awaiting manager approval.','success');
+    renderRiderHandoverStatus();
+    renderRiderHandoverList();
+  } catch(e){showToast('Save failed: '+e.message,'error');}
+  finally{loading(false);}
+}
+
+// Override renderRiderHandoverList to show rejection + resubmit UI
+function renderRiderHandoverList() {
+  var c=document.getElementById('riderHandoverList');
+  if(!riderHandovers.length){
+    c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No handovers yet</div><div class="sub">Submit your first cash handover above</div></div>';
+    return;
+  }
+  var sorted=riderHandovers.slice().sort(function(a,b){return b.riderTimestamp-a.riderTimestamp;});
+  c.innerHTML=sorted.map(function(h){
+    var statusClass='sb-'+h.status;
+    var statusLabel=h.status==='approved'?'Approved':h.status==='discrepancy'?'Discrepancy':h.status==='rejected'?'Rejected':'Pending';
+    var diffHtml='';
+    if(h.status==='approved'||h.status==='discrepancy'){
+      var diff=(+h.receivedAmount||0)-(+h.submittedAmount||0);
+      if(diff===0)diffHtml='<span class="di-match">Match</span>';
+      else if(diff<0)diffHtml='<span class="di-short">Short ₹'+fmtM(Math.abs(diff))+'</span>';
+      else diffHtml='<span class="di-excess">Excess ₹'+fmtM(diff)+'</span>';
+    }
+    var rejHtml='';
+    if(h.status==='rejected'&&h.rejectionReason){
+      rejHtml='<div class="reject-reason"><strong>Rejected:</strong> '+esc(h.rejectionReason)+'</div>'
+        +'<div class="resubmit-form" id="rsf-'+esc(h.id)+'">'
+        +'<label>Edit Amount to Resubmit</label>'
+        +'<input type="number" class="resubmit-input" id="rsa-'+esc(h.id)+'" value="'+h.submittedAmount+'" min="1" step="1"/>'
+        +'<label>Updated Remarks <span style="text-transform:none;font-weight:500;letter-spacing:0">(optional)</span></label>'
+        +'<input type="text" class="resubmit-input" id="rsr-'+esc(h.id)+'" placeholder="Any updates…"/>'
+        +'<button class="resubmit-btn" data-rsid="'+esc(h.id)+'"><svg><use href="#i-refresh"/></svg> Resubmit for Approval</button>'
+        +'</div>';
+    }
+    return '<div class="ho-card">'
+      +'<div class="ho-card-head"><div><div class="ho-card-title">'+esc(h.managerName)+'</div>'
+      +'<div class="ho-card-sub">'+h.businessDate+' · '+fmtDateTime(h.riderTimestamp)+'</div></div>'
+      +'<div style="text-align:right"><div class="ho-card-amt">₹'+fmtM(h.submittedAmount)+'</div>'
+      +'<span class="status-badge '+statusClass+'">'+statusLabel+'</span></div>'
+      +'</div>'
+      +(diffHtml?'<div style="margin-top:5px">'+diffHtml+'</div>':'')
+      +(h.riderRemarks?'<div style="font-size:11px;color:var(--ink-3);margin-top:5px">'+esc(h.riderRemarks)+'</div>':'')
+      +rejHtml
+      +'</div>';
+  }).join('');
+  // Bind resubmit buttons
+  c.querySelectorAll('[data-rsid]').forEach(function(btn){
+    btn.addEventListener('click',function(){resubmitHandover(btn.dataset.rsid);});
+  });
+}
+
+async function resubmitHandover(hoId) {
+  var amtEl=document.getElementById('rsa-'+hoId);
+  var rmkEl=document.getElementById('rsr-'+hoId);
+  var amount=amtEl?+amtEl.value||0:0;
+  var remarks=rmkEl?rmkEl.value.trim():'';
+  var ho=riderHandovers.find(function(h){return h.id===hoId;});
+  if(!ho){showToast('Handover not found','error');return;}
+  if(!amount||amount<=0){showToast('Enter valid amount','error');return;}
+  // Validation
+  if(isDayClosed(userProfile.uid,ho.businessDate)){showToast('Day is closed. Contact admin.','error');return;}
+  var dayOrds=rOrders.filter(function(o){return o.date===ho.businessDate;});
+  var s2=calcSummary(dayOrds);
+  var alreadySub=riderHandovers
+    .filter(function(h){return h.businessDate===ho.businessDate&&h.status!=='rejected'&&h.id!==hoId;})
+    .reduce(function(sum,h){return sum+(+h.submittedAmount||0);},0);
+  var avail=s2.netCash-alreadySub;
+  if(amount>avail&&avail>=0){showToast('Cannot submit ₹'+fmtM(amount)+'. Available: ₹'+fmtM(avail),'error');return;}
+  loading(true);
+  try {
+    await fsUpdateHandover(hoId,{submittedAmount:amount,riderRemarks:remarks,status:'pending',rejectionReason:'',riderTimestamp:Date.now()});
+    var idx=riderHandovers.findIndex(function(h){return h.id===hoId;});
+    if(idx>=0)Object.assign(riderHandovers[idx],{submittedAmount:amount,riderRemarks:remarks,status:'pending',rejectionReason:'',riderTimestamp:Date.now()});
+    renderRiderHandoverStatus();
+    renderRiderHandoverList();
+    showToast('Resubmitted for approval!','success');
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  finally{loading(false);}
+}
+
+/* ════════════════════════════════════════════════════════════
+   MANAGER — REJECTION WITH REASON
+   ════════════════════════════════════════════════════════════ */
+async function processHandoverWithReason(hoId, action) {
+  if(action==='rejected') {
+    var reason=prompt('Rejection reason (required):');
+    if(!reason||!reason.trim()){showToast('Enter rejection reason','error');return;}
+    loading(true);
+    try {
+      await fsUpdateHandover(hoId,{status:'rejected',rejectionReason:reason.trim(),managerTimestamp:Date.now()});
+      var idx=mgrHandovers.findIndex(function(h){return h.id===hoId;});
+      if(idx>=0)Object.assign(mgrHandovers[idx],{status:'rejected',rejectionReason:reason.trim(),managerTimestamp:Date.now()});
+      showToast('Handover rejected. Rider will be notified.','error');
+      renderMgrApprovals();renderMgrApprovalHistory();initMgrApprovals();
+      renderCollectPending();renderCollectHistory();
+    } catch(e){showToast('Failed: '+e.message,'error');}
+    finally{loading(false);}
+    return;
+  }
+  // For approved/discrepancy — use existing processHandover
+  var amtEl=document.getElementById('acAmt-'+hoId);
+  var rmkEl=document.getElementById('acRmk-'+hoId);
+  var receivedAmt=amtEl?+amtEl.value||0:0;
+  var remarks=rmkEl?rmkEl.value.trim():'';
+  if(!receivedAmt){showToast('Enter received amount','error');return;}
+  await processHandover(hoId,action);
+}
+
+// Wallet tab: reject collect pending
+async function rejectCollect(hoId) {
+  var reason=prompt('Rejection reason (required):');
+  if(!reason||!reason.trim()){showToast('Enter rejection reason','error');return;}
+  loading(true);
+  try {
+    await fsUpdateHandover(hoId,{status:'rejected',rejectionReason:reason.trim(),managerTimestamp:Date.now()});
+    var idx=mgrHandovers.findIndex(function(h){return h.id===hoId;});
+    if(idx>=0)Object.assign(mgrHandovers[idx],{status:'rejected',rejectionReason:reason.trim(),managerTimestamp:Date.now()});
+    showToast('Rejected. Rider can resubmit.','success');
+    renderCollectPending();renderCollectHistory();initMgrApprovals();
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  finally{loading(false);}
+}
+window.rejectCollect=rejectCollect;
+
+/* ════════════════════════════════════════════════════════════
+   ADMIN — EDIT & DELETE ORDERS
+   ════════════════════════════════════════════════════════════ */
+var editTarget = null; // {type, id, data}
+
+function adminEditOrder(orderId) {
+  var o=allOrders.find(function(x){return x.id===orderId;});
+  if(!o){showToast('Order not found','error');return;}
+  editTarget={type:'order',id:orderId,data:o};
+  document.getElementById('editModalTitle').textContent='Edit Order: '+o.orderId;
+  document.getElementById('editModalErr').style.display='none';
+  var ip=o.type==='prepaid';
+  document.getElementById('editModalBody').innerHTML=
+    '<div class="lf"><label>Order ID</label><input type="text" class="fin" id="em_orderId" value="'+esc(o.orderId)+'"/></div>'
+    +'<div class="lf"><label>Date</label><input type="date" class="fin" id="em_date" value="'+esc(o.date)+'"/></div>'
+    +'<div class="lf"><label>Type</label><select class="fin" id="em_type"><option value="cod"'+(o.type==='cod'?' selected':'')+'>COD</option><option value="prepaid"'+(ip?' selected':'')+'>Prepaid</option></select></div>'
+    +'<div class="lf"><label>'+(ip?'Order':'COD')+' Amount</label><input type="number" class="fin" id="em_amount" value="'+(ip?(+o.orderAmount||0):(+o.totalCodAmount||0))+'"/></div>'
+    +'<div class="lf"><label>Cash Collected</label><input type="number" class="fin" id="em_cash" value="'+(+o.cashCollected||0)+'"/></div>'
+    +'<div class="lf"><label>QR Collected</label><input type="number" class="fin" id="em_qr" value="'+(+o.qrCollected||0)+'"/></div>'
+    +'<div class="lf"><label>Refund</label><input type="number" class="fin" id="em_refund" value="'+(+o.refund||0)+'"/></div>'
+    +'<div class="lf"><label>Distance (km)</label><input type="number" class="fin" id="em_dist" value="'+(+o.distance||0)+'" step="0.1"/></div>';
+  document.getElementById('adminEditModal').classList.add('open');
+}
+window.adminEditOrder=adminEditOrder;
+
+async function adminDeleteOrder(orderId) {
+  if(!confirm('Delete this order permanently? This cannot be undone.')) return;
+  loading(true);
+  try {
+    await db.collection('orders').doc(orderId).delete();
+    allOrders=allOrders.filter(function(o){return o.id!==orderId;});
+    renderAdmOrders();showToast('Order deleted','success');
+  } catch(e){showToast('Delete failed: '+e.message,'error');}
+  finally{loading(false);}
+}
+window.adminDeleteOrder=adminDeleteOrder;
+
+async function saveEditModal() {
+  if(!editTarget){return;}
+  var errEl=document.getElementById('editModalErr');
+  errEl.style.display='none';
+  loading(true);
+  try {
+    if(editTarget.type==='order'){
+      var type=document.getElementById('em_type').value;
+      var amt=+document.getElementById('em_amount').value||0;
+      var update={
+        orderId:document.getElementById('em_orderId').value.trim().toUpperCase(),
+        date:document.getElementById('em_date').value,
+        type:type,
+        totalCodAmount:type==='cod'?amt:0,
+        orderAmount:type==='prepaid'?amt:0,
+        cashCollected:+document.getElementById('em_cash').value||0,
+        qrCollected:+document.getElementById('em_qr').value||0,
+        refund:+document.getElementById('em_refund').value||0,
+        distance:+document.getElementById('em_dist').value||0,
+        editedAt:Date.now(),editedBy:userProfile.uid
+      };
+      await db.collection('orders').doc(editTarget.id).update(update);
+      var idx=allOrders.findIndex(function(o){return o.id===editTarget.id;});
+      if(idx>=0)Object.assign(allOrders[idx],update);
+      renderAdmOrders();showToast('Order updated','success');
+    }
+    document.getElementById('adminEditModal').classList.remove('open');
+    editTarget=null;
+  } catch(e){errEl.textContent='Save failed: '+e.message;errEl.style.display='block';}
+  finally{loading(false);}
+}
+
+/* ════════════════════════════════════════════════════════════
+   BANK DEPOSIT — Enhanced with collection date + wallet check
+   ════════════════════════════════════════════════════════════ */
+// Override submitDeposit
+async function submitDeposit() {
+  var amount=+document.getElementById('depAmt').value;
+  var date=document.getElementById('depDate').value;
+  var collDate=(document.getElementById('depCollectionDate')||{}).value||date;
+  var refNo=(document.getElementById('depRefNo')||{}).value||'';
+  var remarks=document.getElementById('depRemarks').value.trim();
+  if(!amount||!date){showToast('Enter amount and date','error');return;}
+
+  // Wallet validation: cannot deposit more than available balance
+  var pos=calcManagerCashPosition(userProfile.uid);
+  if(amount>pos.net&&pos.net>=0){
+    if(!confirm('Warning: Depositing ₹'+fmtM(amount)+' but wallet balance is ₹'+fmtM(pos.net)+'. Continue?')) return;
+  }
+
+  // Day closure check
+  if(isDayClosed(userProfile.uid,date)){showToast('Day is closed. Contact admin.','error');return;}
+
+  loading(true);
+  try {
+    var rec={managerId:userProfile.uid,managerName:userProfile.name,amount:amount,
+      date:date,collectionDate:collDate,refNo:refNo,remarks:remarks,
+      method:depMethod||'cash',timestamp:Date.now(),
+      walletBalanceBefore:pos.net};
+    var ref=await fsAddDeposit(rec);
+    allDeposits.push(Object.assign({},rec,{id:ref.id}));
+    document.getElementById('depAmt').value='';
+    document.getElementById('depRemarks').value='';
+    if(document.getElementById('depRefNo'))document.getElementById('depRefNo').value='';
+    showToast('Deposit recorded! Wallet updated.','success');
+    updateMgrHero();updateBankSummary();renderDepHistory();
+    try{initMgrWallet();}catch(e){}
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  finally{loading(false);}
+}
+
+// Override renderDepHistory to show collection date
+function renderDepHistory() {
+  var deps=allDeposits.slice().sort(function(a,b){return b.timestamp-a.timestamp;});
+  var c=document.getElementById('depHistList');
+  if(!deps.length){c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-bank"/></svg></div><div class="msg">No deposits recorded</div></div>';return;}
+  c.innerHTML='<div class="record-list">'+deps.map(function(d){
+    return '<div class="record-card"><div class="rc-head"><div><div class="rc-title">Bank Deposit</div>'
+      +'<div class="rc-time">Deposited: '+d.date+(d.collectionDate&&d.collectionDate!==d.date?' · Collected: '+d.collectionDate:'')+'</div>'
+      +'</div><div><div class="rc-amount"><span class="cur">₹</span>'+fmtM(d.amount)+'</div><span class="rc-badge deposit">Deposited</span></div></div>'
+      +'<div class="rc-body"><div class="rc-row"><span class="rc-lbl">By</span><span class="rc-val">'+esc(d.managerName)+'</span></div>'
+      +(d.refNo?'<div class="rc-row"><span class="rc-lbl">Ref</span><span class="rc-val">'+esc(d.refNo)+'</span></div>':'')
+      +(d.remarks?'<div class="rc-row" style="grid-column:span 2"><span class="rc-lbl">Note</span><span class="rc-val">'+esc(d.remarks)+'</span></div>':'')
+      +'</div></div>';
+  }).join('')+'</div>';
+}
+
+/* ════════════════════════════════════════════════════════════
+   DEFAULT TODAY FILTERS — applied on login
+   ════════════════════════════════════════════════════════════ */
+function applyDefaultTodayFilters() {
+  var today=todayISO();
+  // Orders tab
+  ordFilter.from=today; ordFilter.to=today;
+  // Analytics
+  anlPeriod='today'; anlFrom=today; anlTo=today;
+  // Riders tab
+  admRiderPeriod='today'; admFrom=today; admTo=today;
+  // Managers tab
+  admMgrPeriod='today';
+}
+
+
+/* ════════════════════════════════════════════════════════════
    MANAGER — NEW COLLECT TAB (approval-first workflow)
    ════════════════════════════════════════════════════════════ */
 async function initMgrCollect() {
@@ -3638,14 +4319,17 @@ function renderCollectPending() {
       +'<div style="font-size:11px;color:var(--ink-3);margin-bottom:10px;padding:8px;background:var(--grad-soft);border-radius:8px">Confirm you physically received <strong style="color:var(--teal-dark)">₹'+fmtM(h.submittedAmount)+'</strong> from '+esc(h.riderName)+'</div>'
       +'<div class="ac-btns">'
       +'<button class="ac-btn ac-btn-approve" data-cid="'+esc(h.id)+'"><svg><use href="#i-check"/></svg> Yes, Received — Approve</button>'
+      +'<button class="reject-btn" style="margin-top:6px" data-wrid="'+esc(h.id)+'"><svg><use href="#i-x"/></svg> Reject</button>'
       +'</div>'
       +'</div>';
   }).join('');
 
   // Bind click events
   if(c) c.addEventListener('click', function(e){
-    var btn = e.target.closest('[data-cid]');
-    if(btn) approveCollect(btn.dataset.cid);
+    var appBtn = e.target.closest('[data-cid]');
+    if(appBtn) approveCollect(appBtn.dataset.cid);
+    var rejBtn = e.target.closest('[data-wrid]');
+    if(rejBtn) rejectCollect(rejBtn.dataset.wrid);
   });
 }
 
@@ -4111,7 +4795,8 @@ function setupTabBar(barId,prefix) {
     document.querySelectorAll('#'+barId+' .tab-btn').forEach(function(b){b.classList.toggle('active',b===btn);});
     document.querySelectorAll('[id^="'+prefix+'"]').forEach(function(el){el.classList.toggle('active',el.id===prefix+tab);});
     if(barId==='mgrTabBar'){
-      if(tab==='collect'){try{initMgrCollect();}catch(e){console.warn(e);}}
+      if(tab==='wallet'){try{initMgrWallet();}catch(e){console.warn(e);}}
+      else if(tab==='collect'){try{initMgrCollect();}catch(e){console.warn(e);}}
       else if(tab==='history')renderSettlHistory();
       else if(tab==='bank'){renderDepHistory();updateBankSummary();}
       else if(tab==='approvals'){try{initMgrApprovals();}catch(e){}}
