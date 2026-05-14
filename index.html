@@ -622,6 +622,37 @@ select.fin{cursor:pointer}
 .odc-value.green{color:var(--good)}.odc-value.red{color:var(--bad)}.odc-value.teal{color:var(--teal-deep)}
 .multi-results-label{font-size:11px;color:var(--ink-3);font-weight:600;margin-bottom:8px;padding:0 2px}
 
+
+/* ── MANAGER TRANSFERS ── */
+.transfer-card{background:white;border:1.5px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}
+.transfer-card.incoming{border-color:var(--teal);background:#f0fdf9}
+.transfer-card.pending-out{border-color:var(--warn);background:#fffbf2}
+.tc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px}
+.tc-direction{display:flex;align-items:center;gap:7px}
+.tc-arrow{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex-shrink:0}
+.tc-arrow.out{background:var(--warn-soft);color:var(--warn)}
+.tc-arrow.in{background:var(--good-soft);color:var(--good)}
+.tc-arrow svg{width:14px;height:14px}
+.tc-name{font-weight:700;font-size:13px;color:var(--ink)}
+.tc-meta{font-size:11px;color:var(--ink-3);margin-top:1px;font-weight:500}
+.tc-amount{font-weight:800;font-size:18px;font-variant-numeric:tabular-nums;color:var(--teal-dark);text-align:right}
+.tc-amount.out{color:var(--warn)}
+.tc-amount.in{color:var(--good)}
+.tc-ack-btn{width:100%;margin-top:10px;background:var(--teal-dark);color:white;border:none;padding:12px;border-radius:10px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.tc-ack-btn:hover{background:var(--teal)}
+.tc-ack-btn svg{width:14px;height:14px}
+.transfer-position{background:linear-gradient(135deg,#0e2e2b,#1e3a37);color:white;border-radius:var(--radius-lg);padding:18px;margin-bottom:14px}
+.tp-title{font-size:10px;text-transform:uppercase;letter-spacing:.12em;opacity:.7;font-weight:700;margin-bottom:12px}
+.tp-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.tp-row:last-child{border-bottom:none;padding-top:12px;margin-top:4px}
+.tp-lbl{font-size:12px;opacity:.8;font-weight:500}
+.tp-val{font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
+.tp-val.big{font-size:20px;font-weight:800}
+.tp-val.green{color:#6effa8}
+.tp-val.warn{color:#ffd080}
+.tp-val.red{color:#ff8a7a}
+.incoming-badge{background:var(--teal);color:white;font-size:9px;padding:1px 5px;border-radius:999px;font-weight:700;margin-left:4px}
+
 </style>
 </head>
 <body>
@@ -664,6 +695,7 @@ select.fin{cursor:pointer}
 <symbol id="i-swap" viewBox="0 0 24 24"><polyline points="17,1 21,5 17,9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M3 11V9a4 4 0 014-4h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><polyline points="7,23 3,19 7,15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M21 13v2a4 4 0 01-4 4H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
 <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="2" fill="none"/><line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
 <symbol id="i-orders" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="currentColor" stroke-width="2" fill="none"/><rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" stroke-width="2" fill="none"/><line x1="9" y1="12" x2="15" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="9" y1="16" x2="13" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-transfer" viewBox="0 0 24 24"><path d="M5 9l4-4-4-4M9 5H3M19 15l-4 4-4-4M15 19h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
 <symbol id="i-handshake" viewBox="0 0 24 24"><path d="M20.42 4.58a5.4 5.4 0 00-7.65 0l-.77.78-.77-.78a5.4 5.4 0 00-7.65 7.65l1.06 1.06L12 21.23l7.36-7.94 1.06-1.06a5.4 5.4 0 000-7.65z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></symbol>
 <symbol id="i-people" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" fill="none"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
 <symbol id="i-disable" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
@@ -863,35 +895,38 @@ service cloud.firestore {
       <button class="tab-btn" data-tab="bank"><svg><use href="#i-bank"/></svg> Bank</button>
       <button class="tab-btn" data-tab="approvals" id="mgrApprovalsTabBtn"><svg><use href="#i-circle-check"/></svg> Approvals</button>
       <button class="tab-btn" data-tab="cash"><svg><use href="#i-cash"/></svg> Cash</button>
+      <button class="tab-btn" data-tab="transfer" id="mgrTransferTabBtn"><svg><use href="#i-transfer"/></svg> Transfer <span id="mgrIncomingBadge" class="incoming-badge hidden">0</span></button>
       <button class="tab-btn" data-tab="shift"><svg><use href="#i-swap"/></svg> Shift</button>
       <button class="tab-btn" data-tab="incidents"><svg><use href="#i-alert"/></svg> Incidents</button>
     </div>
-    <!-- COLLECT TAB -->
+    <!-- COLLECT TAB — simplified approval-only workflow -->
     <div class="tab-content active" id="mgr-tab-collect">
+      <!-- Cash position summary -->
+      <div class="ho-status-bar" id="collectCashBar">
+        <div class="ho-stat"><div class="ho-stat-val ok" id="collectTotalApproved">₹0</div><div class="ho-stat-lbl">Total Received</div></div>
+        <div class="ho-stat"><div class="ho-stat-val" id="collectDeposited">₹0</div><div class="ho-stat-lbl">Deposited</div></div>
+        <div class="ho-stat"><div class="ho-stat-val warn" id="collectInHand">₹0</div><div class="ho-stat-lbl">In Hand</div></div>
+      </div>
+      <!-- Pending rider handovers to approve -->
       <section class="section">
-        <div class="section-head"><h2>COD Collection</h2></div>
-        <div class="section-body">
-          <div class="lf"><label>Select Rider</label><select class="fin" id="mgrRiderSel"><option value="">-- Choose Rider --</option></select></div>
-          <div class="lf"><label>Settlement Date</label><input type="date" class="fin" id="mgrSettleDate"/></div>
-          <div id="pendingPreviewWrap" class="hidden">
-            <div class="pending-preview">
-              <div class="pp-lbl">Pending Cash from Rider</div>
-              <div class="pp-val"><span class="cur">₹</span><span id="pendingAmt">0</span></div>
-              <div class="pp-sub" id="pendingDesc">Net cash for selected date</div>
-              <div class="diff-row">
-                <div class="diff-cell"><div class="dl">Cash</div><div class="dv" id="ppCash">₹0</div></div>
-                <div class="diff-cell"><div class="dl">Refunds</div><div class="dv" id="ppRef">₹0</div></div>
-                <div class="diff-cell"><div class="dl">Orders</div><div class="dv" id="ppOrders">0</div></div>
-              </div>
-            </div>
-          </div>
-          <div class="lf"><label>Amount Physically Received (₹)</label><input type="number" class="fin" id="mgrRecvAmt" placeholder="0" min="0" step="1"/></div>
-          <div class="lf hidden" id="mgrRemarksWrap"><label>Remarks <span class="opt">(optional)</span></label><input type="text" class="fin" id="mgrRemarks" placeholder="Any notes…"/></div>
-          <button class="btn-primary green" id="mgrSubmitBtn" disabled>
-            <svg><use href="#i-circle-check"/></svg> Acknowledge &amp; Record
-          </button>
+        <div class="section-head"><h2>Pending from Riders</h2><span class="count-pill" id="collectPendingBadge">0</span></div>
+        <div class="section-body" id="collectPendingList">
+          <div class="empty"><div class="empty-icon"><svg><use href="#i-cash"/></svg></div><div class="msg">No pending handovers</div><div class="sub">Riders will appear here when they submit cash to you</div></div>
         </div>
       </section>
+      <!-- Today's collection history -->
+      <section class="section">
+        <div class="section-head"><h2>Collection History</h2></div>
+        <div class="section-body" id="collectHistoryList"></div>
+      </section>
+      <!-- Hidden inputs kept for JS compatibility -->
+      <input type="hidden" id="mgrRiderSel"/>
+      <input type="hidden" id="mgrSettleDate"/>
+      <input type="hidden" id="mgrRecvAmt"/>
+      <input type="hidden" id="mgrRemarks"/>
+      <div id="pendingPreviewWrap" class="hidden"><span id="pendingAmt">0</span><span id="pendingDesc"></span><span id="ppCash"></span><span id="ppRef"></span><span id="ppOrders"></span></div>
+      <div id="mgrRemarksWrap" class="hidden"></div>
+      <button id="mgrSubmitBtn" class="hidden" disabled></button>
     </div>
     <!-- HISTORY TAB -->
     <div class="tab-content" id="mgr-tab-history">
@@ -928,23 +963,16 @@ service cloud.firestore {
       <section class="section">
         <div class="section-head"><h2>Record Bank Deposit</h2></div>
         <div class="section-body">
+          <div class="info-box">Enter the cash you deposited into the company bank account.</div>
           <div class="fin-row">
-            <div class="lf"><label>Amount (₹)</label><input type="number" class="fin" id="depAmt" placeholder="0" min="0" step="1"/></div>
-            <div class="lf"><label>Date</label><input type="date" class="fin" id="depDate"/></div>
+            <div class="lf"><label>Deposit Amount (₹)</label><input type="number" class="fin" id="depAmt" placeholder="0" min="0" step="1"/></div>
+            <div class="lf"><label>Deposit Date</label><input type="date" class="fin" id="depDate"/></div>
           </div>
-          <div class="lf"><label>Deposit Method</label>
-            <div class="dep-method-pills" id="depMethodPills">
-              <button type="button" class="dep-method-pill active" data-method="cash">Cash</button>
-              <button type="button" class="dep-method-pill" data-method="neft">NEFT</button>
-              <button type="button" class="dep-method-pill" data-method="rtgs">RTGS</button>
-              <button type="button" class="dep-method-pill" data-method="upi">UPI</button>
-            </div>
-          </div>
-          <div class="fin-row">
-            <div class="lf"><label>Bank Name <span class="opt">(optional)</span></label><input type="text" class="fin" id="depBank" placeholder="e.g. HDFC Bank"/></div>
-            <div class="lf"><label>Transaction / Ref No <span class="opt">(optional)</span></label><input type="text" class="fin" id="depRefNo" placeholder="UTR / Ref number"/></div>
-          </div>
-          <div class="lf"><label>Remarks <span class="opt">(optional)</span></label><input type="text" class="fin" id="depRemarks" placeholder="Any notes…"/></div>
+          <div class="lf"><label>Transaction / Reference No <span class="opt">(optional)</span></label><input type="text" class="fin" id="depRefNo" placeholder="UTR / bank ref number"/></div>
+          <div class="lf"><label>Remarks <span class="opt">(optional)</span></label><input type="text" class="fin" id="depRemarks" placeholder="Bank name, branch, notes…"/></div>
+          <!-- Hidden for compatibility -->
+          <input type="hidden" id="depBank" value=""/>
+          <div id="depMethodPills" style="display:none"></div>
           <button class="btn-primary blue" id="depSubmitBtn">
             <svg><use href="#i-bank"/></svg> Record Deposit
           </button>
@@ -993,6 +1021,56 @@ service cloud.firestore {
           <button class="btn-primary" id="saveCashSessionBtn" style="background:var(--teal-dark)"><svg><use href="#i-check"/></svg> Save Opening Balance</button>
         </div>
       </section>
+    </div>
+
+
+    <!-- TRANSFER TAB — Manager to Manager Internal Cash Transfer -->
+    <div class="tab-content" id="mgr-tab-transfer">
+
+      <!-- Cash Position with transfers -->
+      <div class="transfer-position" id="transferPosition">
+        <div class="tp-title">Your Cash Position</div>
+        <div class="tp-row"><div class="tp-lbl">Collected from Riders</div><div class="tp-val tp-collected">₹0</div></div>
+        <div class="tp-row"><div class="tp-lbl">Received (Incoming Transfers)</div><div class="tp-val green tp-incoming">₹0</div></div>
+        <div class="tp-row"><div class="tp-lbl">Sent (Outgoing Transfers)</div><div class="tp-val warn tp-outgoing">₹0</div></div>
+        <div class="tp-row"><div class="tp-lbl">Deposited to Bank</div><div class="tp-val tp-deposited">₹0</div></div>
+        <div class="tp-row"><div class="tp-lbl" style="font-weight:700;font-size:13px">Net Cash in Hand</div><div class="tp-val big green tp-net">₹0</div></div>
+      </div>
+
+      <!-- Incoming transfers awaiting acknowledgment -->
+      <section class="section" id="incomingTransferSection">
+        <div class="section-head">
+          <h2>Incoming — Acknowledge</h2>
+          <span class="count-pill" id="incomingTransferCount">0</span>
+        </div>
+        <div class="section-body" id="incomingTransferList">
+          <div class="empty"><div class="empty-icon"><svg><use href="#i-transfer"/></svg></div><div class="msg">No incoming transfers</div><div class="sub">Other managers will appear here when they send cash to you</div></div>
+        </div>
+      </section>
+
+      <!-- Send transfer form -->
+      <section class="section">
+        <div class="section-head"><h2>Send Cash to Manager</h2></div>
+        <div class="section-body">
+          <div class="info-box">Transfer your collected COD cash to another manager who will deposit it to the bank.</div>
+          <div class="lf"><label>Transfer To</label><select class="fin" id="txToMgrSel"><option value="">-- Select Manager --</option></select></div>
+          <div class="fin-row">
+            <div class="lf"><label>Amount (₹)</label><input type="number" class="fin" id="txAmount" placeholder="0" min="1" step="1"/></div>
+            <div class="lf"><label>Date</label><input type="date" class="fin" id="txDate"/></div>
+          </div>
+          <div class="lf"><label>Remarks <span class="opt">(optional)</span></label><input type="text" class="fin" id="txRemarks" placeholder="e.g. COD collection for 13 May…"/></div>
+          <button class="btn-primary" id="txSubmitBtn" style="background:var(--teal-dark)">
+            <svg><use href="#i-transfer"/></svg> Send Transfer Request
+          </button>
+        </div>
+      </section>
+
+      <!-- Transfer history -->
+      <section class="section">
+        <div class="section-head"><h2>Transfer History</h2></div>
+        <div class="section-body"><div id="transferHistoryList"></div></div>
+      </section>
+
     </div>
 
     <!-- SHIFT HANDOVER TAB -->
@@ -1183,6 +1261,19 @@ service cloud.firestore {
 
     <!-- ORDERS TAB -->
     <div class="tab-content" id="adm-tab-orders">
+      <!-- Quick Date Filter -->
+      <div class="quick-filter-bar" id="ordQuickFilter">
+        <button class="qf-btn active" data-operiod="today">Today</button>
+        <button class="qf-btn" data-operiod="yesterday">Yesterday</button>
+        <button class="qf-btn" data-operiod="week">This Week</button>
+        <button class="qf-btn" data-operiod="month">This Month</button>
+        <button class="qf-btn" data-operiod="custom">Custom</button>
+      </div>
+      <div class="custom-dates-row hidden" id="ordQfCstmDates" style="margin-bottom:10px">
+        <input type="date" id="ordQfFrom"/>
+        <input type="date" id="ordQfTo"/>
+        <button class="filter-pill active" id="ordQfApply">Apply</button>
+      </div>
       <!-- Search Bar -->
       <div class="order-search-wrap">
         <div class="order-search-bar">
@@ -1312,7 +1403,7 @@ let userProfile = null;
 let rOrders = [];
 let rViewDate = todayISO();
 let wizStep = null, wizHistory = [], wizData = {};
-let allSettlements = [], allDeposits = [], allUsers = [], allOrders = [], allHandovers = [];
+let allSettlements = [], allDeposits = [], allUsers = [], allOrders = [], allHandovers = [], allTransfers = [];
 let settlFilter = { range:'today', rider:'', from:'', to:'' };
 let cpwTargetUid = null, cpwTargetEmail = null;
 let admFrom = '', admTo = '';
@@ -1334,6 +1425,8 @@ function fmtM(n) {
   return n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 function fmtMoney(n) { return (Number(n)||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+/* PDF-only formatter — no ₹ symbol, whole numbers only, comma-separated */
+function pdfN(n) { return Math.round(Number(n)||0).toLocaleString('en-IN'); }
 function fmtTime(ts) {
   const d = typeof ts==='number'?new Date(ts):ts&&ts.toDate?ts.toDate():new Date();
   let h=d.getHours(),m=String(d.getMinutes()).padStart(2,'0'),ap=h>=12?'pm':'am';
@@ -1506,7 +1599,7 @@ async function doLogout() {
   loading(true);
   try { await auth.signOut(); } catch(e){ console.warn('Signout:',e); }
   fbUser=null; userProfile=null; rOrders=[];
-  allSettlements=[]; allDeposits=[]; allUsers=[]; allOrders=[]; allHandovers=[];
+  allSettlements=[]; allDeposits=[]; allUsers=[]; allOrders=[]; allHandovers=[]; allTransfers=[];
   ['riderPanel','managerPanel','adminPanel'].forEach(function(id){document.getElementById(id).classList.remove('active');});
   loading(false);
   showScreen('loginScreen');
@@ -1885,7 +1978,7 @@ function openReport() {
   var list=getOrdersForDate(rViewDate);
   var s=calcSummary(list);
   document.getElementById('rhSub').textContent=fmtDateLabel(rViewDate)+' · '+rViewDate+' · '+list.length+' orders';
-  var rows=[['Total COD','₹'+fmtM(s.totalCod),s.codCount+' COD'],['Paid Online','₹'+fmtM(s.online),s.prepaidCount+' prepaid'],['Cash Collected','₹'+fmtM(s.cash),'physical'],['QR Collected','₹'+fmtM(s.qr),'via QR'],['Refunds','₹'+fmtM(s.refunds),'paid out'],['Extra','₹'+fmtM(s.extra),'added'],['Distance',s.distance.toFixed(1)+' km','total']];
+  var rows=[['Total COD',pdfN(s.totalCod),s.codCount+' COD'],['Paid Online','₹'+fmtM(s.online),s.prepaidCount+' prepaid'],['Cash Collected','₹'+fmtM(s.cash),'physical'],['QR Collected','₹'+fmtM(s.qr),'via QR'],['Refunds','₹'+fmtM(s.refunds),'paid out'],['Extra','₹'+fmtM(s.extra),'added'],['Distance',s.distance.toFixed(1)+' km','total']];
   document.getElementById('reportBody').innerHTML='<div style="background:white;border-radius:var(--radius);padding:20px;border:1px solid var(--line)">'
     +'<div style="display:flex;justify-content:space-between;padding-bottom:14px;border-bottom:2px solid var(--ink);margin-bottom:16px"><div style="display:flex;align-items:center;gap:9px"><div style="width:34px;height:34px;background:var(--grad);border-radius:9px;display:grid;place-items:center"><svg width="18" height="18" color="white"><use href="#i-logo"/></svg></div><div><div style="font-weight:800;font-size:14px"><span style="color:var(--teal)">Insta</span><span style="color:var(--green-deep)">घर</span></div><div style="font-size:9px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:700">Rider Report</div></div></div><div style="text-align:right;font-size:11px"><div style="font-weight:700">'+rViewDate+'</div><div style="color:var(--ink-3)">'+userProfile.name+(userProfile.riderId?' · '+userProfile.riderId:'')+'</div></div></div>'
     +rows.map(function(r){return '<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)"><div style="font-size:12px;color:var(--ink-2);font-weight:600">'+r[0]+'<div style="font-size:10px;color:var(--ink-3)">'+r[2]+'</div></div><div style="font-weight:800;font-size:14px;font-variant-numeric:tabular-nums">'+r[1]+'</div></div>';}).join('')
@@ -1909,13 +2002,13 @@ function genPDF(share) {
   doc.setFont('helvetica','bold');doc.setFontSize(15);doc.setTextColor(255,255,255);
   doc.text('INSTAGHAR — Rider Daily Report',mg,20);
   doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text(rViewDate+' · '+userProfile.name,mg,28);
-  doc.autoTable({startY:44,margin:{left:mg,right:mg},body:[['Total COD',fmtM(s.totalCod),'Distance',s.distance.toFixed(1)+' km'],['Cash Collected',fmtM(s.cash),'QR Collected',fmtM(s.qr)],['Refunds','−'+fmtM(s.refunds),'Extra','+'+fmtM(s.extra)],['COD Orders',s.codCount,'Prepaid Orders',s.prepaidCount]],theme:'plain',styles:{fontSize:10,cellPadding:{top:5,bottom:5,left:8,right:8},lineColor:[224,238,236],lineWidth:.5}});
+  doc.autoTable({startY:44,margin:{left:mg,right:mg},body:[['Total COD',fmtM(s.totalCod),'Distance',s.distance.toFixed(1)+' km'],['Cash Collected',fmtM(s.cash),'QR Collected',fmtM(s.qr)],['Refunds',pdfN(s.refunds),'Extra',pdfN(s.extra)],['COD Orders',s.codCount,'Prepaid Orders',s.prepaidCount]],theme:'plain',styles:{fontSize:10,cellPadding:{top:5,bottom:5,left:8,right:8},lineColor:[224,238,236],lineWidth:.5}});
   var y=doc.lastAutoTable.finalY+8;
   doc.setFillColor(0,168,156);doc.roundedRect(mg,y,pw-mg*2,38,5,5,'F');
   doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text('NET CASH WITH RIDER',mg+10,y+14);
-  doc.setFontSize(18);doc.text('Rs '+fmtM(s.netCash),pw-mg-10,y+24,{align:'right'});
+  doc.setFontSize(18);doc.text(pdfN(s.netCash),pw-mg-10,y+24,{align:'right'});
   y+=48;
-  doc.autoTable({startY:y,margin:{left:mg,right:mg},head:[['#','Order ID','Time','Type','Amount','Cash','QR','Refund','Extra','KM']],body:list.map(function(o,i){var ip=o.type==='prepaid';var es=getExtraSplit(o);var cash=(+o.cashCollected||0)+es.cash;var qr=(+o.qrCollected||0)+es.qr;return[i+1,o.orderId,fmtTime(o.timestamp),ip?'Prepaid':'COD',fmtM(ip?(+o.orderAmount||0):(+o.totalCodAmount||0)),cash>0?fmtM(cash):'—',qr>0?fmtM(qr):'—',(+o.refund||0)>0?'-'+fmtM(o.refund):'—',(+o.extraCollected||0)>0?'+'+fmtM(o.extraCollected):'—',(+o.distance||0).toFixed(1)];}),theme:'striped',headStyles:{fillColor:[14,46,43],textColor:[255,255,255],fontSize:8},bodyStyles:{fontSize:8}});
+  doc.autoTable({startY:y,margin:{left:mg,right:mg},head:[['#','Order ID','Time','Type','Amount','Cash','QR','Refund','Extra','KM']],body:list.map(function(o,i){var ip=o.type==='prepaid';var es=getExtraSplit(o);var cash=(+o.cashCollected||0)+es.cash;var qr=(+o.qrCollected||0)+es.qr;return[i+1,o.orderId,fmtTime(o.timestamp),ip?'Prepaid':'COD',pdfN(ip?(+o.orderAmount||0):(+o.totalCodAmount||0)),cash>0?pdfN(cash):'0',qr>0?pdfN(qr):'0',(+o.refund||0)>0?pdfN(o.refund):'0',(+o.extraCollected||0)>0?pdfN(o.extraCollected):'0',(+o.distance||0).toFixed(1)];}),theme:'striped',headStyles:{fillColor:[14,46,43],textColor:[255,255,255],fontSize:8},bodyStyles:{fontSize:8}});
   var fn='instaghar-'+(userProfile.name||'rider').replace(/\s+/g,'-').toLowerCase()+'-'+rViewDate+'.pdf';
   if(share&&navigator.share){var blob=doc.output('blob');var file=new File([blob],fn,{type:'application/pdf'});if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:'Instaghar Rider Report'}).catch(function(){doc.save(fn);});return;}}
   doc.save(fn);showToast('PDF downloaded','success');
@@ -2038,6 +2131,10 @@ async function initManager() {
     allSettlements=await fsGetSettlements(userProfile.uid);
     allDeposits=await fsGetDeposits(userProfile.uid);
     allUsers=await fsGetAllUsers();
+    try {
+      mgrTransfers = await fsGetTransfersForManager(userProfile.uid);
+      allTransfers = mgrTransfers;
+    } catch(et){ mgrTransfers=[]; allTransfers=[]; }
   } catch(e) { console.warn('Manager data load failed:',e); }
   finally { loading(false); }
   populateMgrRiderSel();
@@ -2058,6 +2155,8 @@ async function initManager() {
   document.getElementById('depSubmitBtn').addEventListener('click',submitDeposit);
   renderSettlHistory();renderDepHistory();updateBankSummary();
   try { await initMgrApprovals(); } catch(e){ console.warn('Approvals init:',e); }
+  try { await initMgrCollect(); } catch(e){ console.warn('Collect init:',e); }
+  try { updateIncomingBadge(); } catch(e){}
 }
 function populateMgrRiderSel() {
   var riders=allUsers.filter(function(u){return u.role==='rider';});
@@ -2152,6 +2251,8 @@ function updateBankSummary() {
   document.getElementById('bankCollected').textContent=fmtM(collected);
   document.getElementById('bankDeposited').textContent=fmtM(deposited);
   document.getElementById('bankPending').textContent=fmtM(Math.max(0,collected-deposited));
+  // Also refresh transfer cash position if visible
+  try { updateCollectCashBar(); renderTransferPosition(); } catch(e){}
 }
 function renderDepHistory() {
   var deps=allDeposits.slice().sort(function(a,b){return b.timestamp-a.timestamp;});
@@ -2265,18 +2366,30 @@ async function processHandover(hoId, status) {
   loading(true);
   try {
     var finalStatus = status;
-    if(status==='approved') {
-      var ho = mgrHandovers.find(function(h){return h.id===hoId;});
-      if(ho && receivedAmount !== ho.submittedAmount) finalStatus='discrepancy';
-    }
+    var ho = mgrHandovers.find(function(h){return h.id===hoId;});
+    if(status==='approved' && ho && receivedAmount !== ho.submittedAmount) finalStatus='discrepancy';
     await fsUpdateHandover(hoId, {
       status: finalStatus, receivedAmount: receivedAmount,
       managerRemarks: remarks, managerTimestamp: Date.now()
     });
+    // Auto-create settlement record
+    if(ho && (finalStatus==='approved'||finalStatus==='discrepancy')) {
+      var autoSettl = {
+        riderId:ho.riderId, riderName:ho.riderName,
+        date:ho.businessDate, receivedAmount:receivedAmount,
+        managerId:userProfile.uid, managerName:userProfile.name,
+        timestamp:Date.now(), remarks:remarks||'Via approval', source:'approvals'
+      };
+      try {
+        var sRef = await fsAddSettlement(autoSettl);
+        allSettlements.push(Object.assign({},autoSettl,{id:sRef.id}));
+        updateBankSummary(); updateMgrHero();
+      } catch(se){ console.warn('Settlement create failed:',se); }
+    }
     // Update local state
     var idx = mgrHandovers.findIndex(function(h){return h.id===hoId;});
     if(idx>=0) Object.assign(mgrHandovers[idx],{status:finalStatus,receivedAmount:receivedAmount,managerRemarks:remarks,managerTimestamp:Date.now()});
-    showToast(finalStatus==='approved'?'Handover approved!':'Discrepancy flagged','success');
+    showToast(finalStatus==='approved'?'Approved! Settlement recorded.':'Discrepancy flagged','success');
     renderMgrApprovals();
     renderMgrApprovalHistory();
     initMgrApprovals(); // refresh badge
@@ -2302,6 +2415,7 @@ async function initAdmin() {
     var riderIds=allUsers.filter(function(u){return u.role==='rider';}).map(function(u){return u.uid;});
     allOrders=riderIds.length?await fsGetOrdersForRiders(riderIds):[];
     try { allHandovers=await fsGetAllHandovers(); } catch(e2){ allHandovers=[]; }
+    try { allTransfers=await fsGetAllTransfers(); } catch(e3){ allTransfers=[]; }
   } catch(e) { console.warn('Admin data load failed:',e); showToast('Some data failed to load','error'); }
   finally { loading(false); }
   try { initAdmAnalytics(); } catch(e){ renderAdmAnalytics(); }
@@ -3040,7 +3154,8 @@ function initAdmOrders() {
   var riders=allUsers.filter(function(u){return u.role==='rider';});
   rf.innerHTML='<option value="">All Riders</option>'+riders.map(function(r){return '<option value="'+esc(r.uid)+'">'+esc(r.name)+'</option>';}).join('');
   rf.dataset.populated='1';
-  renderAdmOrders();
+  initOrdQuickFilter();
+  applyOrdQuickFilter();
   initOrdSearch();
   if(!document.getElementById('ordApplyBtn').dataset.bound){
     document.getElementById('ordApplyBtn').dataset.bound='1';
@@ -3180,10 +3295,10 @@ function exportAdmPDF(type) {
   var s=calcSummary(filtOrders);
   var settled=allSettlements.filter(function(st){return st.date>=from&&st.date<=to;}).reduce(function(sum,st){return sum+(+st.receivedAmount||0);},0);
   doc.autoTable({startY:y,margin:{left:mg,right:mg},body:[
-    ['Total Orders',filtOrders.length,'Total COD','₹'+fmtM(s.totalCod)],
-    ['Cash Collected','₹'+fmtM(s.cash),'QR Collected','₹'+fmtM(s.qr)],
-    ['Total Refunds','₹'+fmtM(s.refunds),'Total Distance',s.distance.toFixed(1)+' km'],
-    ['Net Cash','₹'+fmtM(s.netCash),'Settled','₹'+fmtM(settled)]
+    ['Total Orders',filtOrders.length,'Total COD',pdfN(s.totalCod)],
+    ['Cash Collected',pdfN(s.cash),'QR Collected',pdfN(s.qr)],
+    ['Total Refunds',pdfN(s.refunds),'Total Distance',s.distance.toFixed(1)+' km'],
+    ['Net Cash',pdfN(s.netCash),'Settled',pdfN(settled)]
   ],theme:'plain',styles:{fontSize:10,cellPadding:{top:4,bottom:4,left:6,right:6},lineColor:[224,238,236],lineWidth:.4}});
   y=doc.lastAutoTable.finalY+8;
   // Rider table
@@ -3191,7 +3306,7 @@ function exportAdmPDF(type) {
   var rtData=riders.map(function(r){
     var ords=filtOrders.filter(function(o){return o.riderId===r.uid;});
     var rs=calcSummary(ords);
-    return [r.name,ords.length,fmtM(rs.totalCod),fmtM(rs.cash),fmtM(rs.qr),fmtM(rs.refunds),rs.distance.toFixed(1),fmtM(rs.netCash)];
+    return [r.name,ords.length,pdfN(rs.totalCod),pdfN(rs.cash),pdfN(rs.qr),pdfN(rs.refunds),rs.distance.toFixed(1),pdfN(rs.netCash)];
   }).filter(function(r){return +r[1]>0;});
   if(rtData.length){
     doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(14,46,43);
@@ -3206,7 +3321,7 @@ function exportAdmPDF(type) {
     var oData=filtOrders.slice(0,100).map(function(o){
       var ip=o.type==='prepaid'; var es=getExtraSplit(o);
       var cash=(+o.cashCollected||0)+es.cash;
-      return [o.orderId,o.riderName||'—',o.date,ip?'Prepaid':'COD',fmtM(ip?(+o.orderAmount||0):(+o.totalCodAmount||0)),fmtM(cash),(+o.distance||0).toFixed(1)];
+      return [o.orderId,o.riderName||'—',o.date,ip?'Prepaid':'COD',pdfN(ip?(+o.orderAmount||0):(+o.totalCodAmount||0)),cash?pdfN(cash):'0',(+o.distance||0).toFixed(1)];
     });
     doc.autoTable({startY:y,margin:{left:mg,right:mg},head:[['Order ID','Rider','Date','Type','Amount','Cash','KM']],body:oData,theme:'striped',headStyles:{fillColor:[14,46,43],textColor:[255,255,255],fontSize:7},bodyStyles:{fontSize:7}});
   }
@@ -3229,13 +3344,418 @@ function exportOrdersPDF() {
     var ip=o.type==='prepaid'; var es=getExtraSplit(o);
     var cash=(+o.cashCollected||0)+es.cash; var qr=(+o.qrCollected||0)+es.qr;
     return [o.orderId,o.riderName||'—',o.date,fmtTime(o.timestamp),(ip?'Prepaid':'COD'),
-      fmtM(ip?(+o.orderAmount||0):(+o.totalCodAmount||0)),cash?fmtM(cash):'—',qr?fmtM(qr):'—',+o.refund?fmtM(o.refund):'—',(+o.distance||0).toFixed(1)];
+      pdfN(ip?(+o.orderAmount||0):(+o.totalCodAmount||0)),cash?pdfN(cash):'0',qr?pdfN(qr):'0',+o.refund?pdfN(o.refund):'0',(+o.distance||0).toFixed(1)];
   });
   doc.autoTable({startY:30,margin:{left:mg,right:mg},head:[['Order ID','Rider','Date','Time','Type','Amount','Cash','QR','Refund','KM']],body:body,theme:'striped',headStyles:{fillColor:[14,46,43],textColor:[255,255,255],fontSize:8,fontStyle:'bold'},bodyStyles:{fontSize:7},alternateRowStyles:{fillColor:[243,250,248]}});
   doc.save('instaghar-orders-'+from+'-to-'+to+'.pdf');
   showToast('PDF downloaded ('+filtered.length+' orders)','success');
 }
 
+
+
+
+/* ════════════════════════════════════════════════════════════
+   FIRESTORE — MANAGER TRANSFERS
+   ════════════════════════════════════════════════════════════ */
+async function fsGetTransfersForManager(mgrId) {
+  // Get both sent and received transfers
+  var snapFrom = await db.collection('managerTransfers').where('fromManagerId','==',mgrId).get();
+  var snapTo   = await db.collection('managerTransfers').where('toManagerId','==',mgrId).get();
+  var all = {};
+  snapFrom.docs.forEach(function(d){ all[d.id]=Object.assign({id:d.id},d.data()); });
+  snapTo.docs.forEach(function(d){ all[d.id]=Object.assign({id:d.id},d.data()); });
+  return Object.values(all);
+}
+async function fsGetAllTransfers() {
+  var snap = await db.collection('managerTransfers').get();
+  return snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+}
+async function fsAddTransfer(data) { return db.collection('managerTransfers').add(data); }
+async function fsUpdateTransfer(txId, update) {
+  return db.collection('managerTransfers').doc(txId).update(update);
+}
+
+/* ════════════════════════════════════════════════════════════
+   MANAGER — TRANSFER MODULE
+   ════════════════════════════════════════════════════════════ */
+var mgrTransfers = [];
+
+async function initMgrTransfer() {
+  // Populate manager selector
+  try {
+    var allU = allUsers.length ? allUsers : await fsGetAllUsers();
+    var mgrs = allU.filter(function(u){
+      return u.role==='manager' && u.uid!==userProfile.uid && u.active!==false && !u.deleted;
+    });
+    var sel = document.getElementById('txToMgrSel');
+    if(sel) sel.innerHTML = '<option value="">-- Select Manager --</option>'
+      + mgrs.map(function(m){return '<option value="'+esc(m.uid)+'|'+esc(m.name)+'">'+esc(m.name)+'</option>';}).join('');
+  } catch(e){}
+
+  document.getElementById('txDate').value = todayISO();
+
+  loading(true);
+  try {
+    mgrTransfers = await fsGetTransfersForManager(userProfile.uid);
+    // Also update allTransfers for cash position
+    allTransfers = mgrTransfers;
+  } catch(e){ mgrTransfers=[]; }
+  finally { loading(false); }
+
+  renderTransferPosition();
+  renderIncomingTransfers();
+  renderTransferHistory();
+  updateIncomingBadge();
+
+  if(!document.getElementById('txSubmitBtn').dataset.bound) {
+    document.getElementById('txSubmitBtn').dataset.bound='1';
+    document.getElementById('txSubmitBtn').addEventListener('click', sendTransfer);
+  }
+}
+
+function renderTransferPosition() {
+  if(!userProfile) return;
+  var pos = calcManagerCashPosition(userProfile.uid);
+  var el = document.getElementById('transferPosition');
+  if(!el) return;
+  var tc=document.querySelector('.tp-collected'), ti=document.querySelector('.tp-incoming');
+  var to=document.querySelector('.tp-outgoing'), td=document.querySelector('.tp-deposited');
+  var tn=document.querySelector('.tp-net');
+  if(tc) tc.textContent='₹'+fmtM(pos.fromRiders);
+  if(ti) ti.textContent='₹'+fmtM(pos.incoming);
+  if(to) to.textContent='₹'+fmtM(pos.outgoing);
+  if(td) td.textContent='₹'+fmtM(pos.deposited);
+  if(tn) tn.textContent='₹'+fmtM(pos.net);
+}
+
+function renderIncomingTransfers() {
+  var incoming = mgrTransfers.filter(function(t){
+    return t.toManagerId===userProfile.uid && t.status==='pending';
+  });
+  var c = document.getElementById('incomingTransferList');
+  var badge = document.getElementById('incomingTransferCount');
+  if(badge) badge.textContent = incoming.length;
+
+  if(!incoming.length){
+    if(c) c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-transfer"/></svg></div><div class="msg">No incoming transfers</div><div class="sub">Other managers will appear here when they send cash to you</div></div>';
+    return;
+  }
+
+  if(c) c.innerHTML = incoming.map(function(t){
+    return '<div class="transfer-card incoming" data-txid="'+esc(t.id)+'">'
+      +'<div class="tc-head">'
+      +'<div class="tc-direction">'
+      +'<div class="tc-arrow in"><svg><use href="#i-transfer"/></svg></div>'
+      +'<div><div class="tc-name">From: '+esc(t.fromManagerName)+'</div>'
+      +'<div class="tc-meta">'+t.transferDate+' · Sent '+fmtDateTime(t.timestamp)+'</div>'
+      +(t.fromRemarks?'<div class="tc-meta" style="color:var(--teal-deep)">Note: '+esc(t.fromRemarks)+'</div>':'')
+      +'</div></div>'
+      +'<div><div class="tc-amount in">₹'+fmtM(t.amount)+'</div>'
+      +'<span class="status-badge sb-pending">Pending</span>'
+      +'</div>'
+      +'</div>'
+      +'<div style="font-size:11px;color:var(--ink-2);background:var(--grad-soft);border-radius:8px;padding:9px;margin-bottom:9px">'
+      +'<strong>'+esc(t.fromManagerName)+'</strong> sent you <strong>₹'+fmtM(t.amount)+'</strong>. '
+      +'Confirm you have physically received this cash.'
+      +'</div>'
+      +'<button class="tc-ack-btn" data-ackid="'+esc(t.id)+'">'
+      +'<svg><use href="#i-circle-check"/></svg> Acknowledge — I Received This Cash'
+      +'</button>'
+      +'</div>';
+  }).join('');
+
+  // Bind acknowledge buttons
+  if(c) c.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-ackid]');
+    if(btn) acknowledgeTransfer(btn.dataset.ackid);
+  });
+}
+
+function renderTransferHistory() {
+  var c = document.getElementById('transferHistoryList');
+  if(!mgrTransfers.length){
+    if(c) c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No transfers yet</div></div>';
+    return;
+  }
+  var sorted = mgrTransfers.slice().sort(function(a,b){return b.timestamp-a.timestamp;});
+  if(c) c.innerHTML = sorted.map(function(t){
+    var isOut = t.fromManagerId===userProfile.uid;
+    var statusLabel = t.status==='acknowledged'?'Acknowledged':'Pending';
+    return '<div class="transfer-card '+(isOut?'pending-out':'incoming')+'">'
+      +'<div class="tc-head">'
+      +'<div class="tc-direction">'
+      +'<div class="tc-arrow '+(isOut?'out':'in')+'"><svg><use href="#i-transfer"/></svg></div>'
+      +'<div>'
+      +'<div class="tc-name">'+(isOut?'To: '+esc(t.toManagerName):'From: '+esc(t.fromManagerName))+'</div>'
+      +'<div class="tc-meta">'+t.transferDate+' · '+fmtDateTime(t.timestamp)+'</div>'
+      +(t.fromRemarks?'<div class="tc-meta">'+esc(t.fromRemarks)+'</div>':'')
+      +(t.toRemarks&&t.status==='acknowledged'?'<div class="tc-meta" style="color:var(--good)">Ack note: '+esc(t.toRemarks)+'</div>':'')
+      +'</div></div>'
+      +'<div style="text-align:right">'
+      +'<div class="tc-amount '+(isOut?'out':'in')+'">₹'+fmtM(t.amount)+'</div>'
+      +'<span class="status-badge '+(t.status==='acknowledged'?'sb-approved':'sb-pending')+'">'+statusLabel+'</span>'
+      +'</div>'
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+async function sendTransfer() {
+  var mgrVal = document.getElementById('txToMgrSel').value;
+  var amount = +document.getElementById('txAmount').value;
+  var date   = document.getElementById('txDate').value;
+  var remarks= document.getElementById('txRemarks').value.trim();
+  if(!mgrVal){ showToast('Select a manager to transfer to','error'); return; }
+  if(!amount||amount<=0){ showToast('Enter a valid amount','error'); return; }
+  if(!date){ showToast('Select date','error'); return; }
+  var parts = mgrVal.split('|');
+  var toId=parts[0], toName=parts.slice(1).join('|');
+  // Check available cash
+  var pos = calcManagerCashPosition(userProfile.uid);
+  if(amount > pos.net && pos.net >= 0) {
+    if(!confirm('Warning: Transferring Rs '+fmtM(amount)+' but your net cash in hand is Rs '+fmtM(pos.net)+'. Continue anyway?')) return;
+  }
+  loading(true);
+  try {
+    var rec = {
+      fromManagerId: userProfile.uid, fromManagerName: userProfile.name,
+      toManagerId: toId, toManagerName: toName,
+      amount: amount, transferDate: date, timestamp: Date.now(),
+      status: 'pending', fromRemarks: remarks, toRemarks: ''
+    };
+    var ref = await fsAddTransfer(rec);
+    mgrTransfers.push(Object.assign({},rec,{id:ref.id}));
+    allTransfers = mgrTransfers;
+    document.getElementById('txAmount').value='';
+    document.getElementById('txRemarks').value='';
+    showToast('Transfer request sent to '+toName,'success');
+    renderTransferPosition();
+    renderTransferHistory();
+    updateCollectCashBar();
+  } catch(e){ showToast('Failed: '+e.message,'error'); }
+  finally { loading(false); }
+}
+
+async function acknowledgeTransfer(txId) {
+  var tx = mgrTransfers.find(function(t){return t.id===txId;});
+  if(!tx) return;
+  if(!confirm('Confirm you received Rs '+fmtM(tx.amount)+' from '+tx.fromManagerName+'?')) return;
+  loading(true);
+  try {
+    await fsUpdateTransfer(txId, {
+      status: 'acknowledged', toRemarks: 'Acknowledged', acknowledgedAt: Date.now()
+    });
+    var idx = mgrTransfers.findIndex(function(t){return t.id===txId;});
+    if(idx>=0) Object.assign(mgrTransfers[idx],{status:'acknowledged',acknowledgedAt:Date.now()});
+    allTransfers = mgrTransfers;
+    showToast('Transfer acknowledged! Cash position updated.','success');
+    renderTransferPosition();
+    renderIncomingTransfers();
+    renderTransferHistory();
+    updateIncomingBadge();
+    updateCollectCashBar();
+  } catch(e){ showToast('Failed: '+e.message,'error'); }
+  finally { loading(false); }
+}
+window.acknowledgeTransfer = acknowledgeTransfer;
+
+function updateIncomingBadge() {
+  var pending = mgrTransfers.filter(function(t){
+    return t.toManagerId===userProfile.uid && t.status==='pending';
+  }).length;
+  var badge = document.getElementById('mgrIncomingBadge');
+  if(badge){ badge.textContent=pending; badge.classList.toggle('hidden',pending===0); }
+  var tabBtn = document.getElementById('mgrTransferTabBtn');
+  if(tabBtn){
+    tabBtn.innerHTML='<svg><use href="#i-transfer"/></svg> Transfer'
+      +(pending?'<span class="incoming-badge">'+pending+'</span>':'');
+  }
+}
+
+/* ════════════════════════════════════════════════════════════
+   MANAGER — NEW COLLECT TAB (approval-first workflow)
+   ════════════════════════════════════════════════════════════ */
+async function initMgrCollect() {
+  updateCollectCashBar();
+  renderCollectPending();
+  renderCollectHistory();
+}
+
+function calcManagerCashPosition(mgrUid) {
+  // Cash from rider approvals
+  var fromRiders = allSettlements
+    .filter(function(s){return s.managerId===mgrUid;})
+    .reduce(function(sum,s){return sum+(+s.receivedAmount||0);},0);
+  // Incoming acknowledged transfers
+  var incoming = allTransfers
+    .filter(function(t){return t.toManagerId===mgrUid&&t.status==='acknowledged';})
+    .reduce(function(sum,t){return sum+(+t.amount||0);},0);
+  // Outgoing sent transfers (all, regardless of status — cash is gone)
+  var outgoing = allTransfers
+    .filter(function(t){return t.fromManagerId===mgrUid;})
+    .reduce(function(sum,t){return sum+(+t.amount||0);},0);
+  // Deposited to bank
+  var deposited = allDeposits
+    .filter(function(d){return d.managerId===mgrUid;})
+    .reduce(function(sum,d){return sum+(+d.amount||0);},0);
+  var net = Math.max(0, fromRiders + incoming - outgoing - deposited);
+  return { fromRiders:fromRiders, incoming:incoming, outgoing:outgoing, deposited:deposited, net:net };
+}
+
+function updateCollectCashBar() {
+  if(!userProfile) return;
+  var pos = calcManagerCashPosition(userProfile.uid);
+  var el1=document.getElementById('collectTotalApproved');
+  var el2=document.getElementById('collectDeposited');
+  var el3=document.getElementById('collectInHand');
+  if(el1) el1.textContent='₹'+fmtM(pos.fromRiders);
+  if(el2) el2.textContent='₹'+fmtM(pos.deposited);
+  if(el3) el3.textContent='₹'+fmtM(pos.net);
+}
+
+function renderCollectPending() {
+  var pending = mgrHandovers.filter(function(h){return h.status==='pending';});
+  var c = document.getElementById('collectPendingList');
+  var badge = document.getElementById('collectPendingBadge');
+  if(badge) badge.textContent = pending.length;
+
+  if(!pending.length){
+    if(c) c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-cash"/></svg></div><div class="msg">No pending handovers</div><div class="sub">Riders will appear here when they submit cash to you</div></div>';
+    return;
+  }
+
+  if(c) c.innerHTML = pending.map(function(h){
+    return '<div class="approval-card needs-action" id="cp-'+esc(h.id)+'">'
+      +'<div class="ac-head">'
+      +'<div><div class="ac-rider-name">'+esc(h.riderName)+'</div>'
+      +'<div class="ac-meta">Business date: <strong>'+h.businessDate+'</strong></div>'
+      +'<div class="ac-meta">Submitted: '+fmtDateTime(h.riderTimestamp)+'</div>'
+      +(h.riderRemarks?'<div class="ac-meta" style="color:var(--teal-deep);margin-top:2px">Note: '+esc(h.riderRemarks)+'</div>':'')
+      +'</div>'
+      +'<div style="text-align:right"><div class="ac-submitted">₹'+fmtM(h.submittedAmount)+'</div>'
+      +'<div class="ac-sublbl">Rider submitted</div></div>'
+      +'</div>'
+      +'<div style="font-size:11px;color:var(--ink-3);margin-bottom:10px;padding:8px;background:var(--grad-soft);border-radius:8px">Confirm you physically received <strong style="color:var(--teal-dark)">₹'+fmtM(h.submittedAmount)+'</strong> from '+esc(h.riderName)+'</div>'
+      +'<div class="ac-btns">'
+      +'<button class="ac-btn ac-btn-approve" data-cid="'+esc(h.id)+'"><svg><use href="#i-check"/></svg> Yes, Received — Approve</button>'
+      +'</div>'
+      +'</div>';
+  }).join('');
+
+  // Bind click events
+  if(c) c.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-cid]');
+    if(btn) approveCollect(btn.dataset.cid);
+  });
+}
+
+async function approveCollect(hoId) {
+  var ho = mgrHandovers.find(function(h){return h.id===hoId;});
+  if(!ho) return;
+  if(!confirm('Confirm receipt of Rs '+fmtM(ho.submittedAmount)+' from '+ho.riderName+'. This will be recorded as settled.')) return;
+  loading(true);
+  try {
+    // 1. Update handover status
+    await fsUpdateHandover(hoId, {
+      status: 'approved',
+      receivedAmount: ho.submittedAmount,
+      managerTimestamp: Date.now()
+    });
+    // 2. Auto-create settlement record
+    var settl = {
+      riderId: ho.riderId, riderName: ho.riderName,
+      date: ho.businessDate,
+      receivedAmount: ho.submittedAmount,
+      managerId: userProfile.uid, managerName: userProfile.name,
+      timestamp: Date.now(), remarks: 'Auto-approved from handover',
+      source: 'handover'
+    };
+    var ref = await fsAddSettlement(settl);
+    // Update local state
+    var idx = mgrHandovers.findIndex(function(h){return h.id===hoId;});
+    if(idx>=0) Object.assign(mgrHandovers[idx],{status:'approved',receivedAmount:ho.submittedAmount,managerTimestamp:Date.now()});
+    allSettlements.push(Object.assign({},settl,{id:ref.id}));
+    showToast('Approved! ₹'+fmtM(ho.submittedAmount)+' from '+ho.riderName,'success');
+    updateCollectCashBar();
+    renderCollectPending();
+    renderCollectHistory();
+    updateMgrHero();
+    updateBankSummary();
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  finally{loading(false);}
+}
+
+function renderCollectHistory() {
+  var approved = mgrHandovers.filter(function(h){return h.status!=='pending';});
+  approved.sort(function(a,b){return (b.managerTimestamp||0)-(a.managerTimestamp||0);});
+  var c = document.getElementById('collectHistoryList');
+  if(!approved.length){
+    if(c) c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No collections yet</div><div class="sub">Approved handovers will appear here</div></div>';
+    return;
+  }
+  if(c) c.innerHTML = approved.map(function(h){
+    var diff = (+h.receivedAmount||0)-(+h.submittedAmount||0);
+    return '<div class="ho-card">'
+      +'<div class="ho-card-head">'
+      +'<div><div class="ho-card-title">'+esc(h.riderName)+'</div>'
+      +'<div class="ho-card-sub">'+h.businessDate+' · '+fmtDateTime(h.managerTimestamp||h.riderTimestamp)+'</div></div>'
+      +'<div style="text-align:right"><div class="ho-card-amt">₹'+fmtM(h.receivedAmount||h.submittedAmount)+'</div>'
+      +'<span class="status-badge sb-'+h.status+'">'+(h.status==='approved'?'Approved':'Discrepancy')+'</span>'
+      +'</div></div>'
+      +(diff!==0?'<div style="margin-top:5px">'+(diff<0?'<span class="di-short">↓ Short ₹'+fmtM(Math.abs(diff))+'</span>':'<span class="di-excess">↑ Excess ₹'+fmtM(diff)+'</span>')+'</div>':'')
+      +'</div>';
+  }).join('');
+}
+
+/* ════════════════════════════════════════════════════════════
+   ORDERS TAB — Quick Date Filter Init
+   ════════════════════════════════════════════════════════════ */
+var ordQuickPeriod = 'today';
+var ordQfCustomFrom = '', ordQfCustomTo = '';
+
+function initOrdQuickFilter() {
+  var bar = document.getElementById('ordQuickFilter');
+  if(!bar || bar.dataset.bound) return;
+  bar.dataset.bound = '1';
+
+  // Set today as default
+  var today = todayISO();
+  var qff = document.getElementById('ordQfFrom');
+  var qft = document.getElementById('ordQfTo');
+  if(qff) qff.value = today;
+  if(qft) qft.value = today;
+
+  bar.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-operiod]');
+    if(!btn) return;
+    ordQuickPeriod = btn.dataset.operiod;
+    bar.querySelectorAll('.qf-btn').forEach(function(b){b.classList.toggle('active',b===btn);});
+    var cstm = document.getElementById('ordQfCstmDates');
+    if(cstm) cstm.classList.toggle('hidden', ordQuickPeriod!=='custom');
+    if(ordQuickPeriod!=='custom') applyOrdQuickFilter();
+  });
+
+  var applyBtn = document.getElementById('ordQfApply');
+  if(applyBtn && !applyBtn.dataset.bound){
+    applyBtn.dataset.bound='1';
+    applyBtn.addEventListener('click', function(){
+      ordQfCustomFrom = (document.getElementById('ordQfFrom')||{}).value||todayISO();
+      ordQfCustomTo   = (document.getElementById('ordQfTo')||{}).value||todayISO();
+      applyOrdQuickFilter();
+    });
+  }
+}
+
+function applyOrdQuickFilter() {
+  var dates = periodToDates(ordQuickPeriod, ordQfCustomFrom, ordQfCustomTo);
+  ordFilter.from = dates.from;
+  ordFilter.to   = dates.to;
+  // Sync the manual date inputs if they exist
+  var f=document.getElementById('ordFrom'), t=document.getElementById('ordTo');
+  if(f) f.value=dates.from;
+  if(t) t.value=dates.to;
+  renderAdmOrders();
+}
 
 /* ════════════════════════════════════════════════════════════
    HELPER: resolve date range from period string
@@ -3568,6 +4088,19 @@ function renderOrderDetailCard(o) {
     + '</div></div>';
 }
 
+/* Helper: admin manager card transfer summary */
+function buildMgrTransferSummary(mgrUid, from, to) {
+  var txOut = allTransfers.filter(function(t){return t.fromManagerId===mgrUid&&t.transferDate>=from&&t.transferDate<=to;});
+  var txIn  = allTransfers.filter(function(t){return t.toManagerId===mgrUid&&t.transferDate>=from&&t.transferDate<=to&&t.status==='acknowledged';});
+  if(!txOut.length&&!txIn.length) return '';
+  var sentAmt = txOut.reduce(function(s,t){return s+(+t.amount||0);},0);
+  var rcvdAmt = txIn.reduce(function(s,t){return s+(+t.amount||0);},0);
+  return '<div style="display:flex;gap:9px;font-size:11px;background:#f0fdf9;border-radius:9px;padding:8px 12px;margin-top:6px">'
+    +(sentAmt?'<div>Transferred Out: <strong style="color:var(--warn)">₹'+fmtM(sentAmt)+'</strong></div>':'')
+    +(rcvdAmt?'<div>Received In: <strong style="color:var(--good)">₹'+fmtM(rcvdAmt)+'</strong></div>':'')
+    +'</div>';
+}
+
 /* ══════════════════════════
    TAB BAR HELPER
    ══════════════════════════ */
@@ -3578,9 +4111,11 @@ function setupTabBar(barId,prefix) {
     document.querySelectorAll('#'+barId+' .tab-btn').forEach(function(b){b.classList.toggle('active',b===btn);});
     document.querySelectorAll('[id^="'+prefix+'"]').forEach(function(el){el.classList.toggle('active',el.id===prefix+tab);});
     if(barId==='mgrTabBar'){
-      if(tab==='history')renderSettlHistory();
+      if(tab==='collect'){try{initMgrCollect();}catch(e){console.warn(e);}}
+      else if(tab==='history')renderSettlHistory();
       else if(tab==='bank'){renderDepHistory();updateBankSummary();}
       else if(tab==='approvals'){try{initMgrApprovals();}catch(e){}}
+      else if(tab==='transfer'){try{initMgrTransfer();}catch(e){console.warn(e);}}
       else if(tab==='cash'){try{initMgrCash();}catch(e){console.warn(e);}}
       else if(tab==='shift'){try{initMgrShift();}catch(e){console.warn(e);}}
       else if(tab==='incidents'){try{initMgrIncidents();}catch(e){console.warn(e);}}
