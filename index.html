@@ -523,6 +523,72 @@ select.fin{cursor:pointer}
 .pending-dot{width:8px;height:8px;background:var(--warn);border-radius:50%;display:inline-block;margin-left:3px;animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
+
+/* ── ANALYTICS & REPORTING ── */
+.date-range-bar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.date-range-bar select,.date-range-bar input{flex:1;min-width:100px;padding:9px 12px;background:white;border:1.5px solid var(--line);border-radius:10px;font-family:inherit;font-size:12px;font-weight:600;color:var(--ink);outline:none}
+.date-range-bar select:focus,.date-range-bar input:focus{border-color:var(--teal)}
+.export-bar{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+.export-btn{display:flex;align-items:center;gap:5px;padding:9px 14px;border:1.5px solid var(--line);border-radius:10px;background:white;font-family:inherit;font-size:11px;font-weight:700;color:var(--ink-2);cursor:pointer;transition:all .15s;letter-spacing:.03em;text-transform:uppercase}
+.export-btn svg{width:14px;height:14px}
+.export-btn:hover{border-color:var(--teal);color:var(--teal-deep)}
+.export-btn.pdf{border-color:var(--bad);color:var(--bad)}
+.export-btn.pdf:hover{background:var(--bad);color:white}
+.export-btn.csv{border-color:var(--good);color:var(--good)}
+.export-btn.csv:hover{background:var(--good);color:white}
+.analytics-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+@media(min-width:500px){.analytics-grid{grid-template-columns:repeat(4,1fr)}}
+.perf-table{width:100%;border-collapse:collapse}
+.perf-table th{text-align:left;padding:8px 10px;font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);font-weight:700;border-bottom:2px solid var(--line-strong);white-space:nowrap;background:var(--bg)}
+.perf-table td{padding:9px 10px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:middle}
+.perf-table tr:last-child td{border-bottom:none}
+.perf-table tr:hover td{background:var(--bg)}
+.perf-name{font-weight:700;color:var(--ink)}
+.perf-sub{font-size:10px;color:var(--ink-3);margin-top:1px}
+.perf-num{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+.rank-badge{width:22px;height:22px;border-radius:50%;background:var(--grad);color:white;font-size:10px;font-weight:800;display:inline-grid;place-items:center}
+.rank-badge.r2{background:var(--line-strong);color:var(--ink-2)}
+.rank-badge.r3{background:#fdebcf;color:var(--warn)}
+.period-tabs{display:flex;gap:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.period-tab{flex:1;padding:9px 6px;border:none;background:transparent;font-family:inherit;font-size:11px;font-weight:700;color:var(--ink-3);cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.04em;border-right:1px solid var(--line)}
+.period-tab:last-child{border-right:none}
+.period-tab.active{background:var(--ink);color:white}
+/* ── MANAGER CASH CONTROL ── */
+.cash-ledger{background:var(--teal-dark);color:white;border-radius:var(--radius-lg);padding:20px;margin-bottom:14px;box-shadow:var(--shadow-lift)}
+.cl-title{font-size:10px;text-transform:uppercase;letter-spacing:.12em;opacity:.7;font-weight:700;margin-bottom:16px}
+.cl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.cl-item{background:rgba(255,255,255,.12);border-radius:10px;padding:12px}
+.cl-item.highlight{background:rgba(52,196,123,.25);border:1px solid rgba(52,196,123,.4)}
+.cl-item.warning{background:rgba(196,114,0,.25);border:1px solid rgba(196,114,0,.4)}
+.cl-val{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.cl-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.08em;opacity:.75;font-weight:700;margin-top:3px}
+.cl-total{margin-top:12px;background:rgba(255,255,255,.18);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center}
+.cl-total-lbl{font-size:13px;font-weight:700}
+.cl-total-val{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+/* ── SHIFT HANDOVER ── */
+.shift-card{background:white;border:1px solid var(--line);border-radius:var(--radius);padding:13px;margin-bottom:9px;box-shadow:var(--shadow)}
+.shift-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}
+.shift-from{font-weight:700;font-size:13px;color:var(--ink)}
+.shift-to{font-size:11px;color:var(--ink-3);margin-top:1px}
+.shift-amt{font-weight:800;font-size:17px;font-variant-numeric:tabular-nums;color:var(--teal-dark);text-align:right}
+/* ── INCIDENTS ── */
+.incident-card{background:white;border:1.5px solid var(--line);border-radius:var(--radius);padding:13px;margin-bottom:9px;box-shadow:var(--shadow)}
+.incident-card.open{border-color:var(--bad);background:#fff8f7}
+.incident-card.resolved{opacity:.7}
+.inc-type{display:inline-flex;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px}
+.inc-short{background:var(--bad-soft);color:var(--bad)}
+.inc-missing{background:var(--warn-soft);color:var(--warn)}
+.inc-dispute{background:#f0e6ff;color:#7c3aed}
+.inc-mismatch{background:var(--blue-soft);color:var(--blue-deep)}
+.inc-delayed{background:#f1f5f9;color:#475569}
+.inc-other{background:var(--bg);color:var(--ink-3);border:1px solid var(--line)}
+.inc-desc{font-size:12px;color:var(--ink-2);font-weight:500;line-height:1.4}
+.inc-meta{font-size:10px;color:var(--ink-3);margin-top:5px;font-weight:500}
+/* ── ENHANCED BANK DEPOSIT ── */
+.dep-method-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.dep-method-pill{padding:7px 12px;border:1.5px solid var(--line);border-radius:999px;font-family:inherit;font-size:11px;font-weight:700;color:var(--ink-3);cursor:pointer;transition:all .15s;background:white}
+.dep-method-pill.active{background:var(--teal-dark);color:white;border-color:var(--teal-dark)}
+
 </style>
 </head>
 <body>
@@ -560,6 +626,11 @@ select.fin{cursor:pointer}
 <symbol id="i-share" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
 <symbol id="i-refresh" viewBox="0 0 24 24"><polyline points="23,4 23,10 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
 <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+<symbol id="i-analytics" viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="i-swap" viewBox="0 0 24 24"><polyline points="17,1 21,5 17,9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M3 11V9a4 4 0 014-4h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><polyline points="7,23 3,19 7,15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M21 13v2a4 4 0 01-4 4H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="2" fill="none"/><line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
+<symbol id="i-orders" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="currentColor" stroke-width="2" fill="none"/><rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" stroke-width="2" fill="none"/><line x1="9" y1="12" x2="15" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="9" y1="16" x2="13" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
 <symbol id="i-handshake" viewBox="0 0 24 24"><path d="M20.42 4.58a5.4 5.4 0 00-7.65 0l-.77.78-.77-.78a5.4 5.4 0 00-7.65 7.65l1.06 1.06L12 21.23l7.36-7.94 1.06-1.06a5.4 5.4 0 000-7.65z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></symbol>
 <symbol id="i-people" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" fill="none"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
 <symbol id="i-disable" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
@@ -758,6 +829,9 @@ service cloud.firestore {
       <button class="tab-btn" data-tab="history"><svg><use href="#i-list"/></svg> History</button>
       <button class="tab-btn" data-tab="bank"><svg><use href="#i-bank"/></svg> Bank</button>
       <button class="tab-btn" data-tab="approvals" id="mgrApprovalsTabBtn"><svg><use href="#i-circle-check"/></svg> Approvals</button>
+      <button class="tab-btn" data-tab="cash"><svg><use href="#i-cash"/></svg> Cash</button>
+      <button class="tab-btn" data-tab="shift"><svg><use href="#i-swap"/></svg> Shift</button>
+      <button class="tab-btn" data-tab="incidents"><svg><use href="#i-alert"/></svg> Incidents</button>
     </div>
     <!-- COLLECT TAB -->
     <div class="tab-content active" id="mgr-tab-collect">
@@ -825,7 +899,19 @@ service cloud.firestore {
             <div class="lf"><label>Amount (₹)</label><input type="number" class="fin" id="depAmt" placeholder="0" min="0" step="1"/></div>
             <div class="lf"><label>Date</label><input type="date" class="fin" id="depDate"/></div>
           </div>
-          <div class="lf"><label>Remarks / Ref No <span class="opt">(optional)</span></label><input type="text" class="fin" id="depRemarks" placeholder="Transaction ID, bank branch…"/></div>
+          <div class="lf"><label>Deposit Method</label>
+            <div class="dep-method-pills" id="depMethodPills">
+              <button type="button" class="dep-method-pill active" data-method="cash">Cash</button>
+              <button type="button" class="dep-method-pill" data-method="neft">NEFT</button>
+              <button type="button" class="dep-method-pill" data-method="rtgs">RTGS</button>
+              <button type="button" class="dep-method-pill" data-method="upi">UPI</button>
+            </div>
+          </div>
+          <div class="fin-row">
+            <div class="lf"><label>Bank Name <span class="opt">(optional)</span></label><input type="text" class="fin" id="depBank" placeholder="e.g. HDFC Bank"/></div>
+            <div class="lf"><label>Transaction / Ref No <span class="opt">(optional)</span></label><input type="text" class="fin" id="depRefNo" placeholder="UTR / Ref number"/></div>
+          </div>
+          <div class="lf"><label>Remarks <span class="opt">(optional)</span></label><input type="text" class="fin" id="depRemarks" placeholder="Any notes…"/></div>
           <button class="btn-primary blue" id="depSubmitBtn">
             <svg><use href="#i-bank"/></svg> Record Deposit
           </button>
@@ -851,6 +937,88 @@ service cloud.firestore {
       </section>
     </div>
 
+
+    <!-- CASH CONTROL TAB -->
+    <div class="tab-content" id="mgr-tab-cash">
+      <div class="cash-ledger" id="cashLedger">
+        <div class="cl-title">Live Cash Position · <span id="cashLedgerDate"></span></div>
+        <div class="cl-grid">
+          <div class="cl-item"><div class="cl-val" id="clOpening">₹0</div><div class="cl-lbl">Opening Balance</div></div>
+          <div class="cl-item highlight"><div class="cl-val" id="clReceived">₹0</div><div class="cl-lbl">Received from Riders</div></div>
+          <div class="cl-item"><div class="cl-val" id="clDeposited">₹0</div><div class="cl-lbl">Deposited to Bank</div></div>
+          <div class="cl-item warning"><div class="cl-val" id="clHandedOver">₹0</div><div class="cl-lbl">Handed to Next Shift</div></div>
+        </div>
+        <div class="cl-total"><div class="cl-total-lbl">Current Cash in Hand</div><div class="cl-total-val" id="clInHand">₹0</div></div>
+      </div>
+      <section class="section">
+        <div class="section-head"><h2>Set Opening Balance</h2></div>
+        <div class="section-body">
+          <div class="fin-row">
+            <div class="lf"><label>Date</label><input type="date" class="fin" id="cashSessionDate"/></div>
+            <div class="lf"><label>Opening Balance (₹)</label><input type="number" class="fin" id="cashOpeningBal" placeholder="0" min="0" step="1"/></div>
+          </div>
+          <button class="btn-primary" id="saveCashSessionBtn" style="background:var(--teal-dark)"><svg><use href="#i-check"/></svg> Save Opening Balance</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- SHIFT HANDOVER TAB -->
+    <div class="tab-content" id="mgr-tab-shift">
+      <section class="section">
+        <div class="section-head"><h2>Shift Handover</h2><div class="head-right">Transfer cash to next shift</div></div>
+        <div class="section-body">
+          <div class="info-box">Record when you hand over cash to the next shift manager at end of your shift.</div>
+          <div class="fin-row">
+            <div class="lf"><label>Handover To (Manager)</label><select class="fin" id="shiftToMgrSel"><option value="">-- Select Manager --</option></select></div>
+            <div class="lf"><label>Cash Amount (₹)</label><input type="number" class="fin" id="shiftAmount" placeholder="0" min="0" step="1"/></div>
+          </div>
+          <div class="fin-row">
+            <div class="lf"><label>Shift Type</label><select class="fin" id="shiftType"><option value="morning">Morning</option><option value="afternoon">Afternoon</option><option value="evening">Evening</option><option value="night">Night</option></select></div>
+            <div class="lf"><label>Date</label><input type="date" class="fin" id="shiftDate"/></div>
+          </div>
+          <div class="lf"><label>Remarks <span class="opt">(optional)</span></label><input type="text" class="fin" id="shiftRemarks" placeholder="Any notes for next shift…"/></div>
+          <button class="btn-primary green" id="shiftSubmitBtn"><svg><use href="#i-swap"/></svg> Submit Shift Handover</button>
+        </div>
+      </section>
+      <section class="section">
+        <div class="section-head"><h2>Shift History</h2></div>
+        <div class="section-body"><div id="shiftHistoryList"></div></div>
+      </section>
+    </div>
+
+    <!-- INCIDENTS TAB -->
+    <div class="tab-content" id="mgr-tab-incidents">
+      <section class="section">
+        <div class="section-head"><h2>Log Incident</h2></div>
+        <div class="section-body">
+          <div class="lf"><label>Incident Type</label>
+            <select class="fin" id="incType">
+              <option value="short_cash">Short Cash Received</option>
+              <option value="missing_cod">Missing COD</option>
+              <option value="dispute">Rider Payment Dispute</option>
+              <option value="mismatch">Counting Mismatch</option>
+              <option value="delayed">Delayed Settlement</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="fin-row">
+            <div class="lf"><label>Rider Involved <span class="opt">(optional)</span></label><select class="fin" id="incRiderSel"><option value="">-- No specific rider --</option></select></div>
+            <div class="lf"><label>Amount Involved (₹) <span class="opt">(optional)</span></label><input type="number" class="fin" id="incAmount" placeholder="0" min="0" step="1"/></div>
+          </div>
+          <div class="fin-row">
+            <div class="lf"><label>Date</label><input type="date" class="fin" id="incDate"/></div>
+            <div class="lf"><label>Status</label><select class="fin" id="incStatus"><option value="open">Open</option><option value="resolved">Resolved</option></select></div>
+          </div>
+          <div class="lf"><label>Description</label><textarea class="fin" id="incDesc" rows="2" placeholder="Describe the incident…" style="resize:vertical;min-height:60px"></textarea></div>
+          <button class="btn-primary red" id="incSubmitBtn"><svg><use href="#i-alert"/></svg> Log Incident</button>
+        </div>
+      </section>
+      <section class="section">
+        <div class="section-head"><h2>Incident Log</h2></div>
+        <div class="section-body"><div id="incidentsList"></div></div>
+      </section>
+    </div>
+
   </div>
 
   <!-- ADMIN PANEL -->
@@ -867,14 +1035,52 @@ service cloud.firestore {
       </div>
     </div>
     <div class="tab-bar" id="admTabBar">
-      <button class="tab-btn active" data-tab="riders"><svg><use href="#i-chart"/></svg> Riders</button>
+      <button class="tab-btn active" data-tab="analytics"><svg><use href="#i-analytics"/></svg> Analytics</button>
+      <button class="tab-btn" data-tab="riders"><svg><use href="#i-chart"/></svg> Riders</button>
       <button class="tab-btn" data-tab="managers"><svg><use href="#i-users"/></svg> Managers</button>
       <button class="tab-btn" data-tab="audit"><svg><use href="#i-shield"/></svg> Audit</button>
       <button class="tab-btn" data-tab="recon"><svg><use href="#i-shield"/></svg> Recon</button>
+      <button class="tab-btn" data-tab="orders"><svg><use href="#i-orders"/></svg> Orders</button>
       <button class="tab-btn" data-tab="users"><svg><use href="#i-key"/></svg> Users</button>
     </div>
+
+    <!-- ANALYTICS TAB -->
+    <div class="tab-content active" id="adm-tab-analytics">
+      <!-- Period selector -->
+      <div class="period-tabs">
+        <button class="period-tab active" data-period="today">Today</button>
+        <button class="period-tab" data-period="week">This Week</button>
+        <button class="period-tab" data-period="month">This Month</button>
+        <button class="period-tab" data-period="custom">Custom</button>
+      </div>
+      <div class="custom-date-row hidden" id="analyticsCstmDates" style="margin-bottom:12px">
+        <input type="date" class="fin" id="anlFrom" style="flex:1"/>
+        <input type="date" class="fin" id="anlTo" style="flex:1"/>
+        <button class="filter-pill active" id="anlApplyBtn">Apply</button>
+      </div>
+      <!-- Export buttons -->
+      <div class="export-bar">
+        <button class="export-btn pdf" id="expRiderPdf"><svg><use href="#i-download"/></svg> Rider Report PDF</button>
+        <button class="export-btn csv" id="expOpsCsv"><svg><use href="#i-download"/></svg> Operations CSV</button>
+        <button class="export-btn csv" id="expPayCsv"><svg><use href="#i-download"/></svg> Payment Recon CSV</button>
+        <button class="export-btn csv" id="expPerfCsv"><svg><use href="#i-download"/></svg> Performance CSV</button>
+      </div>
+      <!-- Summary metrics -->
+      <div class="analytics-grid" id="anlSummaryCards"></div>
+      <!-- Rider Performance Comparison -->
+      <section class="section">
+        <div class="section-head"><h2>Rider Performance</h2><div class="head-right" id="anlPeriodLabel">Today</div></div>
+        <div class="section-body" style="overflow-x:auto"><div id="anlPerfTable"></div></div>
+      </section>
+      <!-- Daily breakdown -->
+      <section class="section">
+        <div class="section-head"><h2>Daily Summary</h2></div>
+        <div class="section-body" style="overflow-x:auto"><div id="anlDailyTable"></div></div>
+      </section>
+    </div>
+
     <!-- RIDERS TAB -->
-    <div class="tab-content active" id="adm-tab-riders">
+    <div class="tab-content" id="adm-tab-riders">
       <div style="display:flex;gap:7px;margin-bottom:12px;align-items:center">
         <input type="date" class="fin" id="admFrom" style="flex:1;padding:9px 13px;font-size:13px"/>
         <span style="color:var(--ink-3);font-size:12px;font-weight:600">to</span>
@@ -921,6 +1127,22 @@ service cloud.firestore {
           <div class="order-tbl-wrap"><div id="orderTblWrap"></div></div>
         </div>
       </section>
+    </div>
+
+
+    <!-- ORDERS TAB -->
+    <div class="tab-content" id="adm-tab-orders">
+      <div class="date-range-bar">
+        <select class="fin" id="ordRiderFilter" style="max-width:160px"><option value="">All Riders</option></select>
+        <input type="date" id="ordFrom"/>
+        <input type="date" id="ordTo"/>
+        <select id="ordTypeFilter"><option value="">All Types</option><option value="cod">COD</option><option value="prepaid">Prepaid</option></select>
+        <button class="filter-pill active" id="ordApplyBtn">Filter</button>
+        <button class="export-btn csv" id="expOrdersCsv" style="margin-left:auto"><svg><use href="#i-download"/></svg> CSV</button>
+        <button class="export-btn pdf" id="expOrdersPdf"><svg><use href="#i-download"/></svg> PDF</button>
+      </div>
+      <div style="font-size:11px;color:var(--ink-3);font-weight:600;margin-bottom:8px" id="ordCountLabel"></div>
+      <div style="overflow-x:auto"><div id="ordersTableWrap"></div></div>
     </div>
 
     <!-- USERS TAB -->
@@ -2020,6 +2242,7 @@ async function initAdmin() {
     try { allHandovers=await fsGetAllHandovers(); } catch(e2){ allHandovers=[]; }
   } catch(e) { console.warn('Admin data load failed:',e); showToast('Some data failed to load','error'); }
   finally { loading(false); }
+  try { initAdmAnalytics(); } catch(e){ renderAdmAnalytics(); }
   await renderAdmRiders();
   renderAdmManagers();
   renderAudit();
@@ -2335,6 +2558,612 @@ async function toggleUserStatus(uid, enable) {
 }
 window.toggleUserStatus=toggleUserStatus;
 
+
+
+/* ════════════════════════════════════════════════════════════════════
+   NEW FIRESTORE HELPERS — SHIFT, INCIDENTS, CASH SESSION
+   ════════════════════════════════════════════════════════════════════ */
+async function fsGetShiftHandovers(mgrId) {
+  var q = mgrId ? db.collection('shiftHandovers').where('fromManagerId','==',mgrId) : db.collection('shiftHandovers');
+  var snap = await q.get();
+  return snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+}
+async function fsAddShiftHandover(data) { return db.collection('shiftHandovers').add(data); }
+async function fsGetIncidents(mgrId) {
+  var q = mgrId ? db.collection('incidents').where('managerId','==',mgrId) : db.collection('incidents');
+  var snap = await q.get();
+  return snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+}
+async function fsAddIncident(data) { return db.collection('incidents').add(data); }
+async function fsGetCashSession(mgrId, date) {
+  var snap = await db.collection('cashSessions').where('managerId','==',mgrId).where('date','==',date).get();
+  if(snap.empty) return null;
+  return Object.assign({id:snap.docs[0].id}, snap.docs[0].data());
+}
+async function fsSaveCashSession(data) {
+  var existing = await db.collection('cashSessions').where('managerId','==',data.managerId).where('date','==',data.date).get();
+  if(!existing.empty) return db.collection('cashSessions').doc(existing.docs[0].id).update(data);
+  return db.collection('cashSessions').add(data);
+}
+async function fsGetAllShiftHandovers() {
+  var snap = await db.collection('shiftHandovers').get();
+  return snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+}
+async function fsGetAllIncidents() {
+  var snap = await db.collection('incidents').get();
+  return snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   MANAGER — CASH CONTROL MODULE
+   ════════════════════════════════════════════════════════════════════ */
+var mgrCashSession = null;
+var mgrShiftHandovers = [];
+var mgrIncidents = [];
+
+async function initMgrCash() {
+  var today = todayISO();
+  document.getElementById('cashSessionDate').value = today;
+  document.getElementById('cashLedgerDate').textContent = today;
+  loading(true);
+  try {
+    mgrCashSession = await fsGetCashSession(userProfile.uid, today);
+    mgrShiftHandovers = await fsGetShiftHandovers(userProfile.uid);
+  } catch(e){ console.warn(e); }
+  finally { loading(false); }
+  renderCashLedger();
+  document.getElementById('cashSessionDate').addEventListener('change', async function(e){
+    document.getElementById('cashLedgerDate').textContent = e.target.value;
+    loading(true);
+    try { mgrCashSession = await fsGetCashSession(userProfile.uid, e.target.value); } catch(e2){}
+    finally { loading(false); }
+    renderCashLedger();
+  });
+  document.getElementById('saveCashSessionBtn').addEventListener('click', saveCashSession);
+}
+
+function renderCashLedger() {
+  var date = document.getElementById('cashSessionDate').value || todayISO();
+  var opening = mgrCashSession ? (+mgrCashSession.openingBalance||0) : 0;
+  var received = allSettlements.filter(function(s){return s.managerId===userProfile.uid&&s.date===date;})
+    .reduce(function(sum,s){return sum+(+s.receivedAmount||0);},0);
+  var deposited = allDeposits.filter(function(d){return d.managerId===userProfile.uid&&d.date===date;})
+    .reduce(function(sum,d){return sum+(+d.amount||0);},0);
+  var handedOver = mgrShiftHandovers.filter(function(h){return h.fromManagerId===userProfile.uid&&h.handoverDate===date;})
+    .reduce(function(sum,h){return sum+(+h.cashAmount||0);},0);
+  var inHand = opening + received - deposited - handedOver;
+  document.getElementById('clOpening').textContent = '₹'+fmtM(opening);
+  document.getElementById('clReceived').textContent = '₹'+fmtM(received);
+  document.getElementById('clDeposited').textContent = '₹'+fmtM(deposited);
+  document.getElementById('clHandedOver').textContent = '₹'+fmtM(handedOver);
+  document.getElementById('clInHand').textContent = '₹'+fmtM(inHand);
+  if(document.getElementById('cashOpeningBal')&&!document.getElementById('cashOpeningBal').value)
+    document.getElementById('cashOpeningBal').value = opening||'';
+}
+
+async function saveCashSession() {
+  var date = document.getElementById('cashSessionDate').value;
+  var opening = +document.getElementById('cashOpeningBal').value||0;
+  if(!date){showToast('Select date','error');return;}
+  loading(true);
+  try {
+    await fsSaveCashSession({managerId:userProfile.uid, managerName:userProfile.name, date:date, openingBalance:opening, updatedAt:Date.now()});
+    mgrCashSession = {managerId:userProfile.uid, managerName:userProfile.name, date:date, openingBalance:opening};
+    renderCashLedger();
+    showToast('Cash session saved!','success');
+  } catch(e){ showToast('Failed: '+e.message,'error'); }
+  finally { loading(false); }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   MANAGER — SHIFT HANDOVER MODULE
+   ════════════════════════════════════════════════════════════════════ */
+async function initMgrShift() {
+  document.getElementById('shiftDate').value = todayISO();
+  // Populate "to manager" selector
+  try {
+    var allU = allUsers.length ? allUsers : await fsGetAllUsers();
+    var mgrs = allU.filter(function(u){return u.role==='manager'&&u.uid!==userProfile.uid&&u.active!==false;});
+    document.getElementById('shiftToMgrSel').innerHTML =
+      '<option value="">-- Select Manager --</option>'
+      + mgrs.map(function(m){return '<option value="'+esc(m.uid)+'|'+esc(m.name)+'">'+esc(m.name)+'</option>';}).join('');
+  } catch(e){}
+  loading(true);
+  try { mgrShiftHandovers = await fsGetShiftHandovers(userProfile.uid); } catch(e){ mgrShiftHandovers=[]; }
+  finally { loading(false); }
+  renderShiftHistory();
+  document.getElementById('shiftSubmitBtn').addEventListener('click', submitShiftHandover);
+}
+
+function renderShiftHistory() {
+  var c = document.getElementById('shiftHistoryList');
+  if(!mgrShiftHandovers.length){
+    c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-swap"/></svg></div><div class="msg">No shift handovers yet</div><div class="sub">Record your first shift handover above</div></div>';
+    return;
+  }
+  var sorted = mgrShiftHandovers.slice().sort(function(a,b){return b.timestamp-a.timestamp;});
+  c.innerHTML = sorted.map(function(h){
+    return '<div class="shift-card">'
+      +'<div class="shift-head"><div><div class="shift-from">To: '+esc(h.toManagerName)+'</div><div class="shift-to">'+esc(h.shiftType||'')+' · '+h.handoverDate+' · '+fmtDateTime(h.timestamp)+'</div></div>'
+      +'<div><div class="shift-amt">₹'+fmtM(h.cashAmount)+'</div><span class="status-badge sb-approved">Done</span></div>'
+      +'</div>'
+      +(h.remarks?'<div style="font-size:11px;color:var(--ink-3)">'+esc(h.remarks)+'</div>':'')
+      +'</div>';
+  }).join('');
+}
+
+async function submitShiftHandover() {
+  var mgrVal = document.getElementById('shiftToMgrSel').value;
+  var amount = +document.getElementById('shiftAmount').value;
+  var shiftType = document.getElementById('shiftType').value;
+  var date = document.getElementById('shiftDate').value;
+  var remarks = document.getElementById('shiftRemarks').value.trim();
+  if(!mgrVal){showToast('Select a manager to hand over to','error');return;}
+  if(!amount){showToast('Enter cash amount','error');return;}
+  var parts = mgrVal.split('|');
+  var toId=parts[0], toName=parts.slice(1).join('|');
+  loading(true);
+  try {
+    var rec = {fromManagerId:userProfile.uid, fromManagerName:userProfile.name, toManagerId:toId, toManagerName:toName, cashAmount:amount, shiftType:shiftType, handoverDate:date, timestamp:Date.now(), remarks:remarks};
+    var ref = await fsAddShiftHandover(rec);
+    mgrShiftHandovers.push(Object.assign({},rec,{id:ref.id}));
+    document.getElementById('shiftAmount').value=''; document.getElementById('shiftRemarks').value='';
+    renderShiftHistory();
+    renderCashLedger();
+    showToast('Shift handover recorded!','success');
+  } catch(e){ showToast('Failed: '+e.message,'error'); }
+  finally { loading(false); }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   MANAGER — INCIDENT LOGGING MODULE
+   ════════════════════════════════════════════════════════════════════ */
+async function initMgrIncidents() {
+  document.getElementById('incDate').value = todayISO();
+  // Populate rider selector
+  try {
+    var allU = allUsers.length ? allUsers : await fsGetAllUsers();
+    var riders = allU.filter(function(u){return u.role==='rider';});
+    document.getElementById('incRiderSel').innerHTML =
+      '<option value="">-- No specific rider --</option>'
+      + riders.map(function(r){return '<option value="'+esc(r.uid)+'|'+esc(r.name)+'">'+esc(r.name)+'</option>';}).join('');
+  } catch(e){}
+  loading(true);
+  try { mgrIncidents = await fsGetIncidents(userProfile.uid); } catch(e){ mgrIncidents=[]; }
+  finally { loading(false); }
+  renderIncidents();
+  document.getElementById('incSubmitBtn').addEventListener('click', logIncident);
+}
+
+function renderIncidents() {
+  var c = document.getElementById('incidentsList');
+  if(!mgrIncidents.length){
+    c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-alert"/></svg></div><div class="msg">No incidents logged</div><div class="sub">Record exceptions above</div></div>';
+    return;
+  }
+  var typeMap={short_cash:'Short Cash',missing_cod:'Missing COD',dispute:'Dispute',mismatch:'Counting Mismatch',delayed:'Delayed Settlement',other:'Other'};
+  var classMap={short_cash:'inc-short',missing_cod:'inc-missing',dispute:'inc-dispute',mismatch:'inc-mismatch',delayed:'inc-delayed',other:'inc-other'};
+  var sorted = mgrIncidents.slice().sort(function(a,b){return b.timestamp-a.timestamp;});
+  c.innerHTML = sorted.map(function(inc){
+    return '<div class="incident-card '+(inc.status==='open'?'open':'resolved')+'">'
+      +'<span class="inc-type '+(classMap[inc.type]||'inc-other')+'">'+(typeMap[inc.type]||inc.type)+'</span>'
+      +(inc.riderName?'<div style="font-size:11px;font-weight:700;color:var(--ink);margin-bottom:4px">Rider: '+esc(inc.riderName)+'</div>':'')
+      +'<div class="inc-desc">'+esc(inc.description||'—')+'</div>'
+      +'<div class="inc-meta">'
+      +(inc.amount?'₹'+fmtM(inc.amount)+' · ':'')
+      +inc.date+' · '+fmtDateTime(inc.timestamp)
+      +' · <span class="status-badge '+(inc.status==='resolved'?'sb-approved':'sb-discrepancy')+'">'+(inc.status==='open'?'Open':'Resolved')+'</span>'
+      +'</div></div>';
+  }).join('');
+}
+
+async function logIncident() {
+  var type = document.getElementById('incType').value;
+  var riderVal = document.getElementById('incRiderSel').value;
+  var amount = +document.getElementById('incAmount').value||0;
+  var date = document.getElementById('incDate').value;
+  var status = document.getElementById('incStatus').value;
+  var desc = document.getElementById('incDesc').value.trim();
+  if(!desc){showToast('Please describe the incident','error');return;}
+  var rparts = riderVal.split('|');
+  var riderId=rparts[0]||'', riderName=rparts.slice(1).join('|')||'';
+  loading(true);
+  try {
+    var rec={managerId:userProfile.uid,managerName:userProfile.name,type:type,riderId:riderId,riderName:riderName,amount:amount,date:date,status:status,description:desc,timestamp:Date.now()};
+    var ref=await fsAddIncident(rec);
+    mgrIncidents.push(Object.assign({},rec,{id:ref.id}));
+    document.getElementById('incDesc').value=''; document.getElementById('incAmount').value='';
+    renderIncidents(); showToast('Incident logged','success');
+  } catch(e){ showToast('Failed: '+e.message,'error'); }
+  finally { loading(false); }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   MANAGER — ENHANCED DEPOSIT (method, bank, ref)
+   ════════════════════════════════════════════════════════════════════ */
+var depMethod = 'cash';
+(function(){
+  var pills = document.getElementById('depMethodPills');
+  if(pills) pills.addEventListener('click',function(e){
+    var btn=e.target.closest('.dep-method-pill');
+    if(!btn)return;
+    pills.querySelectorAll('.dep-method-pill').forEach(function(p){p.classList.remove('active');});
+    btn.classList.add('active');
+    depMethod=btn.dataset.method||'cash';
+  });
+})();
+
+/* ════════════════════════════════════════════════════════════════════
+   MANAGER INIT — add new tabs
+   ════════════════════════════════════════════════════════════════════ */
+
+/* override submitDeposit to include method, bank, ref */
+async function submitDeposit() {
+  var amount=+document.getElementById('depAmt').value;
+  var date=document.getElementById('depDate').value;
+  var remarks=document.getElementById('depRemarks').value.trim();
+  var bankName=(document.getElementById('depBank')||{}).value||'';
+  var refNo=(document.getElementById('depRefNo')||{}).value||'';
+  if(!amount||!date){showToast('Enter amount and date','error');return;}
+  loading(true);
+  try {
+    var rec={managerId:userProfile.uid,managerName:userProfile.name,amount:amount,date:date,remarks:remarks,method:depMethod,bankName:bankName,refNo:refNo,timestamp:Date.now()};
+    var ref=await fsAddDeposit(rec);
+    allDeposits.push(Object.assign({},rec,{id:ref.id}));
+    document.getElementById('depAmt').value='';
+    document.getElementById('depRemarks').value='';
+    if(document.getElementById('depBank')) document.getElementById('depBank').value='';
+    if(document.getElementById('depRefNo')) document.getElementById('depRefNo').value='';
+    showToast('Deposit recorded!','success');
+    updateMgrHero();updateBankSummary();renderDepHistory();renderCashLedger();
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  finally{loading(false);}
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   ADMIN — ANALYTICS MODULE
+   ════════════════════════════════════════════════════════════════════ */
+var anlPeriod = 'today';
+var anlFrom = '', anlTo = '';
+
+async function initAdmAnalytics() {
+  anlFrom = todayISO(); anlTo = todayISO();
+  document.getElementById('anlFrom').value=anlFrom;
+  document.getElementById('anlTo').value=anlTo;
+  renderAdmAnalytics();
+  // Period tab bindings
+  document.querySelectorAll('.period-tab').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('.period-tab').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');
+      anlPeriod=btn.dataset.period;
+      document.getElementById('analyticsCstmDates').classList.toggle('hidden',anlPeriod!=='custom');
+      if(anlPeriod!=='custom') renderAdmAnalytics();
+    });
+  });
+  document.getElementById('anlApplyBtn').addEventListener('click',function(){
+    anlFrom=document.getElementById('anlFrom').value;
+    anlTo=document.getElementById('anlTo').value;
+    renderAdmAnalytics();
+  });
+  // Export bindings
+  document.getElementById('expRiderPdf').addEventListener('click',function(){exportAdmPDF('rider');});
+  document.getElementById('expOpsCsv').addEventListener('click',function(){exportAdmCSV('ops');});
+  document.getElementById('expPayCsv').addEventListener('click',function(){exportAdmCSV('payment');});
+  document.getElementById('expPerfCsv').addEventListener('click',function(){exportAdmCSV('performance');});
+}
+
+function getAnalyticsDates() {
+  var today=todayISO();
+  if(anlPeriod==='today') return {from:today,to:today};
+  if(anlPeriod==='week') {
+    var d=new Date(); d.setDate(d.getDate()-6);
+    return {from:d.toISOString().slice(0,10),to:today};
+  }
+  if(anlPeriod==='month') {
+    var d=new Date(); d.setDate(d.getDate()-29);
+    return {from:d.toISOString().slice(0,10),to:today};
+  }
+  return {from:anlFrom||today, to:anlTo||today};
+}
+
+function renderAdmAnalytics() {
+  var dates=getAnalyticsDates();
+  var from=dates.from, to=dates.to;
+  var periodLabels={today:'Today',week:'Last 7 Days',month:'Last 30 Days',custom:from+' → '+to};
+  var lbl=document.getElementById('anlPeriodLabel');
+  if(lbl) lbl.textContent=periodLabels[anlPeriod]||from+' to '+to;
+
+  var filtOrders=allOrders.filter(function(o){return o.date>=from&&o.date<=to;});
+  var s=calcSummary(filtOrders);
+  var settled=allSettlements.filter(function(st){return st.date>=from&&st.date<=to;}).reduce(function(sum,st){return sum+(+st.receivedAmount||0);},0);
+  var deposited=allDeposits.filter(function(d){return d.date>=from&&d.date<=to;}).reduce(function(sum,d){return sum+(+d.amount||0);},0);
+
+  // Summary cards
+  var sc=document.getElementById('anlSummaryCards');
+  if(sc) sc.innerHTML=[
+    ['si-teal','i-orders',filtOrders.length,'Orders'],
+    ['si-green','i-cash','₹'+fmtM(s.netCash),'Net Cash'],
+    ['si-blue','i-circle-check','₹'+fmtM(settled),'Settled'],
+    ['si-dist','i-bank','₹'+fmtM(deposited),'Deposited']
+  ].map(function(m){
+    return '<div class="metric-card"><div class="mc-icon '+m[0]+'"><svg><use href="#'+m[1]+'"/></svg></div>'
+      +'<div class="mc-val">'+m[2]+'</div><div class="mc-lbl">'+m[3]+'</div></div>';
+  }).join('');
+
+  // Rider performance table
+  var riders=allUsers.filter(function(u){return u.role==='rider';});
+  var pt=document.getElementById('anlPerfTable');
+  if(!riders.length){if(pt)pt.innerHTML='<div class="empty"><div class="msg">No riders</div></div>';return;}
+
+  var riderData=riders.map(function(r){
+    var ords=filtOrders.filter(function(o){return o.riderId===r.uid;});
+    var rs=calcSummary(ords);
+    var rSettled=allSettlements.filter(function(st){return st.riderId===r.uid&&st.date>=from&&st.date<=to;}).reduce(function(sum,st){return sum+(+st.receivedAmount||0);},0);
+    return {uid:r.uid,name:r.name||r.email,riderId:r.riderId||'',orders:ords.length,cod:rs.totalCod,cash:rs.cash,qr:rs.qr,prepaid:rs.online,refunds:rs.refunds,distance:rs.distance,netCash:rs.netCash,settled:rSettled};
+  }).filter(function(r){return r.orders>0;}).sort(function(a,b){return b.orders-a.orders;});
+
+  if(!riderData.length){if(pt)pt.innerHTML='<div class="empty"><div class="msg">No orders in this period</div></div>';return;}
+
+  if(pt) pt.innerHTML='<table class="perf-table"><thead><tr>'
+    +'<th>#</th><th>Rider</th><th>Orders</th><th>COD</th><th>Cash</th><th>QR</th><th>Prepaid</th><th>Refunds</th><th>KM</th><th>Net Cash</th><th>Settled</th>'
+    +'</tr></thead><tbody>'
+    +riderData.map(function(r,i){
+      var rankClass=i===0?'':i===1?' r2':i===2?' r3':'';
+      var settleRate=r.netCash>0?(r.settled/r.netCash*100).toFixed(0)+'%':'—';
+      return '<tr>'
+        +'<td><div class="rank-badge'+rankClass+'">'+(i+1)+'</div></td>'
+        +'<td><div class="perf-name">'+esc(r.name)+'</div><div class="perf-sub">'+esc(r.riderId||'')+'</div></td>'
+        +'<td class="perf-num">'+r.orders+'</td>'
+        +'<td class="perf-num">₹'+fmtM(r.cod)+'</td>'
+        +'<td class="perf-num">₹'+fmtM(r.cash)+'</td>'
+        +'<td class="perf-num">₹'+fmtM(r.qr)+'</td>'
+        +'<td class="perf-num">₹'+fmtM(r.prepaid)+'</td>'
+        +'<td class="perf-num" style="color:var(--bad)">₹'+fmtM(r.refunds)+'</td>'
+        +'<td class="perf-num">'+r.distance.toFixed(1)+'</td>'
+        +'<td class="perf-num" style="color:var(--good)">₹'+fmtM(r.netCash)+'</td>'
+        +'<td class="perf-num">'+settleRate+'</td>'
+        +'</tr>';
+    }).join('')
+    +'</tbody></table>';
+
+  // Daily summary table
+  var dt=document.getElementById('anlDailyTable');
+  var dateMap={};
+  filtOrders.forEach(function(o){
+    if(!dateMap[o.date]) dateMap[o.date]={date:o.date,orders:0,cod:0,cash:0,qr:0,distance:0,netCash:0};
+    var es=getExtraSplit(o);
+    var cash=(+o.cashCollected||0)+es.cash;
+    var qr=(+o.qrCollected||0)+es.qr;
+    var ref=+o.refund||0;
+    dateMap[o.date].orders++;
+    if(o.type==='cod') dateMap[o.date].cod+=(+o.totalCodAmount||0);
+    dateMap[o.date].cash+=cash; dateMap[o.date].qr+=qr;
+    dateMap[o.date].distance+=(+o.distance||0);
+    dateMap[o.date].netCash+=cash-ref;
+  });
+  var days=Object.values(dateMap).sort(function(a,b){return b.date.localeCompare(a.date);});
+  if(dt) dt.innerHTML=days.length?'<table class="perf-table"><thead><tr><th>Date</th><th>Orders</th><th>COD</th><th>Cash</th><th>QR</th><th>Distance</th><th>Net Cash</th></tr></thead><tbody>'
+    +days.map(function(d){
+      return '<tr><td style="font-weight:700">'+fmtDateLabel(d.date)+'<div style="font-size:10px;color:var(--ink-3)">'+d.date+'</div></td>'
+        +'<td class="perf-num">'+d.orders+'</td>'
+        +'<td class="perf-num">₹'+fmtM(d.cod)+'</td>'
+        +'<td class="perf-num">₹'+fmtM(d.cash)+'</td>'
+        +'<td class="perf-num">₹'+fmtM(d.qr)+'</td>'
+        +'<td class="perf-num">'+d.distance.toFixed(1)+' km</td>'
+        +'<td class="perf-num" style="color:var(--good)">₹'+fmtM(d.netCash)+'</td>'
+        +'</tr>';
+    }).join('')+'</tbody></table>'
+    :'<div class="empty"><div class="msg">No data for this period</div></div>';
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   ADMIN — ORDERS TAB
+   ════════════════════════════════════════════════════════════════════ */
+var ordFilter = {riderId:'', from:'', to:'', type:''};
+
+function initAdmOrders() {
+  var today=todayISO();
+  var d30=new Date(Date.now()-30*86400000).toISOString().slice(0,10);
+  document.getElementById('ordFrom').value=d30;
+  document.getElementById('ordTo').value=today;
+  ordFilter.from=d30; ordFilter.to=today;
+  // populate rider filter
+  var rf=document.getElementById('ordRiderFilter');
+  var riders=allUsers.filter(function(u){return u.role==='rider';});
+  rf.innerHTML='<option value="">All Riders</option>'+riders.map(function(r){return '<option value="'+esc(r.uid)+'">'+esc(r.name)+'</option>';}).join('');
+  rf.dataset.populated='1';
+  renderAdmOrders();
+  if(!document.getElementById('ordApplyBtn').dataset.bound){
+    document.getElementById('ordApplyBtn').dataset.bound='1';
+    document.getElementById('ordApplyBtn').addEventListener('click',function(){
+      ordFilter.riderId=document.getElementById('ordRiderFilter').value;
+      ordFilter.from=document.getElementById('ordFrom').value;
+      ordFilter.to=document.getElementById('ordTo').value;
+      ordFilter.type=document.getElementById('ordTypeFilter').value;
+      renderAdmOrders();
+    });
+    document.getElementById('expOrdersCsv').addEventListener('click',function(){exportOrdersCSV();});
+    document.getElementById('expOrdersPdf').addEventListener('click',function(){exportOrdersPDF();});
+  }
+}
+
+function renderAdmOrders() {
+  var from=ordFilter.from||'2020-01-01', to=ordFilter.to||todayISO();
+  var filtered=allOrders.filter(function(o){
+    return o.date>=from&&o.date<=to
+      &&(!ordFilter.riderId||o.riderId===ordFilter.riderId)
+      &&(!ordFilter.type||o.type===ordFilter.type);
+  }).sort(function(a,b){return b.timestamp-a.timestamp;});
+
+  var lbl=document.getElementById('ordCountLabel');
+  if(lbl) lbl.textContent=filtered.length+' orders · '+from+' to '+to;
+  var wrap=document.getElementById('ordersTableWrap');
+  if(!filtered.length){wrap.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-orders"/></svg></div><div class="msg">No orders found</div></div>';return;}
+
+  wrap.innerHTML='<table class="order-tbl"><thead><tr>'
+    +'<th>Order ID</th><th>Rider</th><th>Date</th><th>Time</th><th>Type</th><th>COD/Amt</th><th>Cash</th><th>QR</th><th>Refund</th><th>Extra</th><th>KM</th><th>Settlement</th>'
+    +'</tr></thead><tbody>'
+    +filtered.slice(0,500).map(function(o){
+      var ip=o.type==='prepaid';
+      var es=getExtraSplit(o);
+      var cash=(+o.cashCollected||0)+es.cash;
+      var qr=(+o.qrCollected||0)+es.qr;
+      var ref=+o.refund||0, ext=+o.extraCollected||0;
+      var settled=allSettlements.some(function(s){return s.riderId===o.riderId&&s.date===o.date;});
+      return '<tr>'
+        +'<td style="font-weight:700;white-space:nowrap">'+esc(o.orderId)+'</td>'
+        +'<td style="white-space:nowrap">'+esc(o.riderName||'—')+'</td>'
+        +'<td style="white-space:nowrap">'+o.date+'</td>'
+        +'<td style="white-space:nowrap;color:var(--ink-3)">'+fmtTime(o.timestamp)+'</td>'
+        +'<td><span class="badge '+o.type+'">'+(ip?'Prepaid':'COD')+'</span></td>'
+        +'<td style="text-align:right;font-variant-numeric:tabular-nums">₹'+fmtM(ip?(+o.orderAmount||0):(+o.totalCodAmount||0))+'</td>'
+        +'<td style="text-align:right;font-variant-numeric:tabular-nums;color:var(--good)">'+(cash?'₹'+fmtM(cash):'—')+'</td>'
+        +'<td style="text-align:right;font-variant-numeric:tabular-nums">'+(qr?'₹'+fmtM(qr):'—')+'</td>'
+        +'<td style="text-align:right;font-variant-numeric:tabular-nums;color:var(--bad)">'+(ref?'-₹'+fmtM(ref):'—')+'</td>'
+        +'<td style="text-align:right;font-variant-numeric:tabular-nums;color:var(--good)">'+(ext?'+₹'+fmtM(ext):'—')+'</td>'
+        +'<td style="text-align:right">'+((+o.distance||0).toFixed(1))+'</td>'
+        +'<td>'+(settled?'<span class="di-match">Settled</span>':'<span class="di-pending">Pending</span>')+'</td>'
+        +'</tr>';
+    }).join('')
+    +'</tbody></table>'
+    +(filtered.length>500?'<div style="padding:10px;font-size:11px;color:var(--ink-3)">Showing first 500 of '+filtered.length+' orders</div>':'');
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   EXPORT FUNCTIONS
+   ════════════════════════════════════════════════════════════════════ */
+function exportAdmCSV(type) {
+  var dates=getAnalyticsDates();
+  var from=dates.from, to=dates.to;
+  var filtOrders=allOrders.filter(function(o){return o.date>=from&&o.date<=to;});
+  var rows, filename, headers;
+  if(type==='ops') {
+    headers='Date,Rider,Order ID,Type,Amount,Cash,QR,Refund,Extra,Distance';
+    rows=filtOrders.sort(function(a,b){return b.timestamp-a.timestamp;}).map(function(o){
+      var ip=o.type==='prepaid'; var es=getExtraSplit(o);
+      var cash=(+o.cashCollected||0)+es.cash; var qr=(+o.qrCollected||0)+es.qr;
+      return [o.date,'"'+(o.riderName||'')+'"','"'+o.orderId+'"',(ip?'Prepaid':'COD'),
+        (ip?(+o.orderAmount||0):(+o.totalCodAmount||0)),cash,qr,(+o.refund||0),(+o.extraCollected||0),(+o.distance||0).toFixed(1)].join(',');
+    });
+    filename='instaghar-ops-'+from+'-to-'+to+'.csv';
+  } else if(type==='payment') {
+    headers='Date,Rider,Submitted,Manager,Received,Status,Difference';
+    rows=allHandovers.filter(function(h){return h.businessDate>=from&&h.businessDate<=to;}).map(function(h){
+      var diff=(+h.receivedAmount||0)-(+h.submittedAmount||0);
+      return [h.businessDate,'"'+h.riderName+'"',h.submittedAmount,'"'+h.managerName+'"',(+h.receivedAmount||0),h.status,diff].join(',');
+    });
+    filename='instaghar-payment-recon-'+from+'-to-'+to+'.csv';
+  } else {
+    // performance
+    var riders=allUsers.filter(function(u){return u.role==='rider';});
+    headers='Rider,Rider ID,Orders,COD,Cash,QR,Prepaid,Refunds,KM,Net Cash,Settled';
+    rows=riders.map(function(r){
+      var ords=filtOrders.filter(function(o){return o.riderId===r.uid;});
+      var rs=calcSummary(ords);
+      var settled=allSettlements.filter(function(st){return st.riderId===r.uid&&st.date>=from&&st.date<=to;}).reduce(function(sum,st){return sum+(+st.receivedAmount||0);},0);
+      return ['"'+r.name+'"','"'+(r.riderId||'')+'"',ords.length,rs.totalCod,rs.cash,rs.qr,rs.online,rs.refunds,rs.distance.toFixed(1),rs.netCash,settled].join(',');
+    }).filter(function(r){return r.split(',')[2]!=='0';});
+    filename='instaghar-performance-'+from+'-to-'+to+'.csv';
+  }
+  var csv=headers+'\n'+rows.join('\n');
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=filename; a.click();
+  showToast('CSV downloaded','success');
+}
+
+function exportOrdersCSV() {
+  var from=ordFilter.from||'2020-01-01', to=ordFilter.to||todayISO();
+  var filtered=allOrders.filter(function(o){return o.date>=from&&o.date<=to&&(!ordFilter.riderId||o.riderId===ordFilter.riderId)&&(!ordFilter.type||o.type===ordFilter.type);});
+  var headers='Order ID,Rider,Date,Time,Type,Amount,Cash,QR,Refund,Extra,Distance';
+  var rows=filtered.map(function(o){
+    var ip=o.type==='prepaid'; var es=getExtraSplit(o);
+    var cash=(+o.cashCollected||0)+es.cash; var qr=(+o.qrCollected||0)+es.qr;
+    return ['"'+o.orderId+'"','"'+(o.riderName||'')+'"',o.date,fmtTime(o.timestamp),(ip?'Prepaid':'COD'),
+      (ip?(+o.orderAmount||0):(+o.totalCodAmount||0)),cash,qr,(+o.refund||0),(+o.extraCollected||0),(+o.distance||0).toFixed(1)].join(',');
+  });
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(headers+'\n'+rows.join('\n'));
+  a.download='instaghar-orders-'+from+'-to-'+to+'.csv'; a.click();
+  showToast(filtered.length+' orders exported','success');
+}
+
+function exportAdmPDF(type) {
+  var jsPDFLib=window.jspdf&&window.jspdf.jsPDF?window.jspdf.jsPDF:window.jsPDF;
+  if(!jsPDFLib){showToast('PDF library loading, try again','error');return;}
+  var dates=getAnalyticsDates();
+  var from=dates.from, to=dates.to;
+  var filtOrders=allOrders.filter(function(o){return o.date>=from&&o.date<=to;});
+  var doc=new jsPDFLib({orientation:'portrait',unit:'mm',format:'a4'});
+  var mg=14, pw=doc.internal.pageSize.getWidth();
+  // Header
+  doc.setFillColor(14,46,43); doc.rect(0,0,pw,30,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(255,255,255);
+  doc.text('INSTAGHAR — Admin Analytics Report',mg,16);
+  doc.setFont('helvetica','normal'); doc.setFontSize(8);
+  doc.text('Period: '+from+' to '+to,mg,24);
+  var y=38;
+  // Summary
+  var s=calcSummary(filtOrders);
+  var settled=allSettlements.filter(function(st){return st.date>=from&&st.date<=to;}).reduce(function(sum,st){return sum+(+st.receivedAmount||0);},0);
+  doc.autoTable({startY:y,margin:{left:mg,right:mg},body:[
+    ['Total Orders',filtOrders.length,'Total COD','₹'+fmtM(s.totalCod)],
+    ['Cash Collected','₹'+fmtM(s.cash),'QR Collected','₹'+fmtM(s.qr)],
+    ['Total Refunds','₹'+fmtM(s.refunds),'Total Distance',s.distance.toFixed(1)+' km'],
+    ['Net Cash','₹'+fmtM(s.netCash),'Settled','₹'+fmtM(settled)]
+  ],theme:'plain',styles:{fontSize:10,cellPadding:{top:4,bottom:4,left:6,right:6},lineColor:[224,238,236],lineWidth:.4}});
+  y=doc.lastAutoTable.finalY+8;
+  // Rider table
+  var riders=allUsers.filter(function(u){return u.role==='rider';});
+  var rtData=riders.map(function(r){
+    var ords=filtOrders.filter(function(o){return o.riderId===r.uid;});
+    var rs=calcSummary(ords);
+    return [r.name,ords.length,fmtM(rs.totalCod),fmtM(rs.cash),fmtM(rs.qr),fmtM(rs.refunds),rs.distance.toFixed(1),fmtM(rs.netCash)];
+  }).filter(function(r){return +r[1]>0;});
+  if(rtData.length){
+    doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(14,46,43);
+    doc.text('Rider Performance',mg,y); y+=6;
+    doc.autoTable({startY:y,margin:{left:mg,right:mg},head:[['Rider','Orders','COD','Cash','QR','Refunds','KM','Net Cash']],body:rtData,theme:'striped',headStyles:{fillColor:[14,46,43],textColor:[255,255,255],fontSize:8},bodyStyles:{fontSize:8},columnStyles:{0:{fontStyle:'bold'}}});
+    y=doc.lastAutoTable.finalY+8;
+  }
+  // Orders table
+  if(filtOrders.length){
+    doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(14,46,43);
+    doc.text('Order Details (first 100)',mg,y); y+=6;
+    var oData=filtOrders.slice(0,100).map(function(o){
+      var ip=o.type==='prepaid'; var es=getExtraSplit(o);
+      var cash=(+o.cashCollected||0)+es.cash;
+      return [o.orderId,o.riderName||'—',o.date,ip?'Prepaid':'COD',fmtM(ip?(+o.orderAmount||0):(+o.totalCodAmount||0)),fmtM(cash),(+o.distance||0).toFixed(1)];
+    });
+    doc.autoTable({startY:y,margin:{left:mg,right:mg},head:[['Order ID','Rider','Date','Type','Amount','Cash','KM']],body:oData,theme:'striped',headStyles:{fillColor:[14,46,43],textColor:[255,255,255],fontSize:7},bodyStyles:{fontSize:7}});
+  }
+  var fn='instaghar-admin-report-'+from+'-to-'+to+'.pdf';
+  doc.save(fn); showToast('PDF downloaded','success');
+}
+
+function exportOrdersPDF() {
+  var jsPDFLib=window.jspdf&&window.jspdf.jsPDF?window.jspdf.jsPDF:window.jsPDF;
+  if(!jsPDFLib){showToast('PDF library loading, try again','error');return;}
+  var from=ordFilter.from||'2020-01-01', to=ordFilter.to||todayISO();
+  var filtered=allOrders.filter(function(o){return o.date>=from&&o.date<=to&&(!ordFilter.riderId||o.riderId===ordFilter.riderId)&&(!ordFilter.type||o.type===ordFilter.type);}).slice(0,300);
+  if(!filtered.length){showToast('No orders to export','error');return;}
+  var doc=new jsPDFLib({orientation:'landscape',unit:'mm',format:'a4'});
+  var mg=12, pw=doc.internal.pageSize.getWidth();
+  doc.setFillColor(14,46,43); doc.rect(0,0,pw,26,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(255,255,255);
+  doc.text('INSTAGHAR — Order Report · '+from+' to '+to,mg,16);
+  var body=filtered.map(function(o){
+    var ip=o.type==='prepaid'; var es=getExtraSplit(o);
+    var cash=(+o.cashCollected||0)+es.cash; var qr=(+o.qrCollected||0)+es.qr;
+    return [o.orderId,o.riderName||'—',o.date,fmtTime(o.timestamp),(ip?'Prepaid':'COD'),
+      fmtM(ip?(+o.orderAmount||0):(+o.totalCodAmount||0)),cash?fmtM(cash):'—',qr?fmtM(qr):'—',+o.refund?fmtM(o.refund):'—',(+o.distance||0).toFixed(1)];
+  });
+  doc.autoTable({startY:30,margin:{left:mg,right:mg},head:[['Order ID','Rider','Date','Time','Type','Amount','Cash','QR','Refund','KM']],body:body,theme:'striped',headStyles:{fillColor:[14,46,43],textColor:[255,255,255],fontSize:8,fontStyle:'bold'},bodyStyles:{fontSize:7},alternateRowStyles:{fillColor:[243,250,248]}});
+  doc.save('instaghar-orders-'+from+'-to-'+to+'.pdf');
+  showToast('PDF downloaded ('+filtered.length+' orders)','success');
+}
+
 /* ══════════════════════════
    TAB BAR HELPER
    ══════════════════════════ */
@@ -2344,8 +3173,23 @@ function setupTabBar(barId,prefix) {
     var tab=btn.dataset.tab;
     document.querySelectorAll('#'+barId+' .tab-btn').forEach(function(b){b.classList.toggle('active',b===btn);});
     document.querySelectorAll('[id^="'+prefix+'"]').forEach(function(el){el.classList.toggle('active',el.id===prefix+tab);});
-    if(barId==='mgrTabBar'){if(tab==='history')renderSettlHistory();else if(tab==='bank'){renderDepHistory();updateBankSummary();}else if(tab==='approvals'){try{initMgrApprovals();}catch(e){}}}
-    if(barId==='admTabBar'){if(tab==='managers')renderAdmManagers();else if(tab==='audit')renderAudit();else if(tab==='recon')renderRecon();else if(tab==='users')renderUsersTab();}
+    if(barId==='mgrTabBar'){
+      if(tab==='history')renderSettlHistory();
+      else if(tab==='bank'){renderDepHistory();updateBankSummary();}
+      else if(tab==='approvals'){try{initMgrApprovals();}catch(e){}}
+      else if(tab==='cash'){try{initMgrCash();}catch(e){console.warn(e);}}
+      else if(tab==='shift'){try{initMgrShift();}catch(e){console.warn(e);}}
+      else if(tab==='incidents'){try{initMgrIncidents();}catch(e){console.warn(e);}}
+    }
+    if(barId==='admTabBar'){
+      if(tab==='analytics')renderAdmAnalytics();
+      else if(tab==='riders'){admFrom=document.getElementById('admFrom').value;admTo=document.getElementById('admTo').value;loading(true);renderAdmRiders().finally(function(){loading(false);});}
+      else if(tab==='managers')renderAdmManagers();
+      else if(tab==='audit')renderAudit();
+      else if(tab==='recon')renderRecon();
+      else if(tab==='orders')initAdmOrders();
+      else if(tab==='users')renderUsersTab();
+    }
   });
 }
 
