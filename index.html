@@ -589,6 +589,39 @@ select.fin{cursor:pointer}
 .dep-method-pill{padding:7px 12px;border:1.5px solid var(--line);border-radius:999px;font-family:inherit;font-size:11px;font-weight:700;color:var(--ink-3);cursor:pointer;transition:all .15s;background:white}
 .dep-method-pill.active{background:var(--teal-dark);color:white;border-color:var(--teal-dark)}
 
+
+/* ── QUICK FILTER TABS (shared by Riders + Managers) ── */
+.quick-filter-bar{display:flex;gap:0;background:white;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px;box-shadow:var(--shadow)}
+.qf-btn{flex:1;padding:10px 4px;border:none;background:transparent;font-family:inherit;font-size:10px;font-weight:700;color:var(--ink-3);cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.04em;border-right:1px solid var(--line);white-space:nowrap}
+.qf-btn:last-child{border-right:none}
+.qf-btn.active{background:var(--teal-dark);color:white}
+.qf-btn:hover:not(.active){background:var(--bg);color:var(--ink)}
+.custom-dates-row{display:flex;gap:7px;margin-bottom:11px;align-items:center}
+.custom-dates-row input{flex:1;padding:9px 12px;background:white;border:1.5px solid var(--line);border-radius:10px;font-family:inherit;font-size:12px;font-weight:600;color:var(--ink);outline:none}
+.custom-dates-row input:focus{border-color:var(--teal)}
+
+/* ── ORDER SEARCH BAR ── */
+.order-search-wrap{margin-bottom:12px}
+.order-search-bar{display:flex;align-items:center;gap:9px;background:white;border:2px solid var(--line);border-radius:12px;padding:0 14px;transition:all .2s;box-shadow:var(--shadow)}
+.order-search-bar:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,168,156,.12)}
+.order-search-bar svg{width:16px;height:16px;color:var(--ink-3);flex-shrink:0}
+.order-search-bar input{flex:1;border:none;background:transparent;padding:13px 0;font-family:inherit;font-size:15px;font-weight:600;color:var(--ink);outline:none}
+.order-search-bar input::placeholder{color:var(--ink-3);font-weight:500;font-size:14px}
+.search-clear-btn{background:var(--line);border:none;width:22px;height:22px;border-radius:50%;cursor:pointer;display:grid;place-items:center;color:var(--ink-2);flex-shrink:0;transition:all .15s}
+.search-clear-btn:hover{background:var(--bad-soft);color:var(--bad)}
+.search-clear-btn svg{width:12px;height:12px}
+.search-hint{font-size:11px;color:var(--ink-3);font-weight:500;margin-top:6px;text-align:center}
+.order-detail-card{background:white;border:2px solid var(--teal);border-radius:var(--radius);padding:16px;margin-bottom:14px;box-shadow:0 0 0 3px rgba(0,168,156,.1)}
+.odc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;padding-bottom:11px;border-bottom:1px solid var(--line)}
+.odc-id{font-size:18px;font-weight:800;color:var(--teal-dark);letter-spacing:-.01em}
+.odc-time{font-size:11px;color:var(--ink-3);margin-top:2px;font-weight:500}
+.odc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.odc-item{background:var(--bg);border-radius:9px;padding:10px}
+.odc-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:700;margin-bottom:4px}
+.odc-value{font-size:14px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.odc-value.green{color:var(--good)}.odc-value.red{color:var(--bad)}.odc-value.teal{color:var(--teal-deep)}
+.multi-results-label{font-size:11px;color:var(--ink-3);font-weight:600;margin-bottom:8px;padding:0 2px}
+
 </style>
 </head>
 <body>
@@ -1081,16 +1114,34 @@ service cloud.firestore {
 
     <!-- RIDERS TAB -->
     <div class="tab-content" id="adm-tab-riders">
-      <div style="display:flex;gap:7px;margin-bottom:12px;align-items:center">
-        <input type="date" class="fin" id="admFrom" style="flex:1;padding:9px 13px;font-size:13px"/>
-        <span style="color:var(--ink-3);font-size:12px;font-weight:600">to</span>
-        <input type="date" class="fin" id="admTo" style="flex:1;padding:9px 13px;font-size:13px"/>
-        <button class="filter-pill active" id="admRefreshBtn" style="flex-shrink:0">Go</button>
+      <div class="quick-filter-bar" id="riderQuickFilter">
+        <button class="qf-btn active" data-rperiod="today">Today</button>
+        <button class="qf-btn" data-rperiod="yesterday">Yesterday</button>
+        <button class="qf-btn" data-rperiod="week">This Week</button>
+        <button class="qf-btn" data-rperiod="month">This Month</button>
+        <button class="qf-btn" data-rperiod="custom">Custom</button>
+      </div>
+      <div class="custom-dates-row hidden" id="riderCstmDates">
+        <input type="date" id="admFrom"/>
+        <input type="date" id="admTo"/>
+        <button class="filter-pill active" id="admRefreshBtn">Apply</button>
       </div>
       <div id="admRidersContent"><div class="empty"><div class="empty-icon"><svg><use href="#i-bike"/></svg></div><div class="msg">Loading…</div></div></div>
     </div>
     <!-- MANAGERS TAB -->
     <div class="tab-content" id="adm-tab-managers">
+      <div class="quick-filter-bar" id="mgrQuickFilter">
+        <button class="qf-btn active" data-mperiod="today">Today</button>
+        <button class="qf-btn" data-mperiod="yesterday">Yesterday</button>
+        <button class="qf-btn" data-mperiod="week">This Week</button>
+        <button class="qf-btn" data-mperiod="month">This Month</button>
+        <button class="qf-btn" data-mperiod="custom">Custom</button>
+      </div>
+      <div class="custom-dates-row hidden" id="mgrCstmDates">
+        <input type="date" id="mgrFltFrom"/>
+        <input type="date" id="mgrFltTo"/>
+        <button class="filter-pill active" id="mgrFltApply">Apply</button>
+      </div>
       <div id="admManagersContent"><div class="empty"><div class="empty-icon"><svg><use href="#i-users"/></svg></div><div class="msg">Loading…</div></div></div>
     </div>
     <!-- AUDIT TAB -->
@@ -1132,6 +1183,17 @@ service cloud.firestore {
 
     <!-- ORDERS TAB -->
     <div class="tab-content" id="adm-tab-orders">
+      <!-- Search Bar -->
+      <div class="order-search-wrap">
+        <div class="order-search-bar">
+          <svg><use href="#i-list"/></svg>
+          <input type="text" id="ordSearchInput" placeholder="Search by Order ID… e.g. ORD-1234" autocomplete="off" autocapitalize="characters"/>
+          <button class="search-clear-btn hidden" id="ordSearchClear"><svg><use href="#i-x"/></svg></button>
+        </div>
+        <div class="search-hint" id="ordSearchHint">Type Order ID to instantly find and inspect any order</div>
+      </div>
+      <!-- Search Result Detail Card -->
+      <div id="ordSearchResult" class="hidden"></div>
       <div class="date-range-bar">
         <select class="fin" id="ordRiderFilter" style="max-width:160px"><option value="">All Riders</option></select>
         <input type="date" id="ordFrom"/>
@@ -2243,6 +2305,7 @@ async function initAdmin() {
   } catch(e) { console.warn('Admin data load failed:',e); showToast('Some data failed to load','error'); }
   finally { loading(false); }
   try { initAdmAnalytics(); } catch(e){ renderAdmAnalytics(); }
+  initRidersQuickFilter();
   await renderAdmRiders();
   renderAdmManagers();
   renderAudit();
@@ -2301,6 +2364,10 @@ async function renderAdmRiders() {
   c.innerHTML=html;
 }
 function renderAdmManagers() {
+  initManagersQuickFilter();
+  renderAdmManagersFiltered();
+}
+function renderAdmManagers_orig() {
   var mgrs=allUsers.filter(function(u){return u.role==='manager';});
   var c=document.getElementById('admManagersContent');
   if(!mgrs.length){c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-users"/></svg></div><div class="msg">No managers yet</div></div>';return;}
@@ -2974,6 +3041,7 @@ function initAdmOrders() {
   rf.innerHTML='<option value="">All Riders</option>'+riders.map(function(r){return '<option value="'+esc(r.uid)+'">'+esc(r.name)+'</option>';}).join('');
   rf.dataset.populated='1';
   renderAdmOrders();
+  initOrdSearch();
   if(!document.getElementById('ordApplyBtn').dataset.bound){
     document.getElementById('ordApplyBtn').dataset.bound='1';
     document.getElementById('ordApplyBtn').addEventListener('click',function(){
@@ -2989,6 +3057,10 @@ function initAdmOrders() {
 }
 
 function renderAdmOrders() {
+  if(ordSearchActive) {
+    var term = (document.getElementById('ordSearchInput')||{}).value||'';
+    if(term) { runOrderSearch(term); return; }
+  }
   var from=ordFilter.from||'2020-01-01', to=ordFilter.to||todayISO();
   var filtered=allOrders.filter(function(o){
     return o.date>=from&&o.date<=to
@@ -3162,6 +3234,338 @@ function exportOrdersPDF() {
   doc.autoTable({startY:30,margin:{left:mg,right:mg},head:[['Order ID','Rider','Date','Time','Type','Amount','Cash','QR','Refund','KM']],body:body,theme:'striped',headStyles:{fillColor:[14,46,43],textColor:[255,255,255],fontSize:8,fontStyle:'bold'},bodyStyles:{fontSize:7},alternateRowStyles:{fillColor:[243,250,248]}});
   doc.save('instaghar-orders-'+from+'-to-'+to+'.pdf');
   showToast('PDF downloaded ('+filtered.length+' orders)','success');
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   HELPER: resolve date range from period string
+   ════════════════════════════════════════════════════════════ */
+function periodToDates(period, customFrom, customTo) {
+  var today = todayISO();
+  if (period === 'today')     return { from: today, to: today };
+  if (period === 'yesterday') { var y=yesterdayISO(); return { from:y, to:y }; }
+  if (period === 'week') {
+    var d=new Date(); d.setDate(d.getDate()-6);
+    return { from: d.toISOString().slice(0,10), to: today };
+  }
+  if (period === 'month') {
+    var d=new Date(); d.setDate(d.getDate()-29);
+    return { from: d.toISOString().slice(0,10), to: today };
+  }
+  return { from: customFrom||today, to: customTo||today };
+}
+
+function periodLabel(period, from, to) {
+  if(period==='today')     return 'Today';
+  if(period==='yesterday') return 'Yesterday';
+  if(period==='week')      return 'Last 7 Days';
+  if(period==='month')     return 'Last 30 Days';
+  return from + ' → ' + to;
+}
+
+/* ════════════════════════════════════════════════════════════
+   RIDERS TAB — Quick Date Filter Logic
+   ════════════════════════════════════════════════════════════ */
+var admRiderPeriod = 'today';
+var admRiderCustomFrom = '', admRiderCustomTo = '';
+
+function initRidersQuickFilter() {
+  // Set initial date inputs to today
+  var today = todayISO();
+  var el = document.getElementById('admFrom');
+  if(el) el.value = today;
+  var el2 = document.getElementById('admTo');
+  if(el2) el2.value = today;
+
+  var bar = document.getElementById('riderQuickFilter');
+  if(!bar || bar.dataset.bound) return;
+  bar.dataset.bound = '1';
+
+  bar.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-rperiod]');
+    if(!btn) return;
+    admRiderPeriod = btn.dataset.rperiod;
+    bar.querySelectorAll('.qf-btn').forEach(function(b){b.classList.toggle('active', b===btn);});
+    var cstm = document.getElementById('riderCstmDates');
+    if(cstm) cstm.classList.toggle('hidden', admRiderPeriod !== 'custom');
+    if(admRiderPeriod !== 'custom') applyRidersFilter();
+  });
+
+  var applyBtn = document.getElementById('admRefreshBtn');
+  if(applyBtn && !applyBtn.dataset.bound) {
+    applyBtn.dataset.bound = '1';
+    applyBtn.addEventListener('click', function() {
+      admRiderCustomFrom = (document.getElementById('admFrom')||{}).value || todayISO();
+      admRiderCustomTo   = (document.getElementById('admTo')||{}).value   || todayISO();
+      applyRidersFilter();
+    });
+  }
+}
+
+function applyRidersFilter() {
+  var dates = periodToDates(admRiderPeriod, admRiderCustomFrom, admRiderCustomTo);
+  admFrom = dates.from;
+  admTo   = dates.to;
+  // Update custom inputs if not custom mode
+  if(admRiderPeriod !== 'custom') {
+    var f = document.getElementById('admFrom');
+    var t = document.getElementById('admTo');
+    if(f) f.value = dates.from;
+    if(t) t.value = dates.to;
+  }
+  loading(true);
+  renderAdmRiders().catch(function(e){console.warn(e);}).finally(function(){loading(false);});
+}
+
+/* ════════════════════════════════════════════════════════════
+   MANAGERS TAB — Quick Date Filter Logic
+   ════════════════════════════════════════════════════════════ */
+var admMgrPeriod = 'today';
+var admMgrCustomFrom = '', admMgrCustomTo = '';
+
+function initManagersQuickFilter() {
+  var bar = document.getElementById('mgrQuickFilter');
+  if(!bar || bar.dataset.bound) return;
+  bar.dataset.bound = '1';
+
+  bar.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-mperiod]');
+    if(!btn) return;
+    admMgrPeriod = btn.dataset.mperiod;
+    bar.querySelectorAll('.qf-btn').forEach(function(b){b.classList.toggle('active', b===btn);});
+    var cstm = document.getElementById('mgrCstmDates');
+    if(cstm) cstm.classList.toggle('hidden', admMgrPeriod !== 'custom');
+    if(admMgrPeriod !== 'custom') renderAdmManagersFiltered();
+  });
+
+  var applyBtn = document.getElementById('mgrFltApply');
+  if(applyBtn && !applyBtn.dataset.bound) {
+    applyBtn.dataset.bound = '1';
+    applyBtn.addEventListener('click', function() {
+      admMgrCustomFrom = (document.getElementById('mgrFltFrom')||{}).value || todayISO();
+      admMgrCustomTo   = (document.getElementById('mgrFltTo')||{}).value   || todayISO();
+      renderAdmManagersFiltered();
+    });
+  }
+}
+
+function renderAdmManagersFiltered() {
+  var dates = periodToDates(admMgrPeriod, admMgrCustomFrom, admMgrCustomTo);
+  var from = dates.from, to = dates.to;
+  var mgrs = allUsers.filter(function(u){return u.role==='manager';});
+  var c = document.getElementById('admManagersContent');
+  if(!mgrs.length) {
+    c.innerHTML = '<div class="empty"><div class="empty-icon"><svg><use href="#i-users"/></svg></div><div class="msg">No managers yet</div></div>';
+    return;
+  }
+
+  var periodLbl = periodLabel(admMgrPeriod, from, to);
+  c.innerHTML = '<div style="font-size:11px;font-weight:700;color:var(--ink-3);margin-bottom:10px;padding:2px 0">Showing: ' + periodLbl + '</div>'
+    + mgrs.map(function(mgr) {
+    var settl = allSettlements.filter(function(s){return s.managerId===mgr.uid && s.date>=from && s.date<=to;});
+    var deps  = allDeposits.filter(function(d){return d.managerId===mgr.uid && d.date>=from && d.date<=to;});
+    var handovers = allHandovers.filter(function(h){return h.managerId===mgr.uid && h.businessDate>=from && h.businessDate<=to;});
+
+    var collected  = settl.reduce(function(s,r){return s+(+r.receivedAmount||0);},0);
+    var deposited  = deps.reduce(function(s,r){return s+(+r.amount||0);},0);
+    var pending    = Math.max(0, collected - deposited);
+    var riderSet   = new Set(settl.map(function(s){return s.riderId;})).size;
+
+    var pendingHO  = handovers.filter(function(h){return h.status==='pending';}).length;
+    var discrepHO  = handovers.filter(function(h){return h.status==='discrepancy';}).length;
+    var approvedHO = handovers.filter(function(h){return h.status==='approved';}).length;
+
+    var isDisabled = mgr.active === false || mgr.deleted === true;
+    return '<div class="section" style="margin-bottom:12px">'
+      + '<div class="section-head">'
+      + '<div style="display:flex;align-items:center;gap:9px">'
+      + '<div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1d4ed8,#6366f1);color:white;font-weight:800;font-size:13px;display:grid;place-items:center">'+(mgr.name||'?').charAt(0).toUpperCase()+'</div>'
+      + '<div><div style="font-weight:700;font-size:14px'+(isDisabled?';color:var(--ink-3)':'')+'">'+esc(mgr.name)+'</div>'
+      + '<div style="font-size:10px;color:var(--ink-3)">'+esc(mgr.shift||mgr.email)+'</div></div></div>'
+      + '<span class="rc-badge '+(pending>0?'pending':'ok')+'">'+(pending>0?'₹'+fmtM(pending)+' undeposited':'All deposited')+'</span>'
+      + '</div>'
+      + '<div class="section-body"><div class="metric-grid">'
+      + '<div class="metric-card"><div class="mc-icon si-green"><svg><use href="#i-cash"/></svg></div><div class="mc-val"><span class="cur">₹</span>'+fmtM(collected)+'</div><div class="mc-lbl">Collected</div></div>'
+      + '<div class="metric-card"><div class="mc-icon si-blue"><svg><use href="#i-bank"/></svg></div><div class="mc-val"><span class="cur">₹</span>'+fmtM(deposited)+'</div><div class="mc-lbl">Deposited</div></div>'
+      + '<div class="metric-card"><div class="mc-icon si-warn"><svg><use href="#i-cash"/></svg></div><div class="mc-val" style="color:var(--warn)"><span class="cur">₹</span>'+fmtM(pending)+'</div><div class="mc-lbl">Pending</div></div>'
+      + '<div class="metric-card"><div class="mc-icon si-teal"><svg><use href="#i-users"/></svg></div><div class="mc-val">'+riderSet+'</div><div class="mc-lbl">Riders Served</div></div>'
+      + '</div>'
+      + '<div style="display:flex;gap:7px;flex-wrap:wrap;font-size:11px;background:var(--grad-soft);border-radius:9px;padding:10px 13px;margin-top:2px">'
+      + '<div>Collections: <strong style="color:var(--ink)">'+settl.length+'</strong></div>'
+      + '<div>Deposits: <strong style="color:var(--blue-deep)">'+deps.length+'</strong></div>'
+      + '<div>Handovers Approved: <strong style="color:var(--good)">'+approvedHO+'</strong></div>'
+      + (pendingHO?'<div>Pending: <strong style="color:var(--warn)">'+pendingHO+'</strong></div>':'')
+      + (discrepHO?'<div>Discrepancies: <strong style="color:var(--bad)">'+discrepHO+'</strong></div>':'')
+      + '</div></div></div>';
+  }).join('');
+}
+
+/* ════════════════════════════════════════════════════════════
+   ORDERS TAB — Search by Order ID
+   ════════════════════════════════════════════════════════════ */
+var ordSearchActive = false;
+
+function initOrdSearch() {
+  var input = document.getElementById('ordSearchInput');
+  var clearBtn = document.getElementById('ordSearchClear');
+  var hint = document.getElementById('ordSearchHint');
+  if(!input || input.dataset.bound) return;
+  input.dataset.bound = '1';
+
+  input.addEventListener('input', function() {
+    var term = input.value.trim();
+    if(clearBtn) clearBtn.classList.toggle('hidden', !term);
+    if(!term) {
+      ordSearchActive = false;
+      if(hint) hint.style.display='';
+      document.getElementById('ordSearchResult').classList.add('hidden');
+      renderAdmOrders();
+      return;
+    }
+    ordSearchActive = true;
+    if(hint) hint.style.display='none';
+    runOrderSearch(term);
+  });
+
+  input.addEventListener('keydown', function(e){
+    if(e.key==='Escape'){ clearOrdSearch(); }
+  });
+
+  if(clearBtn) clearBtn.addEventListener('click', clearOrdSearch);
+}
+
+function clearOrdSearch() {
+  var input = document.getElementById('ordSearchInput');
+  if(input) input.value = '';
+  ordSearchActive = false;
+  var clearBtn = document.getElementById('ordSearchClear');
+  if(clearBtn) clearBtn.classList.add('hidden');
+  var hint = document.getElementById('ordSearchHint');
+  if(hint) hint.style.display='';
+  document.getElementById('ordSearchResult').classList.add('hidden');
+  renderAdmOrders();
+}
+
+function runOrderSearch(term) {
+  var termUp = term.toUpperCase().trim();
+  var resultWrap = document.getElementById('ordSearchResult');
+  if(!resultWrap) return;
+
+  // Find matching orders
+  var matches = allOrders.filter(function(o){
+    return (o.orderId||'').toUpperCase().includes(termUp);
+  }).sort(function(a,b){
+    // Exact match first
+    var aExact = (a.orderId||'').toUpperCase() === termUp ? 0 : 1;
+    var bExact = (b.orderId||'').toUpperCase() === termUp ? 0 : 1;
+    return aExact - bExact || b.timestamp - a.timestamp;
+  });
+
+  // Also update the main table with search filter
+  var from = ordFilter.from||'2020-01-01', to = ordFilter.to||todayISO();
+  var tableMatches = matches.filter(function(o){
+    return (!ordFilter.riderId||o.riderId===ordFilter.riderId)&&(!ordFilter.type||o.type===ordFilter.type);
+  });
+  var wrap = document.getElementById('ordersTableWrap');
+  var lbl = document.getElementById('ordCountLabel');
+  if(lbl) lbl.textContent = (matches.length?matches.length:0)+' result'+(matches.length!==1?'s':'')+" for '"+term+"'";
+
+  if(!matches.length) {
+    resultWrap.classList.add('hidden');
+    if(wrap) wrap.innerHTML = '<div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No orders found for "'+esc(term)+'"</div><div class="sub">Check the Order ID and try again</div></div>';
+    return;
+  }
+
+  // Render exact match detail card
+  var exactMatch = matches.find(function(o){return (o.orderId||'').toUpperCase()===termUp;});
+  if(exactMatch) {
+    resultWrap.classList.remove('hidden');
+    resultWrap.innerHTML = renderOrderDetailCard(exactMatch);
+  } else {
+    resultWrap.classList.add('hidden');
+  }
+
+  // Render matches in table
+  if(wrap) {
+    if(matches.length > 1) {
+      var multiLabel = document.createElement('div');
+    }
+    wrap.innerHTML = '<div class="multi-results-label">'+matches.length+' order'+(matches.length!==1?'s':'')+' matching "'+esc(term)+'"</div>'
+      + '<table class="order-tbl"><thead><tr>'
+      + '<th>Order ID</th><th>Rider</th><th>Date</th><th>Time</th><th>Type</th><th>Amount</th><th>Cash</th><th>QR</th><th>Refund</th><th>KM</th><th>Settlement</th><th>Recon</th>'
+      + '</tr></thead><tbody>'
+      + matches.slice(0,50).map(function(o){
+          var ip=o.type==='prepaid';
+          var es=getExtraSplit(o);
+          var cash=(+o.cashCollected||0)+es.cash;
+          var qr=(+o.qrCollected||0)+es.qr;
+          var ref=+o.refund||0;
+          var settled=allSettlements.some(function(s){return s.riderId===o.riderId&&s.date===o.date;});
+          var hoStatus=allHandovers.filter(function(h){return h.riderId===o.riderId&&h.businessDate===o.date;});
+          var reconStatus=hoStatus.length===0?'none':hoStatus.some(function(h){return h.status==='approved';})
+            ?'approved':hoStatus.some(function(h){return h.status==='discrepancy';})
+            ?'discrepancy':'pending';
+          var isExact=(o.orderId||'').toUpperCase()===termUp;
+          return '<tr'+(isExact?' style="background:#f0fdf4"':'')+'>'
+            +'<td style="font-weight:800;color:'+(isExact?'var(--teal-dark)':'var(--ink)')+'">'+esc(o.orderId)+(isExact?' <span style="font-size:9px;background:var(--teal);color:white;padding:1px 5px;border-radius:4px;vertical-align:middle">MATCH</span>':'')+'</td>'
+            +'<td>'+esc(o.riderName||'—')+'</td>'
+            +'<td style="white-space:nowrap">'+o.date+'</td>'
+            +'<td style="white-space:nowrap;color:var(--ink-3)">'+fmtTime(o.timestamp)+'</td>'
+            +'<td><span class="badge '+o.type+'">'+(ip?'Prepaid':'COD')+'</span></td>'
+            +'<td style="text-align:right;font-variant-numeric:tabular-nums">₹'+fmtM(ip?(+o.orderAmount||0):(+o.totalCodAmount||0))+'</td>'
+            +'<td style="text-align:right;color:var(--good)">'+(cash?'₹'+fmtM(cash):'—')+'</td>'
+            +'<td style="text-align:right">'+(qr?'₹'+fmtM(qr):'—')+'</td>'
+            +'<td style="text-align:right;color:var(--bad)">'+(ref?'-₹'+fmtM(ref):'—')+'</td>'
+            +'<td style="text-align:right">'+((+o.distance||0).toFixed(1))+'</td>'
+            +'<td>'+(settled?'<span class="di-match">Settled</span>':'<span class="di-pending">Pending</span>')+'</td>'
+            +'<td>'+(reconStatus==='approved'?'<span class="di-match">Verified</span>':reconStatus==='discrepancy'?'<span class="di-short">Discrepancy</span>':reconStatus==='pending'?'<span class="di-pending">Pending</span>':'<span style="color:var(--ink-3);font-size:11px">—</span>')+'</td>'
+            +'</tr>';
+        }).join('')
+      +'</tbody></table>'
+      +(matches.length>50?'<div style="padding:8px 12px;font-size:11px;color:var(--ink-3)">Showing first 50 of '+matches.length+' results</div>':'');
+  }
+}
+
+function renderOrderDetailCard(o) {
+  var ip = o.type==='prepaid';
+  var es = getExtraSplit(o);
+  var cash = (+(o.cashCollected||0))+es.cash;
+  var qr   = (+(o.qrCollected||0))+es.qr;
+  var ref  = +(o.refund||0);
+  var ext  = +(o.extraCollected||0);
+
+  var settled = allSettlements.some(function(s){return s.riderId===o.riderId&&s.date===o.date;});
+  var hoList  = allHandovers.filter(function(h){return h.riderId===o.riderId&&h.businessDate===o.date;});
+  var reconStatus = hoList.length===0?null:hoList.some(function(h){return h.status==='approved';})
+    ?'approved':hoList.some(function(h){return h.status==='discrepancy';})?'discrepancy':'pending';
+  var reconManager = hoList.length?hoList[0].managerName:'—';
+
+  var payType = ip?'Prepaid':cash>0&&qr>0?'Split (Cash+QR)':cash>0?'Full Cash':'Full QR';
+
+  return '<div class="order-detail-card">'
+    + '<div class="odc-header">'
+    + '<div><div class="odc-id">'+esc(o.orderId)+'</div><div class="odc-time">'+o.date+' · '+fmtTime(o.timestamp)+'</div></div>'
+    + '<span class="badge '+o.type+'" style="font-size:11px;padding:5px 11px">'+(ip?'Prepaid':'COD')+'</span>'
+    + '</div>'
+    + '<div class="odc-grid">'
+    + '<div class="odc-item"><div class="odc-label">Rider</div><div class="odc-value">'+esc(o.riderName||'—')+'</div></div>'
+    + '<div class="odc-item"><div class="odc-label">Payment Method</div><div class="odc-value teal">'+payType+'</div></div>'
+    + '<div class="odc-item"><div class="odc-label">'+(ip?'Order Amount':'COD Amount')+'</div><div class="odc-value">₹'+fmtM(ip?(+o.orderAmount||0):(+o.totalCodAmount||0))+'</div></div>'
+    + '<div class="odc-item"><div class="odc-label">Distance</div><div class="odc-value">'+((+o.distance||0).toFixed(1))+' km</div></div>'
+    + (cash?'<div class="odc-item"><div class="odc-label">Cash Collected</div><div class="odc-value green">₹'+fmtM(cash)+'</div></div>':'')
+    + (qr?'<div class="odc-item"><div class="odc-label">QR / UPI</div><div class="odc-value teal">₹'+fmtM(qr)+'</div></div>':'')
+    + (ref?'<div class="odc-item"><div class="odc-label">Refund Given</div><div class="odc-value red">-₹'+fmtM(ref)+'</div></div>':'')
+    + (ext?'<div class="odc-item"><div class="odc-label">Extra Collected</div><div class="odc-value green">+₹'+fmtM(ext)+'</div></div>':'')
+    + '<div class="odc-item"><div class="odc-label">Net Cash</div><div class="odc-value green">₹'+fmtM(cash-ref)+'</div></div>'
+    + '<div class="odc-item"><div class="odc-label">Settlement</div><div class="odc-value">'+(settled?'<span class="di-match">Settled</span>':'<span class="di-pending">Pending</span>')+'</div></div>'
+    + '<div class="odc-item"><div class="odc-label">Mgr Reconciliation</div><div class="odc-value">'
+    + (reconStatus==='approved'?'<span class="di-match">Verified</span>'
+      :reconStatus==='discrepancy'?'<span class="di-short">Discrepancy</span>'
+      :reconStatus==='pending'?'<span class="di-pending">Pending</span>'
+      :'<span style="color:var(--ink-3);font-size:11px">Not reconciled</span>')
+    + '</div></div>'
+    + '<div class="odc-item" style="grid-column:span 2"><div class="odc-label">Manager</div><div class="odc-value" style="font-size:12px">'+esc(reconManager)+'</div></div>'
+    + '</div></div>';
 }
 
 /* ══════════════════════════
