@@ -716,6 +716,40 @@ select.fin{cursor:pointer}
 .dep-dates-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
 
+/* ── EDIT REQUEST SYSTEM ── */
+.edit-req-banner{background:var(--warn-soft);border:1.5px solid var(--warn);border-radius:11px;padding:12px 14px;margin-top:10px;font-size:13px;color:var(--warn)}
+.edit-req-banner strong{color:var(--ink)}
+.edit-req-form{margin-top:10px}
+.edit-req-form textarea{width:100%;border:1.5px solid var(--line);border-radius:9px;padding:10px 12px;font-family:inherit;font-size:13px;font-weight:500;color:var(--ink);outline:none;resize:none;height:72px;transition:border-color .15s}
+.edit-req-form textarea:focus{border-color:var(--teal)}
+.edit-req-submit-btn{margin-top:8px;width:100%;background:var(--warn);color:white;border:none;padding:11px;border-radius:9px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s}
+.edit-req-submit-btn:hover{background:#a05e00}
+.edit-req-submit-btn svg{width:14px;height:14px}
+.edit-req-card{background:white;border:1px solid var(--line);border-radius:11px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}
+.erc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px}
+.erc-name{font-weight:700;font-size:13px}
+.erc-meta{font-size:11px;color:var(--ink-3);margin-top:2px}
+.erc-reason{font-size:12px;color:var(--ink-2);background:var(--bg);border-radius:8px;padding:8px 10px;margin-bottom:9px;font-weight:500}
+.erc-btns{display:flex;gap:8px}
+.erc-approve{flex:1;padding:9px;border:none;border-radius:8px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer;background:var(--good);color:white;display:flex;align-items:center;justify-content:center;gap:5px;transition:background .15s}
+.erc-approve:hover{background:var(--green-deep)}
+.erc-reject{flex:1;padding:9px;border:1.5px solid var(--bad);border-radius:8px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer;background:var(--bad-soft);color:var(--bad);display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s}
+.erc-reject:hover{background:var(--bad);color:white}
+.erc-btns svg{width:13px;height:13px}
+.erc-admin-unlock-btn{width:100%;padding:9px;border:none;border-radius:8px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer;background:var(--blue);color:white;display:flex;align-items:center;justify-content:center;gap:5px;margin-top:6px;transition:background .15s}
+.erc-admin-unlock-btn:hover{background:var(--blue-deep)}
+.erc-admin-unlock-btn svg{width:13px;height:13px}
+.req-approved-notice{background:var(--good-soft);border:1.5px solid var(--good);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--good);font-weight:600;margin-top:8px}
+.req-rejected-notice{background:var(--bad-soft);border:1.5px solid var(--bad);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--bad);font-weight:600;margin-top:8px}
+/* ── HANDOVER HISTORY IN RIDER/MANAGER ── */
+.ho-history-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);gap:8px}
+.ho-history-item:last-of-type{border-bottom:none}
+.ho-hi-left{flex:1;min-width:0}
+.ho-hi-name{font-weight:700;font-size:13px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ho-hi-meta{font-size:11px;color:var(--ink-3);margin-top:2px}
+.ho-hi-right{text-align:right;flex-shrink:0}
+.ho-hi-amt{font-weight:800;font-size:15px;font-variant-numeric:tabular-nums;color:var(--good)}
+.ho-hi-status{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
 /* MOBILE RESPONSIVE */
 .tab-bar{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap}
 .tab-bar::-webkit-scrollbar{display:none}
@@ -1007,7 +1041,26 @@ service cloud.firestore {
         <div id="riderHandoverList" style="margin-top:16px"></div>
       </div>
     </section>
+    <!-- ════ APPROVED HANDOVER HISTORY ════ -->
+    <section class="section" id="riderApprovedHandoverSection">
+      <div class="section-head"><h2>Cash Handed Over</h2><div class="head-right">Confirmed by managers</div></div>
+      <div class="section-body" id="riderApprovedHandoverBody">
+        <div class="empty"><div class="empty-icon"><svg><use href="#i-cash"/></svg></div><div class="msg">No confirmed handovers yet</div></div>
+      </div>
+    </section>
     <div id="riderDayClosedBanner" class="hidden" style="padding:0 14px 10px"></div>
+    <!-- ════ EDIT REQUEST SECTION (rider) ════ -->
+    <div id="riderEditReqSection" class="hidden" style="padding:0 14px 10px">
+      <div class="edit-req-banner">
+        <strong>Day Locked</strong> — Want to edit a record? Send an approval request to the admin.
+        <div class="edit-req-form">
+          <textarea id="riderEditReqReason" placeholder="Describe which record you want to edit and why…"></textarea>
+          <div style="margin-top:6px;font-size:11px;color:var(--ink-3)">Date for edit request: <strong id="riderEditReqDateLabel">—</strong></div>
+          <button class="edit-req-submit-btn" id="riderSendReqBtn"><svg><use href="#i-edit"/></svg> Send Edit Request to Admin</button>
+        </div>
+        <div id="riderEditReqStatus" style="margin-top:8px"></div>
+      </div>
+    </div>
     <div style="padding:0 14px 10px">
       <button class="end-day-btn" id="riderEndDayBtn"><svg><use href="#i-lock-day"/></svg> Close My Day</button>
     </div>
@@ -1043,18 +1096,6 @@ service cloud.firestore {
         <div class="ho-stat"><div class="ho-stat-val" id="collectDeposited">₹0</div><div class="ho-stat-lbl">Deposited</div></div>
         <div class="ho-stat"><div class="ho-stat-val warn" id="collectInHand">₹0</div><div class="ho-stat-lbl">In Hand</div></div>
       </div>
-      <!-- Pending rider handovers to approve -->
-      <section class="section">
-        <div class="section-head"><h2>Pending from Riders</h2><span class="count-pill" id="collectPendingBadge">0</span></div>
-        <div class="section-body" id="collectPendingList">
-          <div class="empty"><div class="empty-icon"><svg><use href="#i-cash"/></svg></div><div class="msg">No pending handovers</div><div class="sub">Riders will appear here when they submit cash to you</div></div>
-        </div>
-      </section>
-      <!-- Today's collection history -->
-      <section class="section">
-        <div class="section-head"><h2>Collection History</h2></div>
-        <div class="section-body" id="collectHistoryList"></div>
-      </section>
       <!-- Wallet position hero -->
       <div class="wallet-hero">
         <div class="wh-title">Cash Position — Today <button onclick="try{initMgrWallet();}catch(e){}" style="background:rgba(255,255,255,.15);border:none;color:white;border-radius:7px;padding:3px 8px;font-size:10px;font-weight:700;cursor:pointer">↻ Refresh</button></div>
@@ -1089,10 +1130,29 @@ service cloud.firestore {
       <div id="pendingPreviewWrap" class="hidden"><span id="pendingAmt">0</span><span id="pendingDesc"></span><span id="ppCash"></span><span id="ppRef"></span><span id="ppOrders"></span></div>
       <div id="mgrRemarksWrap" class="hidden"></div>
       <button id="mgrSubmitBtn" class="hidden" disabled></button>
+      <!-- Rider Handover Received History (directly visible in manager panel) -->
+      <section class="section">
+        <div class="section-head"><h2>Cash Received from Riders</h2><div class="head-right">All-time history</div></div>
+        <div class="section-body" id="mgrRiderCashReceivedList">
+          <div class="empty"><div class="empty-icon"><svg><use href="#i-cash"/></svg></div><div class="msg">No cash received yet</div></div>
+        </div>
+      </section>
       <!-- End Day button in Wallet tab -->
       <div id="mgrDayClosedBanner" class="hidden" style="margin:10px 0"></div>
+      <!-- Manager Edit Request Section -->
+      <div id="mgrEditReqSection" class="hidden" style="margin:10px 0">
+        <div class="edit-req-banner">
+          <strong>Shift Locked</strong> — Want to edit a record? Send an approval request to the admin.
+          <div class="edit-req-form">
+            <textarea id="mgrEditReqReason" placeholder="Describe which record you want to edit and why…"></textarea>
+            <button class="edit-req-submit-btn" id="mgrSendReqBtn"><svg><use href="#i-edit"/></svg> Send Edit Request to Admin</button>
+          </div>
+          <div id="mgrEditReqStatus" style="margin-top:8px"></div>
+        </div>
+      </div>
       <div style="margin:10px 0"><button class="end-day-btn" id="mgrEndDayBtn"><svg><use href="#i-lock-day"/></svg> End My Shift</button></div>
     </div>
+    <!-- MANAGER TRANSFER HISTORY TAB (visible summary) -->
     <!-- HISTORY TAB -->
     <div class="tab-content" id="mgr-tab-history">
       <section class="section">
@@ -1318,6 +1378,7 @@ service cloud.firestore {
       <button class="tab-btn" data-tab="audit"><svg><use href="#i-shield"/></svg> Audit</button>
       <button class="tab-btn" data-tab="recon"><svg><use href="#i-shield"/></svg> Recon</button>
       <button class="tab-btn" data-tab="orders"><svg><use href="#i-orders"/></svg> Orders</button>
+      <button class="tab-btn" data-tab="requests" id="admRequestsTabBtn"><svg><use href="#i-edit"/></svg> Requests</button>
       <button class="tab-btn" data-tab="users"><svg><use href="#i-key"/></svg> Users</button>
     </div>
 
@@ -1326,6 +1387,7 @@ service cloud.firestore {
       <!-- Period selector -->
       <div class="period-tabs">
         <button class="period-tab active" data-period="today">Today</button>
+        <button class="period-tab" data-period="yesterday">Yesterday</button>
         <button class="period-tab" data-period="week">This Week</button>
         <button class="period-tab" data-period="month">This Month</button>
         <button class="period-tab" data-period="custom">Custom</button>
@@ -1338,6 +1400,7 @@ service cloud.firestore {
       <!-- Export buttons -->
       <div class="export-bar">
         <button class="export-btn pdf" id="expRiderPdf"><svg><use href="#i-download"/></svg> Rider Report PDF</button>
+        <button class="export-btn pdf" id="expAnalyticsPdf" style="background:var(--teal-dark)"><svg><use href="#i-download"/></svg> Analytics PDF</button>
         <button class="export-btn csv" id="expOpsCsv"><svg><use href="#i-download"/></svg> Operations CSV</button>
         <button class="export-btn csv" id="expPayCsv"><svg><use href="#i-download"/></svg> Payment Recon CSV</button>
         <button class="export-btn csv" id="expPerfCsv"><svg><use href="#i-download"/></svg> Performance CSV</button>
@@ -1401,10 +1464,17 @@ service cloud.firestore {
 
     <!-- RECON TAB -->
     <div class="tab-content" id="adm-tab-recon">
-      <div style="display:flex;gap:7px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
+      <div style="display:flex;gap:7px;margin-bottom:8px;align-items:center;flex-wrap:wrap">
         <select class="fin" id="reconRiderFilter" style="flex:1;padding:9px 13px;font-size:13px"><option value="">All Riders</option></select>
-        <button class="filter-pill" id="reconToday" style="white-space:nowrap">Today</button>
-        <button class="filter-pill" id="reconAll" style="white-space:nowrap">All Time</button>
+        <button class="filter-pill active" id="reconToday" data-reconperiod="today" style="white-space:nowrap">Today</button>
+        <button class="filter-pill" id="reconYest" data-reconperiod="yesterday" style="white-space:nowrap">Yesterday</button>
+        <button class="filter-pill" id="reconAll" data-reconperiod="all" style="white-space:nowrap">All Time</button>
+        <button class="filter-pill" id="reconCustomBtn" data-reconperiod="custom" style="white-space:nowrap">Custom</button>
+      </div>
+      <div class="custom-date-row hidden" id="reconCustomDates" style="margin-bottom:10px">
+        <input type="date" class="fin" id="reconFrom" style="flex:1"/>
+        <input type="date" class="fin" id="reconTo" style="flex:1"/>
+        <button class="filter-pill active" id="reconApply">Apply</button>
       </div>
       <!-- Reconciliation Summary Cards -->
       <div class="metric-grid" id="reconSummaryCards" style="margin-bottom:14px"></div>
@@ -1424,6 +1494,22 @@ service cloud.firestore {
       </section>
     </div>
 
+
+    <!-- REQUESTS TAB — Edit Requests from Riders & Managers -->
+    <div class="tab-content" id="adm-tab-requests">
+      <section class="section">
+        <div class="section-head"><h2>Pending Edit Requests</h2><span class="count-pill" id="admReqPendingCount">0</span></div>
+        <div class="section-body" id="admPendingReqList">
+          <div class="empty"><div class="empty-icon"><svg><use href="#i-edit"/></svg></div><div class="msg">No pending requests</div><div class="sub">Riders and managers will appear here when they request to edit a locked record</div></div>
+        </div>
+      </section>
+      <section class="section">
+        <div class="section-head"><h2>Processed Requests</h2></div>
+        <div class="section-body" id="admProcessedReqList">
+          <div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No processed requests yet</div></div>
+        </div>
+      </section>
+    </div>
 
     <!-- ORDERS TAB -->
     <div class="tab-content" id="adm-tab-orders">
@@ -1585,7 +1671,7 @@ let userProfile = null;
 let rOrders = [];
 let rViewDate = todayISO();
 let wizStep = null, wizHistory = [], wizData = {};
-let allSettlements = [], allDeposits = [], allUsers = [], allOrders = [], allHandovers = [], allTransfers = [];
+let allSettlements = [], allDeposits = [], allUsers = [], allOrders = [], allHandovers = [], allTransfers = [], allEditRequests = [];
 let settlFilter = { range:'today', rider:'', from:'', to:'' };
 let cpwTargetUid = null, cpwTargetEmail = null;
 let admFrom = '', admTo = '';
@@ -1754,6 +1840,26 @@ async function fsDisableUserViaREST(uid) {
   return fsDeleteUserData(uid);
 }
 
+/* ════════════════════════════════════════════════════════════
+   FIRESTORE — EDIT REQUESTS
+   ════════════════════════════════════════════════════════════ */
+async function fsAddEditRequest(data) {
+  return db.collection('editRequests').add(data);
+}
+async function fsGetEditRequestsFor(userId) {
+  var snap = await db.collection('editRequests').where('requesterId','==',userId).get();
+  var docs = snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+  return docs.sort(function(a,b){return (b.requestedAt||0)-(a.requestedAt||0);});
+}
+async function fsGetAllEditRequests() {
+  var snap = await db.collection('editRequests').get();
+  var docs = snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+  return docs.sort(function(a,b){return (b.requestedAt||0)-(a.requestedAt||0);});
+}
+async function fsUpdateEditRequest(reqId, update) {
+  return db.collection('editRequests').doc(reqId).update(update);
+}
+
 /* ══════════════════════════
    AUTH
    ══════════════════════════ */
@@ -1786,7 +1892,7 @@ async function doLogout() {
   try { await auth.signOut(); } catch(e){ console.warn('Signout:',e); }
   fbUser=null; userProfile=null; rOrders=[];
   allSettlements=[]; allDeposits=[]; allUsers=[]; allOrders=[];
-  allHandovers=[]; allTransfers=[]; dayClosures={};
+  allHandovers=[]; allTransfers=[]; allEditRequests=[]; dayClosures={};
   ['riderPanel','managerPanel','adminPanel'].forEach(function(id){document.getElementById(id).classList.remove('active');});
   loading(false);
   showScreen('loginScreen');
@@ -1904,6 +2010,8 @@ async function initRider() {
   // Load day closures
   try{await loadRiderDayClosures();}catch(e){}
   checkAndShowDayClosedBanner(userProfile.uid,rViewDate,'riderDayClosedBanner');
+  // Load edit requests
+  try{ await loadRiderEditRequests(); }catch(e){}
   setupRealtimeListeners();
 }
 function getOrdersForDate(date) {
@@ -2245,7 +2353,7 @@ function renderRiderHandoverStatus() {
   var dayOrders = rOrders.filter(function(o){return o.date===date;});
   var s = calcSummary(dayOrders);
   var submitted = riderHandovers
-    .filter(function(h){return h.businessDate===date;})
+    .filter(function(h){return h.businessDate===date && h.status!=='rejected';})
     .reduce(function(sum,h){return sum+(+h.submittedAmount||0);},0);
   var remaining = Math.max(0, s.netCash - submitted);
   document.getElementById('hoTotalCod').textContent = '₹'+fmtM(s.netCash);
@@ -2300,6 +2408,7 @@ async function initManager() {
   try { initMgrWallet(); } catch(e){ console.warn('Wallet init:',e); }
   try { updateIncomingBadge(); } catch(e){}
   try { await loadMgrDayClosures(); } catch(e){}
+  try { await loadMgrEditRequests(); } catch(e){}
   var medb=document.getElementById('mgrEndDayBtn');
   if(medb&&!medb.dataset.bound){medb.dataset.bound='1';medb.addEventListener('click',mgrCloseDay);}
   setupRealtimeListeners();
@@ -2544,9 +2653,12 @@ async function initAdmin() {
     allOrders=riderIds.length?await fsGetOrdersForRiders(riderIds):[];
     try { allHandovers=await fsGetAllHandovers(); } catch(e2){ allHandovers=[]; }
     try { allTransfers=await fsGetAllTransfers(); } catch(e3){ allTransfers=[]; }
+    try { allEditRequests=await fsGetAllEditRequests(); } catch(e4){ allEditRequests=[]; }
   } catch(e) { console.warn('Admin data load failed:',e); showToast('Some data failed to load','error'); }
   finally { loading(false); }
   try { initAdmAnalytics(); } catch(e){ renderAdmAnalytics(); }
+  // Update requests badge
+  try { updateAdmReqBadge(); } catch(e){}
   initRidersQuickFilter();
   applyDefaultTodayFilters();
   setupRealtimeListeners();
@@ -2559,7 +2671,6 @@ async function initAdmin() {
   renderAudit();
   renderUsersTab();
   updateAdmHero();
-  document.getElementById('admRefreshBtn').addEventListener('click',async function(){admFrom=document.getElementById('admFrom').value;admTo=document.getElementById('admTo').value;loading(true);await renderAdmRiders();loading(false);});
   document.getElementById('admFrom').addEventListener('change',function(e){admFrom=e.target.value;});
   document.getElementById('admTo').addEventListener('change',function(e){admTo=e.target.value;});
   ['auditToday','auditYest','auditAll'].forEach(function(id){
@@ -2713,15 +2824,32 @@ document.getElementById('cpwSave').addEventListener('click',async function(){
 /* ════════════════════════════════════════════════════════════
    ADMIN — RECONCILIATION TAB
    ════════════════════════════════════════════════════════════ */
+var reconPeriod = 'today';
+var reconFrom = '', reconTo = '';
+
+function getReconDates() {
+  var today = todayISO();
+  if(reconPeriod==='today') return {from:today, to:today};
+  if(reconPeriod==='yesterday') { var y=yesterdayISO(); return {from:y, to:y}; }
+  if(reconPeriod==='all') return {from:'2000-01-01', to:'9999-12-31'};
+  return {from:reconFrom||today, to:reconTo||today};
+}
+
 function renderRecon() {
   var rFilter = document.getElementById('reconRiderFilter') ? document.getElementById('reconRiderFilter').value : '';
-  var riders = allUsers.filter(function(u){return u.role==='rider'&&(!rFilter||u.uid===rFilter);});
+  var dates = getReconDates();
+  var rfrom = dates.from, rto = dates.to;
 
-  // Summary cards
-  var totalSubmitted = allHandovers.reduce(function(s,h){return s+(+h.submittedAmount||0);},0);
-  var totalReceived  = allHandovers.filter(function(h){return h.status!=='pending';}).reduce(function(s,h){return s+(+h.receivedAmount||0);},0);
-  var pending  = allHandovers.filter(function(h){return h.status==='pending';}).length;
-  var discrepancies = allHandovers.filter(function(h){return h.status==='discrepancy';}).length;
+  // Filter handovers by date
+  var filtHandovers = allHandovers.filter(function(h){
+    return h.businessDate>=rfrom && h.businessDate<=rto && (!rFilter||h.riderId===rFilter);
+  });
+
+  // Summary cards — filtered by selected period
+  var totalSubmitted = filtHandovers.reduce(function(s,h){return s+(+h.submittedAmount||0);},0);
+  var totalReceived  = filtHandovers.filter(function(h){return h.status!=='pending';}).reduce(function(s,h){return s+(+h.receivedAmount||0);},0);
+  var pending  = filtHandovers.filter(function(h){return h.status==='pending';}).length;
+  var discrepancies = filtHandovers.filter(function(h){return h.status==='discrepancy';}).length;
   var sc = document.getElementById('reconSummaryCards');
   if(sc) sc.innerHTML =
     '<div class="metric-card"><div class="mc-icon si-green"><svg><use href="#i-cash"/></svg></div><div class="mc-val"><span class="cur">₹</span>'+fmtM(totalSubmitted)+'</div><div class="mc-lbl">Rider Submitted</div></div>'
@@ -2731,10 +2859,10 @@ function renderRecon() {
 
   // Reconciliation table per rider per date
   var tw = document.getElementById('reconTableWrap');
-  if(!allHandovers.length){
-    tw.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-shield"/></svg></div><div class="msg">No handovers yet</div><div class="sub">Data will appear when riders submit cash</div></div>';
+  if(!filtHandovers.length){
+    tw.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-shield"/></svg></div><div class="msg">No handovers for this period</div><div class="sub">Try "All Time" or change the date filter</div></div>';
   } else {
-    var rows = allHandovers.filter(function(h){return !rFilter||h.riderId===rFilter;});
+    var rows = filtHandovers.slice();
     rows.sort(function(a,b){return b.riderTimestamp-a.riderTimestamp;});
     tw.innerHTML = '<table class="recon-table"><thead><tr>'
       +'<th>Rider</th><th>Date</th><th>Manager</th><th>Submitted</th><th>Received</th><th>Diff</th><th>Status</th>'
@@ -2761,7 +2889,9 @@ function renderRecon() {
   // Order level view
   var ow = document.getElementById('orderTblWrap');
   var om = document.getElementById('orderTblMeta');
-  var filtOrders = rFilter ? allOrders.filter(function(o){return o.riderId===rFilter;}) : allOrders;
+  var filtOrders = allOrders.filter(function(o){
+    return o.date>=rfrom && o.date<=rto && (!rFilter||o.riderId===rFilter);
+  });
   filtOrders.sort(function(a,b){return b.timestamp-a.timestamp;});
   if(om) om.textContent = filtOrders.length+' orders';
   if(!filtOrders.length){
@@ -2799,11 +2929,29 @@ function renderRecon() {
     rf.dataset.populated='1';
     rf.addEventListener('change',renderRecon);
   }
-  var rt=document.getElementById('reconToday'),ra=document.getElementById('reconAll');
-  if(rt&&!rt.dataset.bound){
-    rt.dataset.bound='1';
-    rt.addEventListener('click',function(){rt.classList.add('active');if(ra)ra.classList.remove('active');renderRecon();});
-    if(ra){ra.addEventListener('click',function(){ra.classList.add('active');rt.classList.remove('active');renderRecon();});}
+  // Bind period filter buttons
+  ['reconToday','reconYest','reconAll','reconCustomBtn'].forEach(function(btnId){
+    var btn=document.getElementById(btnId);
+    if(btn&&!btn.dataset.bound){
+      btn.dataset.bound='1';
+      btn.addEventListener('click',function(){
+        document.querySelectorAll('#adm-tab-recon .filter-pill').forEach(function(b){b.classList.remove('active');});
+        btn.classList.add('active');
+        reconPeriod=btn.dataset.reconperiod||'today';
+        var custDates=document.getElementById('reconCustomDates');
+        if(custDates) custDates.classList.toggle('hidden',reconPeriod!=='custom');
+        if(reconPeriod!=='custom') renderRecon();
+      });
+    }
+  });
+  var applyBtn=document.getElementById('reconApply');
+  if(applyBtn&&!applyBtn.dataset.bound){
+    applyBtn.dataset.bound='1';
+    applyBtn.addEventListener('click',function(){
+      reconFrom=document.getElementById('reconFrom').value;
+      reconTo=document.getElementById('reconTo').value;
+      renderRecon();
+    });
   }
   // Update hero to match current period
   try{updateAdmHero();}catch(e){}
@@ -3150,6 +3298,7 @@ async function initAdmAnalytics() {
   });
   // Export bindings
   document.getElementById('expRiderPdf').addEventListener('click',function(){exportAdmPDF('rider');});
+  document.getElementById('expAnalyticsPdf').addEventListener('click',function(){exportAdmPDF('analytics');});
   document.getElementById('expOpsCsv').addEventListener('click',function(){exportAdmCSV('ops');});
   document.getElementById('expPayCsv').addEventListener('click',function(){exportAdmCSV('payment');});
   document.getElementById('expPerfCsv').addEventListener('click',function(){exportAdmCSV('performance');});
@@ -3158,6 +3307,7 @@ async function initAdmAnalytics() {
 function getAnalyticsDates() {
   var today=todayISO();
   if(anlPeriod==='today') return {from:today,to:today};
+  if(anlPeriod==='yesterday') { var y=yesterdayISO(); return {from:y,to:y}; }
   if(anlPeriod==='week') {
     var d=new Date(); d.setDate(d.getDate()-6);
     return {from:d.toISOString().slice(0,10),to:today};
@@ -3172,7 +3322,7 @@ function getAnalyticsDates() {
 function renderAdmAnalytics() {
   var dates=getAnalyticsDates();
   var from=dates.from, to=dates.to;
-  var periodLabels={today:'Today',week:'Last 7 Days',month:'Last 30 Days',custom:from+' → '+to};
+  var periodLabels={today:'Today',yesterday:'Yesterday',week:'Last 7 Days',month:'Last 30 Days',custom:from+' → '+to};
   var lbl=document.getElementById('anlPeriodLabel');
   if(lbl) lbl.textContent=periodLabels[anlPeriod]||from+' to '+to;
 
@@ -3187,7 +3337,9 @@ function renderAdmAnalytics() {
     ['si-teal','i-orders',filtOrders.length,'Orders'],
     ['si-green','i-cash','₹'+fmtM(s.netCash),'Net Cash'],
     ['si-blue','i-circle-check','₹'+fmtM(settled),'Settled'],
-    ['si-dist','i-bank','₹'+fmtM(deposited),'Deposited']
+    ['si-dist','i-bank','₹'+fmtM(deposited),'Deposited'],
+    ['si-qr','i-qr','₹'+fmtM(s.qr),'Total QR Received'],
+    ['si-online','i-card','₹'+fmtM(s.online),'Total Online (Prepaid)']
   ].map(function(m){
     return '<div class="metric-card"><div class="mc-icon '+m[0]+'"><svg><use href="#'+m[1]+'"/></svg></div>'
       +'<div class="mc-val">'+m[2]+'</div><div class="mc-lbl">'+m[3]+'</div></div>';
@@ -3408,18 +3560,20 @@ function exportAdmPDF(type) {
   // Header
   doc.setFillColor(14,46,43); doc.rect(0,0,pw,30,'F');
   doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(255,255,255);
-  doc.text('INSTAGHAR — Admin Analytics Report',mg,16);
+  doc.text('INSTAGHAR — '+(type==='analytics'?'Analytics Summary':'Admin Analytics Report'),mg,16);
   doc.setFont('helvetica','normal'); doc.setFontSize(8);
-  doc.text('Period: '+from+' to '+to,mg,24);
+  doc.text('Period: '+from+(from!==to?' to '+to:''),mg,24);
   var y=38;
   // Summary
   var s=calcSummary(filtOrders);
   var settled=allSettlements.filter(function(st){return st.date>=from&&st.date<=to;}).reduce(function(sum,st){return sum+(+st.receivedAmount||0);},0);
+  var deposited=allDeposits.filter(function(d){return d.date>=from&&d.date<=to;}).reduce(function(sum,d){return sum+(+d.amount||0);},0);
   doc.autoTable({startY:y,margin:{left:mg,right:mg},body:[
     ['Total Orders',filtOrders.length,'Total COD',pdfN(s.totalCod)],
     ['Cash Collected',pdfN(s.cash),'QR Collected',pdfN(s.qr)],
-    ['Total Refunds',pdfN(s.refunds),'Total Distance',s.distance.toFixed(1)+' km'],
-    ['Net Cash',pdfN(s.netCash),'Settled',pdfN(settled)]
+    ['Online / Prepaid',pdfN(s.online),'Total Refunds',pdfN(s.refunds)],
+    ['Net Cash',pdfN(s.netCash),'Settled',pdfN(settled)],
+    ['Deposited',pdfN(deposited),'Total Distance',s.distance.toFixed(1)+' km']
   ],theme:'plain',styles:{fontSize:10,cellPadding:{top:4,bottom:4,left:6,right:6},lineColor:[224,238,236],lineWidth:.4}});
   y=doc.lastAutoTable.finalY+8;
   // Rider table
@@ -3427,16 +3581,16 @@ function exportAdmPDF(type) {
   var rtData=riders.map(function(r){
     var ords=filtOrders.filter(function(o){return o.riderId===r.uid;});
     var rs=calcSummary(ords);
-    return [r.name,ords.length,pdfN(rs.totalCod),pdfN(rs.cash),pdfN(rs.qr),pdfN(rs.refunds),rs.distance.toFixed(1),pdfN(rs.netCash)];
+    return [r.name,ords.length,pdfN(rs.totalCod),pdfN(rs.cash),pdfN(rs.qr),pdfN(rs.online),pdfN(rs.refunds),rs.distance.toFixed(1),pdfN(rs.netCash)];
   }).filter(function(r){return +r[1]>0;});
   if(rtData.length){
     doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(14,46,43);
     doc.text('Rider Performance',mg,y); y+=6;
-    doc.autoTable({startY:y,margin:{left:mg,right:mg},head:[['Rider','Orders','COD','Cash','QR','Refunds','KM','Net Cash']],body:rtData,theme:'striped',headStyles:{fillColor:[14,46,43],textColor:[255,255,255],fontSize:8},bodyStyles:{fontSize:8},columnStyles:{0:{fontStyle:'bold'}}});
+    doc.autoTable({startY:y,margin:{left:mg,right:mg},head:[['Rider','Orders','COD','Cash','QR','Prepaid','Refunds','KM','Net Cash']],body:rtData,theme:'striped',headStyles:{fillColor:[14,46,43],textColor:[255,255,255],fontSize:8},bodyStyles:{fontSize:8},columnStyles:{0:{fontStyle:'bold'}}});
     y=doc.lastAutoTable.finalY+8;
   }
-  // Orders table
-  if(filtOrders.length){
+  // Orders table (only for full rider report type)
+  if(type!=='analytics'&&filtOrders.length){
     doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(14,46,43);
     doc.text('Order Details (first 100)',mg,y); y+=6;
     var oData=filtOrders.slice(0,100).map(function(o){
@@ -3446,7 +3600,7 @@ function exportAdmPDF(type) {
     });
     doc.autoTable({startY:y,margin:{left:mg,right:mg},head:[['Order ID','Rider','Date','Type','Amount','Cash','KM']],body:oData,theme:'striped',headStyles:{fillColor:[14,46,43],textColor:[255,255,255],fontSize:7},bodyStyles:{fontSize:7}});
   }
-  var fn='instaghar-admin-report-'+from+'-to-'+to+'.pdf';
+  var fn='instaghar-'+(type==='analytics'?'analytics':'admin-report')+'-'+from+(from!==to?'-to-'+to:'')+'.pdf';
   doc.save(fn); showToast('PDF downloaded','success');
 }
 
@@ -3725,6 +3879,7 @@ async function adminRefreshAll() {
     allDeposits=await fsGetDeposits(null);
     try{allHandovers=await fsGetAllHandovers();}catch(e){allHandovers=[];}
     try{allTransfers=await fsGetAllTransfers();}catch(e){allTransfers=[];}
+    try{allEditRequests=await fsGetAllEditRequests();}catch(e){allEditRequests=[];}
     // Re-render all sections
     updateAdmHero();
     renderAdmAnalytics();
@@ -3732,6 +3887,7 @@ async function adminRefreshAll() {
     renderAdmRiders();
     renderAudit();
     renderRecon();
+    updateAdmReqBadge();
     if(document.getElementById('ordersTableWrap'))renderAdmOrders();
   } catch(e){ showToast('Refresh error: '+e.message,'error'); }
   finally{ loading(false); }
@@ -3823,6 +3979,7 @@ async function doRefresh() {
       rOrders=await fsGetOrders(userProfile.uid);
       riderHandovers=await fsGetHandoversForRider(userProfile.uid);
       await loadRiderDayClosures();
+      await loadRiderEditRequests();
       renderRider();
       renderRiderHandoverStatus();
       renderRiderHandoverList();
@@ -3835,6 +3992,7 @@ async function doRefresh() {
       mgrTransfers=await fsGetTransfersForManager(userProfile.uid);
       allTransfers=mgrTransfers;
       await loadMgrDayClosures();
+      await loadMgrEditRequests();
       initMgrWallet();
       renderSettlHistory();
       renderDepHistory();
@@ -3849,9 +4007,11 @@ async function doRefresh() {
       allOrders=rIds.length?await fsGetOrdersForRiders(rIds):[];
       try{allHandovers=await fsGetAllHandovers();}catch(e){allHandovers=[];}
       try{allTransfers=await fsGetAllTransfers();}catch(e){allTransfers=[];}
+      try{allEditRequests=await fsGetAllEditRequests();}catch(e){allEditRequests=[];}
       updateAdmHero();
       renderAdmAnalytics();
       renderRecon();
+      updateAdmReqBadge();
       showToast('Data refreshed','success');
     }
     lastRefreshed=Date.now();
@@ -3884,11 +4044,27 @@ function checkAndShowDayClosedBanner(userId, date, bannerId, unlockFn) {
   if(closure){
     banner.classList.remove('hidden');
     banner.innerHTML='<div class="day-closed-banner"><svg><use href="#i-lock-day"/></svg>Day closed for '+date+'. New entries are locked.'
-      +(userProfile.role==='admin'?'<span class="dcb-unlock" data-closure-id="'+esc(closure.id)+'" onclick="unlockDay(this.dataset.closureId)">Unlock</span>':'')
+      +(userProfile.role==='admin'
+        ?'<span class="dcb-unlock" data-closure-id="'+esc(closure.id)+'" data-user-id="'+esc(userId)+'" data-date="'+esc(date)+'" onclick="unlockDayWithNote(this.dataset.closureId,this.dataset.userId,this.dataset.date)">Unlock</span>'
+        :'')
       +'</div>';
+    // Show edit request section for rider/manager
+    if(userProfile.role==='rider' && bannerId==='riderDayClosedBanner'){
+      showRiderEditReqSection(date);
+    } else if(userProfile.role==='manager' && bannerId==='mgrDayClosedBanner'){
+      showMgrEditReqSection();
+    }
   } else {
     banner.classList.add('hidden');
     banner.innerHTML='';
+    // Hide edit request section when day is unlocked
+    if(bannerId==='riderDayClosedBanner'){
+      var sec=document.getElementById('riderEditReqSection');
+      if(sec)sec.classList.add('hidden');
+    } else if(bannerId==='mgrDayClosedBanner'){
+      var sec=document.getElementById('mgrEditReqSection');
+      if(sec)sec.classList.add('hidden');
+    }
   }
 }
 
@@ -3953,6 +4129,7 @@ async function initMgrWallet() {
   renderCollectPending();
   renderCollectHistory();
   renderWalletTxLog();
+  renderMgrRiderCashReceived();
   checkAndShowDayClosedBanner(userProfile.uid,todayISO(),'mgrDayClosedBanner');
 }
 
@@ -4117,6 +4294,8 @@ function renderRiderHandoverList() {
   c.querySelectorAll('[data-rsid]').forEach(function(btn){
     btn.addEventListener('click',function(){resubmitHandover(btn.dataset.rsid);});
   });
+  // Also update the approved handover history section
+  renderRiderApprovedHandoverHistory();
 }
 
 async function resubmitHandover(hoId) {
@@ -4871,6 +5050,324 @@ function buildMgrTransferSummary(mgrUid, from, to) {
     +'</div>';
 }
 
+/* ════════════════════════════════════════════════════════════
+   EDIT REQUEST SYSTEM — RIDER / MANAGER SEND REQUEST
+   ════════════════════════════════════════════════════════════ */
+var riderEditRequests = [];
+var mgrEditRequests = [];
+
+async function loadRiderEditRequests() {
+  try {
+    riderEditRequests = await fsGetEditRequestsFor(userProfile.uid);
+  } catch(e){ riderEditRequests=[]; }
+  renderRiderEditReqStatus();
+}
+
+async function loadMgrEditRequests() {
+  try {
+    mgrEditRequests = await fsGetEditRequestsFor(userProfile.uid);
+  } catch(e){ mgrEditRequests=[]; }
+  renderMgrEditReqStatus();
+}
+
+function renderRiderEditReqStatus() {
+  var statusEl = document.getElementById('riderEditReqStatus');
+  if(!statusEl) return;
+  var date = rViewDate || todayISO();
+  var req = riderEditRequests.find(function(r){return r.date===date&&(r.status==='pending'||r.status==='approved');});
+  if(!req){statusEl.innerHTML='';return;}
+  if(req.status==='pending'){
+    statusEl.innerHTML='<div class="req-approved-notice" style="background:var(--warn-soft);border-color:var(--warn);color:var(--warn)">⏳ Request sent — waiting for admin approval</div>';
+  } else if(req.status==='approved'){
+    statusEl.innerHTML='<div class="req-approved-notice">✅ Admin approved! Day is unlocked. Edit your records and re-close the day when done.</div>';
+  }
+}
+
+function renderMgrEditReqStatus() {
+  var statusEl = document.getElementById('mgrEditReqStatus');
+  if(!statusEl) return;
+  var date = todayISO();
+  var req = mgrEditRequests.find(function(r){return r.date===date&&(r.status==='pending'||r.status==='approved');});
+  if(!req){statusEl.innerHTML='';return;}
+  if(req.status==='pending'){
+    statusEl.innerHTML='<div class="req-approved-notice" style="background:var(--warn-soft);border-color:var(--warn);color:var(--warn)">⏳ Request sent — waiting for admin approval</div>';
+  } else if(req.status==='approved'){
+    statusEl.innerHTML='<div class="req-approved-notice">✅ Admin approved! Shift is unlocked. Edit your records and re-close when done.</div>';
+  }
+}
+
+function showRiderEditReqSection(date) {
+  var sec = document.getElementById('riderEditReqSection');
+  if(!sec) return;
+  var lbl = document.getElementById('riderEditReqDateLabel');
+  if(lbl) lbl.textContent = date || rViewDate;
+  sec.classList.remove('hidden');
+  // Bind button if not already bound
+  var btn = document.getElementById('riderSendReqBtn');
+  if(btn && !btn.dataset.bound) {
+    btn.dataset.bound = '1';
+    btn.addEventListener('click', submitRiderEditRequest);
+  }
+  renderRiderEditReqStatus();
+}
+
+async function submitRiderEditRequest() {
+  var reason = (document.getElementById('riderEditReqReason')||{}).value||'';
+  reason = reason.trim();
+  if(!reason){showToast('Please describe what you want to edit','error');return;}
+  var date = rViewDate || todayISO();
+  // Check if already pending for this date
+  var existing = riderEditRequests.find(function(r){return r.date===date&&r.status==='pending';});
+  if(existing){showToast('You already have a pending request for this date','error');return;}
+  loading(true);
+  try {
+    var rec = {
+      requesterId: userProfile.uid, requesterName: userProfile.name,
+      requesterRole: 'rider', date: date,
+      reason: reason, status: 'pending',
+      requestedAt: Date.now(), processedAt: null,
+      adminNote: '', adminId: null
+    };
+    var ref = await fsAddEditRequest(rec);
+    riderEditRequests.push(Object.assign({},rec,{id:ref.id}));
+    document.getElementById('riderEditReqReason').value = '';
+    showToast('Edit request sent to admin!','success');
+    renderRiderEditReqStatus();
+    // Only update badge if in admin context
+    if(userProfile && userProfile.role === 'admin') updateAdmReqBadge();
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  loading(false);
+}
+
+async function submitMgrEditRequest() {
+  var reason = (document.getElementById('mgrEditReqReason')||{}).value||'';
+  reason = reason.trim();
+  if(!reason){showToast('Please describe what you want to edit','error');return;}
+  var date = todayISO();
+  var existing = mgrEditRequests.find(function(r){return r.date===date&&r.status==='pending';});
+  if(existing){showToast('You already have a pending request for this date','error');return;}
+  loading(true);
+  try {
+    var rec = {
+      requesterId: userProfile.uid, requesterName: userProfile.name,
+      requesterRole: 'manager', date: date,
+      reason: reason, status: 'pending',
+      requestedAt: Date.now(), processedAt: null,
+      adminNote: '', adminId: null
+    };
+    var ref = await fsAddEditRequest(rec);
+    mgrEditRequests.push(Object.assign({},rec,{id:ref.id}));
+    document.getElementById('mgrEditReqReason').value = '';
+    showToast('Edit request sent to admin!','success');
+    renderMgrEditReqStatus();
+    if(userProfile && userProfile.role === 'admin') updateAdmReqBadge();
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  loading(false);
+}
+
+function showMgrEditReqSection() {
+  var sec = document.getElementById('mgrEditReqSection');
+  if(!sec) return;
+  sec.classList.remove('hidden');
+  var btn = document.getElementById('mgrSendReqBtn');
+  if(btn && !btn.dataset.bound) {
+    btn.dataset.bound = '1';
+    btn.addEventListener('click', submitMgrEditRequest);
+  }
+  renderMgrEditReqStatus();
+}
+
+/* ════════════════════════════════════════════════════════════
+   EDIT REQUEST SYSTEM — ADMIN PANEL
+   ════════════════════════════════════════════════════════════ */
+function updateAdmReqBadge() {
+  var pending = allEditRequests.filter(function(r){return r.status==='pending';}).length;
+  var btn = document.getElementById('admRequestsTabBtn');
+  if(btn){
+    var existing = btn.querySelector('.count-pill');
+    if(pending>0){
+      if(!existing){var sp=document.createElement('span');sp.className='count-pill';sp.style.cssText='background:var(--bad);color:white;margin-left:4px;font-size:9px;padding:1px 6px';btn.appendChild(sp);}
+      btn.querySelector('.count-pill').textContent=pending;
+    } else if(existing) existing.remove();
+  }
+}
+
+function renderEditRequests() {
+  var pending = allEditRequests.filter(function(r){return r.status==='pending';});
+  var processed = allEditRequests.filter(function(r){return r.status!=='pending';});
+
+  var pb = document.getElementById('admReqPendingCount');
+  if(pb) pb.textContent = pending.length;
+
+  var pendingEl = document.getElementById('admPendingReqList');
+  if(pendingEl){
+    if(!pending.length){
+      pendingEl.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-edit"/></svg></div><div class="msg">No pending requests</div><div class="sub">Riders and managers will appear here when they request to edit a locked record</div></div>';
+    } else {
+      pendingEl.innerHTML = pending.map(function(r){
+        var rolePill = r.requesterRole==='rider'
+          ?'<span class="badge" style="background:var(--grad-soft);color:var(--teal-deep);font-size:10px;padding:2px 8px">Rider</span>'
+          :'<span class="badge" style="background:var(--blue-soft);color:var(--blue-deep);font-size:10px;padding:2px 8px">Manager</span>';
+        return '<div class="edit-req-card">'
+          +'<div class="erc-head"><div><div class="erc-name">'+esc(r.requesterName)+' '+rolePill+'</div>'
+          +'<div class="erc-meta">Date: <strong>'+r.date+'</strong> · Requested '+fmtDateTime(r.requestedAt)+'</div></div>'
+          +'<span class="status-badge sb-pending">Pending</span></div>'
+          +'<div class="erc-reason">'+esc(r.reason)+'</div>'
+          +'<div class="erc-btns">'
+          +'<button class="erc-approve" onclick="approveEditRequest(\''+esc(r.id)+'\',\''+esc(r.requesterId)+'\',\''+esc(r.date)+'\')"><svg><use href="#i-circle-check"/></svg> Approve &amp; Unlock</button>'
+          +'<button class="erc-reject" onclick="rejectEditRequest(\''+esc(r.id)+'\')"><svg><use href="#i-x"/></svg> Reject</button>'
+          +'</div></div>';
+      }).join('');
+    }
+  }
+
+  var processedEl = document.getElementById('admProcessedReqList');
+  if(processedEl){
+    if(!processed.length){
+      processedEl.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No processed requests yet</div></div>';
+    } else {
+      var sorted = processed.slice().sort(function(a,b){return b.requestedAt-a.requestedAt;});
+      processedEl.innerHTML = sorted.map(function(r){
+        var statusClass = r.status==='approved'?'sb-approved':r.status==='admin_unlock'?'sb-approved':'sb-discrepancy';
+        var statusLabel = r.status==='approved'?'Approved':r.status==='admin_unlock'?'Admin Unlock':'Rejected';
+        var rolePill = r.requesterRole==='rider'
+          ?'<span class="badge" style="background:var(--grad-soft);color:var(--teal-deep);font-size:10px;padding:2px 8px">Rider</span>'
+          :r.requesterRole==='admin_unlock'
+          ?'<span class="badge" style="background:#f1f5f9;color:#334155;font-size:10px;padding:2px 8px">Admin</span>'
+          :'<span class="badge" style="background:var(--blue-soft);color:var(--blue-deep);font-size:10px;padding:2px 8px">Manager</span>';
+        return '<div class="edit-req-card" style="opacity:0.85">'
+          +'<div class="erc-head"><div><div class="erc-name">'+esc(r.requesterName)+' '+rolePill+'</div>'
+          +'<div class="erc-meta">Date: <strong>'+r.date+'</strong>'+(r.processedAt?' · '+fmtDateTime(r.processedAt):'')+'</div></div>'
+          +'<span class="status-badge '+statusClass+'">'+statusLabel+'</span></div>'
+          +'<div class="erc-reason">'+esc(r.reason||'—')+'</div>'
+          +(r.adminNote?'<div style="font-size:11px;color:var(--ink-3);margin-top:4px">Admin note: '+esc(r.adminNote)+'</div>':'')
+          +'</div>';
+      }).join('');
+    }
+  }
+
+  updateAdmReqBadge();
+}
+
+async function approveEditRequest(reqId, userId, date) {
+  var note = prompt('Optional note to user (leave blank if none):') || '';
+  loading(true);
+  try {
+    // Delete the day closure (unlocks the day)
+    var closureSnap = await db.collection('dayClosures').where('userId','==',userId).where('date','==',date).get();
+    for(var i=0;i<closureSnap.docs.length;i++){
+      await closureSnap.docs[i].ref.delete();
+      delete dayClosures[userId+'_'+date];
+    }
+    // Update edit request
+    await fsUpdateEditRequest(reqId,{status:'approved',processedAt:Date.now(),adminId:userProfile.uid,adminNote:note});
+    var idx=allEditRequests.findIndex(function(r){return r.id===reqId;});
+    if(idx>=0) Object.assign(allEditRequests[idx],{status:'approved',processedAt:Date.now(),adminNote:note});
+    showToast('Approved & day unlocked for '+userId.slice(0,8)+'…','success');
+    renderEditRequests();
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  loading(false);
+}
+window.approveEditRequest=approveEditRequest;
+
+async function rejectEditRequest(reqId) {
+  var note = prompt('Reason for rejection (optional):') || '';
+  loading(true);
+  try {
+    await fsUpdateEditRequest(reqId,{status:'rejected',processedAt:Date.now(),adminId:userProfile.uid,adminNote:note});
+    var idx=allEditRequests.findIndex(function(r){return r.id===reqId;});
+    if(idx>=0) Object.assign(allEditRequests[idx],{status:'rejected',processedAt:Date.now(),adminNote:note});
+    showToast('Request rejected','success');
+    renderEditRequests();
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  loading(false);
+}
+window.rejectEditRequest=rejectEditRequest;
+
+// Admin proactive unlock: enhanced unlockDay with note and optional notification
+async function unlockDayWithNote(closureId, userId, date) {
+  if(userProfile.role!=='admin'){showToast('Admin only','error');return;}
+  var note = prompt('Add a note to the user about what to edit (optional):') || '';
+  if(!confirm('Unlock '+date+' for this user? They will be able to edit their records.')) return;
+  loading(true);
+  try {
+    await fsDeleteDayClosure(closureId);
+    Object.keys(dayClosures).forEach(function(k){if(dayClosures[k].id===closureId)delete dayClosures[k];});
+    // Create admin_unlock notification
+    if(note) {
+      await fsAddEditRequest({
+        requesterId: userId, requesterName: '(Admin Unlock)',
+        requesterRole: 'admin_unlock', date: date,
+        reason: 'Admin proactively unlocked this day.',
+        adminNote: note, status: 'admin_unlock',
+        requestedAt: Date.now(), processedAt: Date.now(),
+        adminId: userProfile.uid
+      });
+    }
+    showToast('Day unlocked'+(note?' · Note sent to user':''),'success');
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  loading(false);
+}
+window.unlockDayWithNote=unlockDayWithNote;
+
+/* ════════════════════════════════════════════════════════════
+   RIDER — APPROVED HANDOVER HISTORY (Req 2)
+   ════════════════════════════════════════════════════════════ */
+function renderRiderApprovedHandoverHistory() {
+  var c = document.getElementById('riderApprovedHandoverBody');
+  if(!c) return;
+  var approved = riderHandovers.filter(function(h){return h.status==='approved'||h.status==='discrepancy';});
+  approved.sort(function(a,b){return b.riderTimestamp-a.riderTimestamp;});
+  if(!approved.length){
+    c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-cash"/></svg></div><div class="msg">No confirmed handovers yet</div><div class="sub">Approved handovers will appear here</div></div>';
+    return;
+  }
+  c.innerHTML = approved.map(function(h){
+    var diff = (+h.receivedAmount||0)-(+h.submittedAmount||0);
+    var diffHtml = diff===0?'<span class="di-match">✓ Match</span>'
+      :diff<0?'<span class="di-short">Short ₹'+fmtM(Math.abs(diff))+'</span>'
+      :'<span class="di-excess">Excess ₹'+fmtM(diff)+'</span>';
+    return '<div class="ho-history-item">'
+      +'<div class="ho-hi-left">'
+      +'<div class="ho-hi-name">'+esc(h.managerName)+'</div>'
+      +'<div class="ho-hi-meta">'+h.businessDate+' · '+fmtDateTime(h.riderTimestamp)+'</div>'
+      +(h.managerRemarks?'<div style="font-size:11px;color:var(--teal-deep);margin-top:2px">'+esc(h.managerRemarks)+'</div>':'')
+      +'</div>'
+      +'<div class="ho-hi-right">'
+      +'<div class="ho-hi-amt">₹'+fmtM(h.submittedAmount)+'</div>'
+      +'<div>'+diffHtml+'</div>'
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+/* ════════════════════════════════════════════════════════════
+   MANAGER — RIDER CASH RECEIVED HISTORY (Req 2)
+   ════════════════════════════════════════════════════════════ */
+function renderMgrRiderCashReceived() {
+  var c = document.getElementById('mgrRiderCashReceivedList');
+  if(!c) return;
+  var received = allSettlements.filter(function(s){return s.managerId===userProfile.uid;});
+  received.sort(function(a,b){return b.timestamp-a.timestamp;});
+  if(!received.length){
+    c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-cash"/></svg></div><div class="msg">No cash received from riders yet</div></div>';
+    return;
+  }
+  c.innerHTML = received.map(function(s){
+    return '<div class="ho-history-item">'
+      +'<div class="ho-hi-left">'
+      +'<div class="ho-hi-name">'+esc(s.riderName||'—')+'</div>'
+      +'<div class="ho-hi-meta">'+s.date+' · '+fmtDateTime(s.timestamp)+'</div>'
+      +(s.remarks?'<div style="font-size:11px;color:var(--ink-3);margin-top:2px">'+esc(s.remarks)+'</div>':'')
+      +'</div>'
+      +'<div class="ho-hi-right">'
+      +'<div class="ho-hi-amt">₹'+fmtM(s.receivedAmount)+'</div>'
+      +'<div class="ho-hi-status" style="color:var(--good)">Collected</div>'
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
 /* ══════════════════════════
    TAB BAR HELPER
    ══════════════════════════ */
@@ -4899,6 +5396,7 @@ function setupTabBar(barId,prefix) {
       else if(tab==='recon')renderRecon();
       else if(tab==='orders')initAdmOrders();
       else if(tab==='users')renderUsersTab();
+      else if(tab==='requests'){loading(true);fsGetAllEditRequests().then(function(reqs){allEditRequests=reqs;renderEditRequests();loading(false);}).catch(function(){loading(false);renderEditRequests();});}
     }
   });
 }
