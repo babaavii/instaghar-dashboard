@@ -715,6 +715,74 @@ select.fin{cursor:pointer}
 /* ── COLLECTION DATE ── */
 .dep-dates-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
+
+/* MOBILE RESPONSIVE */
+.tab-bar{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab-btn{flex-shrink:0;white-space:nowrap}
+.quick-filter-bar{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap}
+.quick-filter-bar::-webkit-scrollbar{display:none}
+.qf-btn{flex-shrink:0}
+.period-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap}
+.period-tabs::-webkit-scrollbar{display:none}
+.period-tab{flex-shrink:0}
+.perf-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.perf-table{min-width:520px}
+.order-tbl{min-width:600px}
+.recon-table{min-width:500px}
+.export-bar{flex-wrap:wrap}
+@media(max-width:540px){
+  .app-nav{padding:8px 12px}
+  .nav-mark{width:30px;height:30px;border-radius:8px}
+  .nav-mark svg{width:16px;height:16px}
+  .nav-title{font-size:14px}
+  .nav-user{max-width:70px;font-size:10px}
+  .role-badge{font-size:9px;padding:2px 6px}
+  .refresh-btn,.logout-btn{width:30px;height:30px;border-radius:8px}
+  .refresh-btn svg,.logout-btn svg{width:13px;height:13px}
+  .hero{padding:16px 14px 14px;border-radius:14px}
+  .hero-amount{font-size:clamp(30px,8vw,44px)}
+  .hero-stats{grid-template-columns:repeat(2,1fr);gap:5px}
+  .hs{padding:7px 5px}
+  .hs-val{font-size:11px}
+  .hs-lbl{font-size:8px}
+  .panel{padding:10px 10px 80px}
+  .section-head{padding:10px 12px 8px}
+  .section-head h2{font-size:13px}
+  .metric-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .mc-val{font-size:16px}
+  .mc-icon{width:34px;height:34px;border-radius:8px}
+  .mc-lbl{font-size:10px}
+  .tab-btn{font-size:9px;padding:8px 10px;gap:3px}
+  .tab-btn svg{width:11px;height:11px}
+  .fin-row{grid-template-columns:1fr}
+  .ac-btns{flex-direction:column}
+  .ac-submitted{font-size:16px}
+  .tc-head{flex-direction:column;gap:8px}
+  .wh-grid{grid-template-columns:repeat(2,1fr)}
+  .wh-val{font-size:13px}
+  .export-btn{font-size:9px;padding:6px 8px}
+  .ho-stat-val{font-size:14px}
+  .step h3{font-size:18px}
+  .analytics-grid{grid-template-columns:repeat(2,1fr)}
+  #reconSummaryCards{grid-template-columns:repeat(2,1fr)}
+  .period-tab{font-size:10px;padding:8px 10px}
+  .qf-btn{font-size:10px;padding:9px 8px}
+  .date-range-bar{flex-wrap:wrap;gap:6px}
+  .usr-card{flex-wrap:wrap}
+  .usr-actions{flex-direction:row;max-width:100%;flex-wrap:wrap;margin-top:8px}
+  .recon-wrap,.order-tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .topbar-r{gap:6px}
+  .day-pill{min-width:80px;padding:7px 9px}
+  .dp-date{font-size:10px}
+}
+@media(max-width:360px){
+  .tab-btn{font-size:8px;padding:7px 7px}
+  .hero-amount{font-size:26px}
+  .nav-user{display:none}
+  .nav-title{font-size:13px}
+}
+
 </style>
 </head>
 <body>
@@ -1279,7 +1347,7 @@ service cloud.firestore {
       <!-- Rider Performance Comparison -->
       <section class="section">
         <div class="section-head"><h2>Rider Performance</h2><div class="head-right" id="anlPeriodLabel">Today</div></div>
-        <div class="section-body" style="overflow-x:auto"><div id="anlPerfTable"></div></div>
+        <div class="section-body"><div class="perf-table-wrap"><div id="anlPerfTable"></div></div></div>
       </section>
       <!-- Daily breakdown -->
       <section class="section">
@@ -1495,8 +1563,7 @@ service cloud.firestore {
 
 
 
-<script>
-/* ══════════════════════════════════════════════════════════
+<script>/* ══════════════════════════════════════════════════════════
    FIREBASE CONFIG — HARDCODED
    ══════════════════════════════════════════════════════════ */
 const FIREBASE_CONFIG = {
@@ -1712,10 +1779,14 @@ async function doLogin() {
   }
 }
 async function doLogout() {
+  // Clean up real-time listeners first
+  rtListeners.forEach(function(unsub){try{unsub();}catch(e){}});
+  rtListeners=[];
   loading(true);
   try { await auth.signOut(); } catch(e){ console.warn('Signout:',e); }
   fbUser=null; userProfile=null; rOrders=[];
-  allSettlements=[]; allDeposits=[]; allUsers=[]; allOrders=[]; allHandovers=[]; allTransfers=[];
+  allSettlements=[]; allDeposits=[]; allUsers=[]; allOrders=[];
+  allHandovers=[]; allTransfers=[]; dayClosures={};
   ['riderPanel','managerPanel','adminPanel'].forEach(function(id){document.getElementById(id).classList.remove('active');});
   loading(false);
   showScreen('loginScreen');
@@ -2159,7 +2230,13 @@ async function initRiderHandover() {
   } catch(e){ riderHandovers=[]; }
   renderRiderHandoverStatus();
   renderRiderHandoverList();
-  document.getElementById('hoBizDate').addEventListener('change', renderRiderHandoverStatus);
+  document.getElementById('hoBizDate').addEventListener('change', function(){
+    renderRiderHandoverStatus();
+    updateHandoverMaxHint();
+  });
+  document.getElementById('hoAmount').addEventListener('input', function(){
+    updateHandoverMaxHint();
+  });
   document.getElementById('hoSubmitBtn').addEventListener('click', submitRiderHandover);
 }
 
@@ -2179,69 +2256,9 @@ function renderRiderHandoverStatus() {
   if(dot) dot.classList.toggle('hidden', remaining<=0);
 }
 
-function renderRiderHandoverList() {
-  var c = document.getElementById('riderHandoverList');
-  if(!riderHandovers.length){
-    c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No handovers yet</div><div class="sub">Submit your first cash handover above</div></div>';
-    return;
-  }
-  var sorted = riderHandovers.slice().sort(function(a,b){return b.riderTimestamp-a.riderTimestamp;});
-  c.innerHTML = sorted.map(function(h){
-    var statusClass = 'sb-'+h.status;
-    var statusLabel = h.status==='approved'?'Approved':h.status==='discrepancy'?'Discrepancy':h.status==='rejected'?'Rejected':'Pending';
-    var diffHtml = '';
-    if(h.status==='approved'||h.status==='discrepancy'){
-      var diff = (+h.receivedAmount||0)-(+h.submittedAmount||0);
-      if(diff===0) diffHtml='<span class="di-match">✓ Match</span>';
-      else if(diff<0) diffHtml='<span class="di-short">↓ Short ₹'+fmtM(Math.abs(diff))+'</span>';
-      else diffHtml='<span class="di-excess">↑ Excess ₹'+fmtM(diff)+'</span>';
-    }
-    return '<div class="ho-card">'
-      +'<div class="ho-card-head">'
-      +'<div><div class="ho-card-title">'+esc(h.managerName)+'</div><div class="ho-card-sub">'+h.businessDate+' · '+fmtDateTime(h.riderTimestamp)+'</div></div>'
-      +'<div style="text-align:right"><div class="ho-card-amt">₹'+fmtM(h.submittedAmount)+'</div><span class="status-badge '+statusClass+'">'+statusLabel+'</span></div>'
-      +'</div>'
-      +(diffHtml?'<div style="margin-top:5px">'+diffHtml+'</div>':'')
-      +(h.riderRemarks?'<div style="font-size:11px;color:var(--ink-3);margin-top:5px">Note: '+esc(h.riderRemarks)+'</div>':'')
-      +(h.managerRemarks&&h.status!=='pending'?'<div style="font-size:11px;color:var(--ink-2);margin-top:3px;font-weight:600">Manager: '+esc(h.managerRemarks)+'</div>':'')
-      +'</div>';
-  }).join('');
-}
 
-async function submitRiderHandover() {
-  var bizDate = document.getElementById('hoBizDate').value;
-  var mgrVal = document.getElementById('hoManagerSel').value;
-  var amount = +document.getElementById('hoAmount').value;
-  var remarks = document.getElementById('hoRemarks').value.trim();
-  if(!bizDate){showToast('Select business date','error');return;}
-  if(!mgrVal){showToast('Select a manager','error');return;}
-  if(!amount||amount<=0){showToast('Enter valid amount','error');return;}
-  var parts = mgrVal.split('|');
-  var mgrId = parts[0], mgrName = parts.slice(1).join('|');
-  loading(true);
-  try {
-    var rec = {
-      riderId: userProfile.uid, riderName: userProfile.name, riderEmail: userProfile.email,
-      managerId: mgrId, managerName: mgrName,
-      businessDate: bizDate,
-      submittedAmount: amount,
-      receivedAmount: 0,
-      status: 'pending',
-      riderTimestamp: Date.now(),
-      managerTimestamp: null,
-      riderRemarks: remarks,
-      managerRemarks: ''
-    };
-    var ref = await fsAddHandover(rec);
-    riderHandovers.push(Object.assign({},rec,{id:ref.id}));
-    document.getElementById('hoAmount').value='';
-    document.getElementById('hoRemarks').value='';
-    showToast('Handover submitted! Awaiting manager approval.','success');
-    renderRiderHandoverStatus();
-    renderRiderHandoverList();
-  } catch(e){showToast('Failed: '+e.message,'error');}
-  loading(false);
-}
+
+
 
 /* ══════════════════════════════════════════════════════════
    MANAGER DASHBOARD
@@ -2358,22 +2375,7 @@ function renderSettlHistory() {
   c.innerHTML='<div style="background:var(--grad-soft);border:1px solid var(--line-strong);border-radius:11px;padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center"><div style="font-size:11px;color:var(--ink-3);font-weight:600;text-transform:uppercase">'+filtered.length+' record'+(filtered.length!==1?'s':'')+'</div><div style="font-weight:800;font-size:17px;color:var(--teal-dark);font-variant-numeric:tabular-nums">₹'+fmtM(total)+'</div></div>'
     +'<div class="record-list">'+filtered.map(function(r){return '<div class="record-card"><div class="rc-head"><div><div class="rc-title">'+esc(r.riderName)+'</div><div class="rc-time">'+fmtDateTime(r.timestamp)+'</div></div><div><div class="rc-amount"><span class="cur">₹</span>'+fmtM(r.receivedAmount)+'</div><span class="rc-badge ok">Settled</span></div></div><div class="rc-body"><div class="rc-row"><span class="rc-lbl">Date</span><span class="rc-val">'+r.date+'</span></div><div class="rc-row"><span class="rc-lbl">Manager</span><span class="rc-val">'+esc(r.managerName)+'</span></div>'+(r.remarks?'<div class="rc-row" style="grid-column:span 2"><span class="rc-lbl">Note</span><span class="rc-val">'+esc(r.remarks)+'</span></div>':'')+'</div></div>';}).join('')+'</div>';
 }
-async function submitDeposit() {
-  var amount=+document.getElementById('depAmt').value;
-  var date=document.getElementById('depDate').value;
-  var remarks=document.getElementById('depRemarks').value.trim();
-  if(!amount||!date){showToast('Enter amount and date','error');return;}
-  loading(true);
-  try {
-    var rec={managerId:userProfile.uid,managerName:userProfile.name,amount:amount,date:date,remarks:remarks,timestamp:Date.now()};
-    var ref=await fsAddDeposit(rec);
-    allDeposits.push(Object.assign({},rec,{id:ref.id}));
-    document.getElementById('depAmt').value='';document.getElementById('depRemarks').value='';
-    showToast('Deposit recorded!','success');
-    updateMgrHero();updateBankSummary();renderDepHistory();
-  } catch(e){showToast('Failed: '+e.message,'error');}
-  loading(false);
-}
+
 
 function updateBankSummary() {
   var collected=allSettlements.reduce(function(s,r){return s+(+r.receivedAmount||0);},0);
@@ -2384,23 +2386,19 @@ function updateBankSummary() {
   // Also refresh transfer cash position if visible
   try { updateCollectCashBar(); renderTransferPosition(); } catch(e){}
 }
-function renderDepHistory() {
-  var deps=allDeposits.slice().sort(function(a,b){return b.timestamp-a.timestamp;});
-  var c=document.getElementById('depHistList');
-  if(!deps.length){c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-bank"/></svg></div><div class="msg">No deposits recorded</div><div class="sub">Record your first bank deposit above</div></div>';return;}
-  c.innerHTML='<div class="record-list">'+deps.map(function(d){return '<div class="record-card"><div class="rc-head"><div><div class="rc-title">Bank Deposit</div><div class="rc-time">'+fmtDateTime(d.timestamp)+'</div></div><div><div class="rc-amount"><span class="cur">₹</span>'+fmtM(d.amount)+'</div><span class="rc-badge deposit">Deposited</span></div></div><div class="rc-body"><div class="rc-row"><span class="rc-lbl">Date</span><span class="rc-val">'+d.date+'</span></div><div class="rc-row"><span class="rc-lbl">By</span><span class="rc-val">'+esc(d.managerName)+'</span></div>'+(d.remarks?'<div class="rc-row" style="grid-column:span 2"><span class="rc-lbl">Ref</span><span class="rc-val">'+esc(d.remarks)+'</span></div>':'')+'</div></div>';}).join('')+'</div>';
-}
+
 function updateMgrHero() {
   var today=todayISO();
-  var todayTotal=allSettlements.filter(function(s){return s.date===today;}).reduce(function(s,r){return s+(+r.receivedAmount||0);},0);
-  var allColl=allSettlements.reduce(function(s,r){return s+(+r.receivedAmount||0);},0);
-  var deposited=allDeposits.reduce(function(s,r){return s+(+r.amount||0);},0);
-  var riderSet=new Set(allSettlements.map(function(s){return s.riderId;}));
+  var mySettl=allSettlements.filter(function(s){return s.managerId===userProfile.uid&&s.date===today;});
+  var todayTotal=mySettl.reduce(function(s,r){return s+(+r.receivedAmount||0);},0);
+  var riderSet=new Set(mySettl.map(function(s){return s.riderId;}));
+  var todayDep=allDeposits.filter(function(d){return d.managerId===userProfile.uid&&d.date===today;}).length;
+  var pos=calcManagerCashPosition(userProfile.uid);
   document.getElementById('mgrHeroVal').textContent=fmtM(todayTotal);
   document.getElementById('mgrHeroRiders').textContent=riderSet.size;
-  document.getElementById('mgrHeroSettl').textContent=allSettlements.length;
-  document.getElementById('mgrHeroDep').textContent=allDeposits.length;
-  document.getElementById('mgrHeroPend').textContent=fmtM(Math.max(0,allColl-deposited));
+  document.getElementById('mgrHeroSettl').textContent=mySettl.length;
+  document.getElementById('mgrHeroDep').textContent=todayDep;
+  document.getElementById('mgrHeroPend').textContent=fmtM(pos.net);
 }
 
 
@@ -2577,15 +2575,22 @@ async function initAdmin() {
     document.getElementById('nuManagerFields').classList.toggle('hidden',e.target.value!=='manager');
   });
 }
-async function updateAdmHero() {
+function updateAdmHero() {
+  var dates=getAnalyticsDates();
+  var from=dates.from,to=dates.to;
   var riders=allUsers.filter(function(u){return u.role==='rider';});
-  var totalCash=calcSummary(allOrders).cash;
-  var deposited=allDeposits.reduce(function(s,d){return s+(+d.amount||0);},0);
-  document.getElementById('admHeroVal').textContent=fmtM(totalCash);
+  var filtOrds=allOrders.filter(function(o){return o.date>=from&&o.date<=to;});
+  var s=calcSummary(filtOrds);
+  var settled=allSettlements.filter(function(st){return st.date>=from&&st.date<=to;}).reduce(function(sum,st){return sum+(+st.receivedAmount||0);},0);
+  var deposited=allDeposits.filter(function(d){return d.date>=from&&d.date<=to;}).reduce(function(sum,d){return sum+(+d.amount||0);},0);
+  document.getElementById('admHeroVal').textContent=fmtM(s.netCash);
   document.getElementById('admHeroRiders').textContent=riders.length;
-  document.getElementById('admHeroOrders').textContent=allOrders.length;
-  document.getElementById('admHeroSettled').textContent=allSettlements.length;
+  document.getElementById('admHeroOrders').textContent=filtOrds.length;
+  document.getElementById('admHeroSettled').textContent=fmtM(settled);
   document.getElementById('admHeroDep').textContent=fmtM(deposited);
+  var lbl=document.querySelector('.hero-dark .hero-label');
+  var pLabels={today:'Today',yesterday:'Yesterday',week:'This Week',month:'This Month'};
+  if(lbl)lbl.textContent='Admin Overview · '+(pLabels[anlPeriod]||from+' to '+to);
 }
 async function renderAdmRiders() {
   var riders=allUsers.filter(function(u){return u.role==='rider';});
@@ -2596,7 +2601,7 @@ async function renderAdmRiders() {
     var rider=riders[ri];
     var rOrds=allOrders.filter(function(o){return o.riderId===rider.uid&&(!admFrom||o.date>=admFrom)&&(!admTo||o.date<=admTo);});
     var s=calcSummary(rOrds);
-    var settled=allSettlements.filter(function(st){return st.riderId===rider.uid;}).reduce(function(sum,st){return sum+(+st.receivedAmount||0);},0);
+    var settled=allSettlements.filter(function(st){return st.riderId===rider.uid&&(!admFrom||st.date>=admFrom)&&(!admTo||st.date<=admTo);}).reduce(function(sum,st){return sum+(+st.receivedAmount||0);},0);
     var unsettled=Math.max(0,s.netCash-settled);
     html+='<div class="section" style="margin-bottom:12px">'
       +'<div class="section-head"><div style="display:flex;align-items:center;gap:9px"><div style="width:34px;height:34px;border-radius:50%;background:var(--grad);color:white;font-weight:800;font-size:13px;display:grid;place-items:center">'+(rider.name||'?').charAt(0).toUpperCase()+'</div><div><div style="font-weight:700;font-size:14px">'+esc(rider.name)+'</div><div style="font-size:10px;color:var(--ink-3)">'+(rider.riderId||rider.email)+'</div></div></div><span class="rc-badge '+(unsettled>0?'pending':'ok')+'">'+(unsettled>0?'₹'+fmtM(unsettled)+' unsettled':'All settled')+'</span></div>'
@@ -2629,7 +2634,7 @@ function renderAdmManagers_orig() {
     var pending=Math.max(0,collected-deposited);
     var riders=new Set(settl.map(function(s){return s.riderId;})).size;
     return '<div class="section" style="margin-bottom:12px">'
-      +'<div class="section-head"><div style="display:flex;align-items:center;gap:9px"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1d4ed8,#6366f1);color:white;font-weight:800;font-size:13px;display:grid;place-items:center">'+(mgr.name||'?').charAt(0).toUpperCase()+'</div><div><div style="font-weight:700;font-size:14px">'+esc(mgr.name)+'</div><div style="font-size:10px;color:var(--ink-3)">'+esc(mgr.shift||mgr.email)+'</div></div></div><span class="rc-badge '+(pending>0?'pending':'ok')+'">'+(pending>0?'₹'+fmtM(pending)+' undeposited':'All deposited')+'</span></div>'
+      +'<div class="section-head"><div style="display:flex;align-items:center;gap:9px"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1d4ed8,#6366f1);color:white;font-weight:800;font-size:13px;display:grid;place-items:center">'+(mgr.name||'?').charAt(0).toUpperCase()+'</div><div><div style="font-weight:700;font-size:14px">'+esc(mgr.name)+'</div><div style="font-size:10px;color:var(--ink-3)">'+esc(mgr.shift||mgr.email)+'</div></div></div><span class="rc-badge '+(pending>0?'pending':'ok')+'">'+(pending>0?'₹'+fmtM(pending)+' in hand':'All settled')+'</span></div>'
       +'<div class="section-body"><div class="metric-grid">'
       +'<div class="metric-card"><div class="mc-icon si-green"><svg><use href="#i-cash"/></svg></div><div class="mc-val"><span class="cur">₹</span>'+fmtM(collected)+'</div><div class="mc-lbl">Collected</div></div>'
       +'<div class="metric-card"><div class="mc-icon si-blue"><svg><use href="#i-bank"/></svg></div><div class="mc-val"><span class="cur">₹</span>'+fmtM(deposited)+'</div><div class="mc-lbl">Deposited</div></div>'
@@ -2644,27 +2649,25 @@ function renderAudit() {
   var type=document.getElementById('auditType').value;
   var today=todayISO(),yest=yesterdayISO();
   var entries=[];
-  if(!type||type==='handover'){allHandovers.forEach(function(h){entries.push({type:'handover',timestamp:h.riderTimestamp,date:h.businessDate,title:'Handover · '+h.riderName+' → '+h.managerName,meta:fmtDateTime(h.riderTimestamp)+' · Status: '+h.status,amount:+h.submittedAmount||0,note:h.status!=='pending'?'Rcvd ₹'+fmtM(h.receivedAmount):''});});}
+  if(!type||type==='handover'){allHandovers.forEach(function(h){entries.push({type:'handover',id:h.id,timestamp:h.riderTimestamp,date:h.businessDate,title:'Handover · '+h.riderName+' → '+h.managerName,meta:fmtDateTime(h.riderTimestamp)+' · Status: '+h.status,amount:+h.submittedAmount||0,note:h.status!=='pending'?'Rcvd ₹'+fmtM(h.receivedAmount):''});});}
   if(!type||type==='order'){allOrders.forEach(function(o){var ip=o.type==='prepaid';var es=getExtraSplit(o);var cash=(+o.cashCollected||0)+es.cash;entries.push({type:'order',timestamp:tsToNum(o.timestamp),date:o.date,title:(ip?'Prepaid':'COD')+' · '+o.orderId,meta:(o.riderName||o.riderId)+' · '+fmtDateTime(o.timestamp),amount:ip?(+o.orderAmount||0):(+o.totalCodAmount||0),extra:'Cash ₹'+fmtM(cash)+(+o.refund?'  −Refund ₹'+fmtM(o.refund):'')});});}
-  if(!type||type==='settlement'){allSettlements.forEach(function(s){entries.push({type:'settlement',timestamp:s.timestamp,date:s.date,title:'COD Collection · '+s.riderName,meta:'By '+s.managerName+' · '+fmtDateTime(s.timestamp),amount:+s.receivedAmount||0});});}
-  if(!type||type==='deposit'){allDeposits.forEach(function(d){entries.push({type:'deposit',timestamp:d.timestamp,date:d.date,title:'Bank Deposit',meta:'By '+d.managerName+' · '+fmtDateTime(d.timestamp),amount:+d.amount||0,note:d.remarks||''});});}
+  if(!type||type==='settlement'){allSettlements.forEach(function(s){entries.push({type:'settlement',id:s.id,timestamp:s.timestamp,date:s.date,title:'COD Collection · '+s.riderName,meta:'By '+s.managerName+' · '+fmtDateTime(s.timestamp),amount:+s.receivedAmount||0});});}
+  if(!type||type==='deposit'){allDeposits.forEach(function(d){entries.push({type:'deposit',id:d.id,timestamp:d.timestamp,date:d.date,title:'Bank Deposit',meta:'By '+d.managerName+' · '+fmtDateTime(d.timestamp),amount:+d.amount||0,note:d.remarks||''});});}
   if(range==='today')entries=entries.filter(function(e){return e.date===today;});
   else if(range==='yesterday')entries=entries.filter(function(e){return e.date===yest;});
   entries.sort(function(a,b){return b.timestamp-a.timestamp;});
   var c=document.getElementById('auditList');
   if(!entries.length){c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-shield"/></svg></div><div class="msg">No records found</div><div class="sub">Try "All Time" or a different filter</div></div>';return;}
   var colorMap={order:'var(--teal)',settlement:'var(--blue)',deposit:'var(--good)',handover:'var(--warn)'};
-  c.innerHTML=entries.map(function(e){return '<div class="audit-entry"><div class="ae-dot '+e.type+'"></div><div class="ae-body"><div class="ae-title">'+esc(e.title)+'</div><div class="ae-meta">'+esc(e.meta)+(e.extra?'<br><span style="color:var(--teal-deep);font-size:10px;font-weight:600">'+esc(e.extra)+'</span>':'')+(e.note?' · '+esc(e.note):'')+'</div></div><div class="ae-amount" style="color:'+(colorMap[e.type]||'var(--ink)')+'">₹'+fmtM(e.amount)+'</div></div>';}).join('');
+  var isAdmin=userProfile&&userProfile.role==='admin';
+  c.innerHTML=entries.map(function(e){
+    var delBtn=isAdmin&&e.id?'<button class="tbl-btn danger" style="margin-left:6px;flex-shrink:0" onclick="adminDeleteRecord(\''+(e.type)+'\'\,\''+esc(e.id)+'\'\,\''+esc(e.title.substring(0,30))+'\')" title="Delete"><svg style="width:11px;height:11px"><use href="#i-trash"/></svg></button>':'';
+    return '<div class="audit-entry"><div class="ae-dot '+e.type+'"></div><div class="ae-body"><div class="ae-title">'+esc(e.title)+'</div><div class="ae-meta">'+esc(e.meta)+(e.extra?'<br><span style="color:var(--teal-deep);font-size:10px;font-weight:600">'+esc(e.extra)+'</span>':'')+(e.note?' · '+esc(e.note):'')+'</div></div><div style="display:flex;align-items:center"><div class="ae-amount" style="color:'+(colorMap[e.type]||'var(--ink)')+'">₹'+fmtM(e.amount)+'</div>'+delBtn+'</div></div>';
+  }).join('');
 }
-function renderUsersTab() {
-  var users=allUsers.filter(function(u){return u.role!=='admin';});
-  var c=document.getElementById('usersListWrap');
-  if(!users.length){c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-users"/></svg></div><div class="msg">No users yet</div><div class="sub">Add riders and managers above</div></div>';return;}
-  c.innerHTML='<table class="user-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Info</th><th>Actions</th></tr></thead><tbody>'
-    +users.map(function(u){return '<tr><td><div class="ud-name">'+esc(u.name)+'</div></td><td style="color:var(--ink-3);font-size:11px;word-break:break-all">'+esc(u.email||'')+'</td><td><span style="display:inline-flex;padding:2px 7px;border-radius:999px;font-size:9px;font-weight:700;text-transform:uppercase;background:'+(u.role==='rider'?'var(--grad-soft)':'var(--blue-soft)')+';color:'+(u.role==='rider'?'var(--teal-deep)':'var(--blue-deep)')+'">'+u.role+'</span></td><td style="font-size:11px;color:var(--ink-3)">'+esc(u.riderId||u.shift||'—')+'</td><td><button class="tbl-btn" onclick="_cpwOpen(\''+esc(u.uid)+'\',\''+esc(u.email||'')+'\',\''+esc(u.name||'')+'\')"><svg><use href="#i-key"/></svg> Reset PW</button></td></tr>';}).join('')
-    +'</tbody></table>';
-}
+
 async function addNewUser() {
+  if(!userProfile||userProfile.role!=='admin'){showToast('Admin access required','error');return;}
   var name=document.getElementById('nuName').value.trim();
   var email=document.getElementById('nuEmail').value.trim();
   var pass=document.getElementById('nuPass').value;
@@ -2802,6 +2805,8 @@ function renderRecon() {
     rt.addEventListener('click',function(){rt.classList.add('active');if(ra)ra.classList.remove('active');renderRecon();});
     if(ra){ra.addEventListener('click',function(){ra.classList.add('active');rt.classList.remove('active');renderRecon();});}
   }
+  // Update hero to match current period
+  try{updateAdmHero();}catch(e){}
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -3115,27 +3120,7 @@ var depMethod = 'cash';
    ════════════════════════════════════════════════════════════════════ */
 
 /* override submitDeposit to include method, bank, ref */
-async function submitDeposit() {
-  var amount=+document.getElementById('depAmt').value;
-  var date=document.getElementById('depDate').value;
-  var remarks=document.getElementById('depRemarks').value.trim();
-  var bankName=(document.getElementById('depBank')||{}).value||'';
-  var refNo=(document.getElementById('depRefNo')||{}).value||'';
-  if(!amount||!date){showToast('Enter amount and date','error');return;}
-  loading(true);
-  try {
-    var rec={managerId:userProfile.uid,managerName:userProfile.name,amount:amount,date:date,remarks:remarks,method:depMethod,bankName:bankName,refNo:refNo,timestamp:Date.now()};
-    var ref=await fsAddDeposit(rec);
-    allDeposits.push(Object.assign({},rec,{id:ref.id}));
-    document.getElementById('depAmt').value='';
-    document.getElementById('depRemarks').value='';
-    if(document.getElementById('depBank')) document.getElementById('depBank').value='';
-    if(document.getElementById('depRefNo')) document.getElementById('depRefNo').value='';
-    showToast('Deposit recorded!','success');
-    updateMgrHero();updateBankSummary();renderDepHistory();renderCashLedger();
-  } catch(e){showToast('Failed: '+e.message,'error');}
-  finally{loading(false);}
-}
+
 
 /* ════════════════════════════════════════════════════════════════════
    ADMIN — ANALYTICS MODULE
@@ -3649,8 +3634,18 @@ async function sendTransfer() {
   // Check available cash
   var pos = calcManagerCashPosition(userProfile.uid);
   if(amount > pos.net && pos.net >= 0) {
-    if(!confirm('Warning: Transferring Rs '+fmtM(amount)+' but your net cash in hand is Rs '+fmtM(pos.net)+'. Continue anyway?')) return;
+    showToast('Cannot transfer ₹'+fmtM(amount)+'. Your wallet balance is only ₹'+fmtM(pos.net),'error');
+    return;
   }
+  // Duplicate transfer check: same to/amount within 5 minutes
+  var fiveMinsAgo = Date.now()-300000;
+  var dupTx = mgrTransfers.find(function(t){
+    return t.fromManagerId===userProfile.uid
+      && t.toManagerId===toId
+      && t.amount===amount
+      && t.timestamp>fiveMinsAgo;
+  });
+  if(dupTx){showToast('Duplicate: same transfer already sent in last 5 minutes','error');return;}
   loading(true);
   try {
     var rec = {
@@ -3707,6 +3702,57 @@ function updateIncomingBadge() {
       +(pending?'<span class="incoming-badge">'+pending+'</span>':'');
   }
 }
+
+
+/* ════════════════════════════════════════════════════════════
+   ADMIN DELETE — ALL RECORD TYPES
+   ════════════════════════════════════════════════════════════ */
+
+// Delete helpers
+async function fsDeleteSettlement(id){ return db.collection('settlements').doc(id).delete(); }
+async function fsDeleteHandover(id){ return db.collection('handovers').doc(id).delete(); }
+async function fsDeleteTransfer(id){ return db.collection('managerTransfers').doc(id).delete(); }
+async function fsDeleteDeposit(id){ return db.collection('deposits').doc(id).delete(); }
+async function fsDeleteIncident(id){ return db.collection('incidents').doc(id).delete(); }
+
+// Master refresh — recalculates everything after delete
+async function adminRefreshAll() {
+  loading(true);
+  try {
+    var rIds=allUsers.filter(function(u){return u.role==='rider';}).map(function(u){return u.uid;});
+    allOrders=rIds.length?await fsGetOrdersForRiders(rIds):[];
+    allSettlements=await fsGetSettlements(null);
+    allDeposits=await fsGetDeposits(null);
+    try{allHandovers=await fsGetAllHandovers();}catch(e){allHandovers=[];}
+    try{allTransfers=await fsGetAllTransfers();}catch(e){allTransfers=[];}
+    // Re-render all sections
+    updateAdmHero();
+    renderAdmAnalytics();
+    renderAdmManagersFiltered();
+    renderAdmRiders();
+    renderAudit();
+    renderRecon();
+    if(document.getElementById('ordersTableWrap'))renderAdmOrders();
+  } catch(e){ showToast('Refresh error: '+e.message,'error'); }
+  finally{ loading(false); }
+}
+
+// Generic admin delete with confirm
+async function adminDeleteRecord(type, id, label) {
+  if(!confirm('Delete this '+label+'?\nThis cannot be undone. All balances will recalculate automatically.')) return;
+  loading(true);
+  try {
+    if(type==='settlement')   { await fsDeleteSettlement(id);   allSettlements=allSettlements.filter(function(x){return x.id!==id;}); }
+    if(type==='handover')     { await fsDeleteHandover(id);     allHandovers=allHandovers.filter(function(x){return x.id!==id;}); }
+    if(type==='transfer')     { await fsDeleteTransfer(id);     allTransfers=allTransfers.filter(function(x){return x.id!==id;}); }
+    if(type==='deposit')      { await fsDeleteDeposit(id);      allDeposits=allDeposits.filter(function(x){return x.id!==id;}); }
+    if(type==='order')        { await db.collection('orders').doc(id).delete(); allOrders=allOrders.filter(function(x){return x.id!==id;}); }
+    showToast(label+' deleted. Recalculating…','success');
+    await adminRefreshAll();
+  } catch(e){ showToast('Delete failed: '+e.message,'error'); }
+  finally{ loading(false); }
+}
+window.adminDeleteRecord=adminDeleteRecord;
 
 /* ════════════════════════════════════════════════════════════
    FIRESTORE — DAY CLOSURES
@@ -3935,6 +3981,36 @@ function renderWalletTxLog() {
   }).join('');
 }
 
+
+function updateHandoverMaxHint() {
+  var date=document.getElementById('hoBizDate').value||rViewDate;
+  var amount=+document.getElementById('hoAmount').value||0;
+  var dayOrds=rOrders.filter(function(o){return o.date===date;});
+  var s=calcSummary(dayOrds);
+  var alreadySub=riderHandovers
+    .filter(function(h){return h.businessDate===date&&h.status!=='rejected';})
+    .reduce(function(sum,h){return sum+(+h.submittedAmount||0);},0);
+  var available=Math.max(0,s.netCash-alreadySub);
+  var hint=document.getElementById('hoAmountHint');
+  if(!hint){
+    hint=document.createElement('div');
+    hint.id='hoAmountHint';
+    hint.style.cssText='font-size:11px;font-weight:600;margin-top:5px;padding:7px 10px;border-radius:8px';
+    var amtInput=document.getElementById('hoAmount');
+    if(amtInput&&amtInput.parentNode)amtInput.parentNode.insertBefore(hint,amtInput.nextSibling);
+  }
+  if(available<=0){
+    hint.style.background='var(--good-soft)';hint.style.color='var(--good)';
+    hint.textContent='All cash submitted. Nothing remaining.';
+  } else if(amount>available){
+    hint.style.background='var(--bad-soft)';hint.style.color='var(--bad)';
+    hint.textContent='Max available: ₹'+fmtM(available)+'. Entered amount exceeds balance.';
+  } else {
+    hint.style.background='var(--grad-soft)';hint.style.color='var(--teal-deep)';
+    hint.textContent='Available: ₹'+fmtM(available)+(amount>0?' · After submit: ₹'+fmtM(available-amount):'');
+  }
+}
+
 /* ════════════════════════════════════════════════════════════
    RIDER — HANDOVER VALIDATION + REJECTION RESUBMIT
    ════════════════════════════════════════════════════════════ */
@@ -3945,7 +4021,10 @@ async function submitRiderHandover() {
   var mgrVal=document.getElementById('hoManagerSel').value;
   var amount=+document.getElementById('hoAmount').value;
   var remarks=document.getElementById('hoRemarks').value.trim();
-  if(!bizDate){showToast('Select business date','error');return;}
+  var hoBtn=document.getElementById('hoSubmitBtn');
+  if(hoBtn&&hoBtn.disabled)return;
+  if(hoBtn)hoBtn.disabled=true;
+  if(!bizDate){if(hoBtn)hoBtn.disabled=false;showToast('Select business date','error');return;}
   if(!mgrVal){showToast('Select a manager','error');return;}
   if(!amount||amount<=0){showToast('Enter valid amount','error');return;}
 
@@ -3991,7 +4070,7 @@ async function submitRiderHandover() {
     renderRiderHandoverStatus();
     renderRiderHandoverList();
   } catch(e){showToast('Save failed: '+e.message,'error');}
-  finally{loading(false);}
+  finally{loading(false);var hob=document.getElementById('hoSubmitBtn');if(hob)hob.disabled=false;}
 }
 
 // Override renderRiderHandoverList to show rejection + resubmit UI
@@ -4152,6 +4231,7 @@ window.adminDeleteOrder=adminDeleteOrder;
 
 async function saveEditModal() {
   if(!editTarget){return;}
+  if(!userProfile||userProfile.role!=='admin'){showToast('Admin access required','error');return;}
   var errEl=document.getElementById('editModalErr');
   errEl.style.display='none';
   loading(true);
@@ -4510,6 +4590,10 @@ function applyRidersFilter() {
   var dates = periodToDates(admRiderPeriod, admRiderCustomFrom, admRiderCustomTo);
   admFrom = dates.from;
   admTo   = dates.to;
+  // Sync analytics period so hero card matches
+  anlPeriod = admRiderPeriod;
+  anlFrom = dates.from;
+  anlTo = dates.to;
   // Update custom inputs if not custom mode
   if(admRiderPeriod !== 'custom') {
     var f = document.getElementById('admFrom');
@@ -4572,7 +4656,9 @@ function renderAdmManagersFiltered() {
 
     var collected  = settl.reduce(function(s,r){return s+(+r.receivedAmount||0);},0);
     var deposited  = deps.reduce(function(s,r){return s+(+r.amount||0);},0);
-    var pending    = Math.max(0, collected - deposited);
+    var txOut=allTransfers.filter(function(t){return t.fromManagerId===mgr.uid&&t.transferDate>=from&&t.transferDate<=to;}).reduce(function(s,t){return s+(+t.amount||0);},0);
+    var txIn=allTransfers.filter(function(t){return t.toManagerId===mgr.uid&&t.status==='acknowledged'&&t.transferDate>=from&&t.transferDate<=to;}).reduce(function(s,t){return s+(+t.amount||0);},0);
+    var pending    = Math.max(0, collected + txIn - txOut - deposited);
     var riderSet   = new Set(settl.map(function(s){return s.riderId;})).size;
 
     var pendingHO  = handovers.filter(function(h){return h.status==='pending';}).length;
@@ -4586,7 +4672,7 @@ function renderAdmManagersFiltered() {
       + '<div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1d4ed8,#6366f1);color:white;font-weight:800;font-size:13px;display:grid;place-items:center">'+(mgr.name||'?').charAt(0).toUpperCase()+'</div>'
       + '<div><div style="font-weight:700;font-size:14px'+(isDisabled?';color:var(--ink-3)':'')+'">'+esc(mgr.name)+'</div>'
       + '<div style="font-size:10px;color:var(--ink-3)">'+esc(mgr.shift||mgr.email)+'</div></div></div>'
-      + '<span class="rc-badge '+(pending>0?'pending':'ok')+'">'+(pending>0?'₹'+fmtM(pending)+' undeposited':'All deposited')+'</span>'
+      + '<span class="rc-badge '+(pending>0?'pending':'ok')+'">'+(pending>0?'₹'+fmtM(pending)+' in hand':'All settled')+'</span>'
       + '</div>'
       + '<div class="section-body"><div class="metric-grid">'
       + '<div class="metric-card"><div class="mc-icon si-green"><svg><use href="#i-cash"/></svg></div><div class="mc-val"><span class="cur">₹</span>'+fmtM(collected)+'</div><div class="mc-lbl">Collected</div></div>'
