@@ -1142,8 +1142,12 @@ service cloud.firestore {
       <!-- Manager Edit Request Section -->
       <div id="mgrEditReqSection" class="hidden" style="margin:10px 0">
         <div class="edit-req-banner">
-          <strong>Shift Locked</strong> — Want to edit a record? Send an approval request to the admin.
+          <strong>Shift Locked</strong> — Select a locked date and send an edit approval request to admin.
           <div class="edit-req-form">
+            <div style="margin-bottom:8px">
+              <div style="font-size:11px;font-weight:700;color:var(--ink-2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em">Locked Date</div>
+              <select class="fin" id="mgrEditReqDate" style="font-size:13px;padding:10px 12px"><option value="">-- Select locked date --</option></select>
+            </div>
             <textarea id="mgrEditReqReason" placeholder="Describe which record you want to edit and why…"></textarea>
             <button class="edit-req-submit-btn" id="mgrSendReqBtn"><svg><use href="#i-edit"/></svg> Send Edit Request to Admin</button>
           </div>
@@ -1671,7 +1675,7 @@ let userProfile = null;
 let rOrders = [];
 let rViewDate = todayISO();
 let wizStep = null, wizHistory = [], wizData = {};
-let allSettlements = [], allDeposits = [], allUsers = [], allOrders = [], allHandovers = [], allTransfers = [], allEditRequests = [];
+let allSettlements = [], allDeposits = [], allUsers = [], allOrders = [], allHandovers = [], allTransfers = [], allEditRequests = [], allDayClosures = [];
 let settlFilter = { range:'today', rider:'', from:'', to:'' };
 let cpwTargetUid = null, cpwTargetEmail = null;
 let admFrom = '', admTo = '';
@@ -1892,7 +1896,7 @@ async function doLogout() {
   try { await auth.signOut(); } catch(e){ console.warn('Signout:',e); }
   fbUser=null; userProfile=null; rOrders=[];
   allSettlements=[]; allDeposits=[]; allUsers=[]; allOrders=[];
-  allHandovers=[]; allTransfers=[]; allEditRequests=[]; dayClosures={};
+  allHandovers=[]; allTransfers=[]; allEditRequests=[]; allDayClosures=[]; dayClosures={};
   ['riderPanel','managerPanel','adminPanel'].forEach(function(id){document.getElementById(id).classList.remove('active');});
   loading(false);
   showScreen('loginScreen');
@@ -2042,6 +2046,8 @@ function renderRider() {
   document.getElementById('rDateLabel2').textContent=lbl;
   renderOrdersList(list);
   renderDayStrip();
+  // Update day-closed banner and edit request section for the current date
+  checkAndShowDayClosedBanner(userProfile.uid, rViewDate, 'riderDayClosedBanner');
 }
 function renderOrdersList(list) {
   const wrap=document.getElementById('ordersWrap');
@@ -2654,6 +2660,11 @@ async function initAdmin() {
     try { allHandovers=await fsGetAllHandovers(); } catch(e2){ allHandovers=[]; }
     try { allTransfers=await fsGetAllTransfers(); } catch(e3){ allTransfers=[]; }
     try { allEditRequests=await fsGetAllEditRequests(); } catch(e4){ allEditRequests=[]; }
+    try {
+      allDayClosures=await fsGetAllDayClosures();
+      dayClosures={};
+      allDayClosures.forEach(function(c){ dayClosures[c.userId+'_'+c.date]=c; });
+    } catch(e5){ allDayClosures=[]; }
   } catch(e) { console.warn('Admin data load failed:',e); showToast('Some data failed to load','error'); }
   finally { loading(false); }
   try { initAdmAnalytics(); } catch(e){ renderAdmAnalytics(); }
@@ -2714,6 +2725,20 @@ async function renderAdmRiders() {
     var s=calcSummary(rOrds);
     var settled=allSettlements.filter(function(st){return st.riderId===rider.uid&&(!admFrom||st.date>=admFrom)&&(!admTo||st.date<=admTo);}).reduce(function(sum,st){return sum+(+st.receivedAmount||0);},0);
     var unsettled=Math.max(0,s.netCash-settled);
+    // Get closed days for this rider
+    var closedDays=allDayClosures.filter(function(c){return c.userId===rider.uid;}).sort(function(a,b){return b.date.localeCompare(a.date);});
+    var closedDaysHtml='';
+    if(closedDays.length){
+      closedDaysHtml='<div style="margin-top:8px;padding:9px 12px;background:#fff8f0;border:1px solid var(--warn-soft);border-radius:9px">'
+        +'<div style="font-size:11px;font-weight:700;color:var(--warn);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em">🔒 Locked Days</div>'
+        +closedDays.map(function(c){
+          return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)">'
+            +'<span style="font-size:12px;font-weight:600;color:var(--ink)">'+c.date+'</span>'
+            +'<button onclick="unlockDayWithNote(\''+esc(c.id)+'\',\''+esc(c.userId)+'\',\''+esc(c.date)+'\')" style="background:var(--teal-dark);color:white;border:none;border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer">Unlock</button>'
+            +'</div>';
+        }).join('')
+        +'</div>';
+    }
     html+='<div class="section" style="margin-bottom:12px">'
       +'<div class="section-head"><div style="display:flex;align-items:center;gap:9px"><div style="width:34px;height:34px;border-radius:50%;background:var(--grad);color:white;font-weight:800;font-size:13px;display:grid;place-items:center">'+(rider.name||'?').charAt(0).toUpperCase()+'</div><div><div style="font-weight:700;font-size:14px">'+esc(rider.name)+'</div><div style="font-size:10px;color:var(--ink-3)">'+(rider.riderId||rider.email)+'</div></div></div><span class="rc-badge '+(unsettled>0?'pending':'ok')+'">'+(unsettled>0?'₹'+fmtM(unsettled)+' unsettled':'All settled')+'</span></div>'
       +'<div class="section-body"><div class="metric-grid">'
@@ -2725,7 +2750,7 @@ async function renderAdmRiders() {
       +'<div style="font-size:11px;color:var(--ink-3);font-weight:600">COD: <strong style="color:var(--ink)">₹'+fmtM(s.totalCod)+'</strong></div>'
       +'<div style="font-size:11px;color:var(--ink-3);font-weight:600">Net Cash: <strong style="color:var(--good)">₹'+fmtM(s.netCash)+'</strong></div>'
       +'<div style="font-size:11px;color:var(--ink-3);font-weight:600">Settled: <strong style="color:var(--teal)">₹'+fmtM(settled)+'</strong></div>'
-      +'</div></div></div>';
+      +'</div>'+closedDaysHtml+'</div></div>';
   }
   c.innerHTML=html;
 }
@@ -3880,6 +3905,11 @@ async function adminRefreshAll() {
     try{allHandovers=await fsGetAllHandovers();}catch(e){allHandovers=[];}
     try{allTransfers=await fsGetAllTransfers();}catch(e){allTransfers=[];}
     try{allEditRequests=await fsGetAllEditRequests();}catch(e){allEditRequests=[];}
+    try{
+      allDayClosures=await fsGetAllDayClosures();
+      dayClosures={};
+      allDayClosures.forEach(function(c){dayClosures[c.userId+'_'+c.date]=c;});
+    }catch(e){allDayClosures=[];}
     // Re-render all sections
     updateAdmHero();
     renderAdmAnalytics();
@@ -4008,6 +4038,11 @@ async function doRefresh() {
       try{allHandovers=await fsGetAllHandovers();}catch(e){allHandovers=[];}
       try{allTransfers=await fsGetAllTransfers();}catch(e){allTransfers=[];}
       try{allEditRequests=await fsGetAllEditRequests();}catch(e){allEditRequests=[];}
+      try{
+        allDayClosures=await fsGetAllDayClosures();
+        dayClosures={};
+        allDayClosures.forEach(function(c){dayClosures[c.userId+'_'+c.date]=c;});
+      }catch(e){allDayClosures=[];}
       updateAdmHero();
       renderAdmAnalytics();
       renderRecon();
@@ -4034,6 +4069,11 @@ async function loadMgrDayClosures() {
     var closures=await fsGetDayClosures(userProfile.uid);
     dayClosures={};
     closures.forEach(function(c){dayClosures[c.userId+'_'+c.date]=c;});
+    // Show edit request section if any closures exist
+    var anyMgrClosed = closures.length > 0;
+    if(anyMgrClosed) {
+      try { showMgrEditReqSection(); } catch(e2){}
+    }
   } catch(e){}
 }
 
@@ -4048,22 +4088,26 @@ function checkAndShowDayClosedBanner(userId, date, bannerId, unlockFn) {
         ?'<span class="dcb-unlock" data-closure-id="'+esc(closure.id)+'" data-user-id="'+esc(userId)+'" data-date="'+esc(date)+'" onclick="unlockDayWithNote(this.dataset.closureId,this.dataset.userId,this.dataset.date)">Unlock</span>'
         :'')
       +'</div>';
-    // Show edit request section for rider/manager
+    // Show edit request section for rider
     if(userProfile.role==='rider' && bannerId==='riderDayClosedBanner'){
       showRiderEditReqSection(date);
-    } else if(userProfile.role==='manager' && bannerId==='mgrDayClosedBanner'){
-      showMgrEditReqSection();
     }
   } else {
     banner.classList.add('hidden');
     banner.innerHTML='';
-    // Hide edit request section when day is unlocked
     if(bannerId==='riderDayClosedBanner'){
       var sec=document.getElementById('riderEditReqSection');
       if(sec)sec.classList.add('hidden');
-    } else if(bannerId==='mgrDayClosedBanner'){
-      var sec=document.getElementById('mgrEditReqSection');
-      if(sec)sec.classList.add('hidden');
+    }
+  }
+  // For manager: always check if ANY day is closed and show section
+  if(userProfile.role==='manager' && bannerId==='mgrDayClosedBanner'){
+    var anyMgrClosed = Object.keys(dayClosures).some(function(k){return dayClosures[k].userId===userId;});
+    var mgrSec=document.getElementById('mgrEditReqSection');
+    if(anyMgrClosed){
+      showMgrEditReqSection();
+    } else {
+      if(mgrSec)mgrSec.classList.add('hidden');
     }
   }
 }
@@ -4844,6 +4888,21 @@ function renderAdmManagersFiltered() {
     var discrepHO  = handovers.filter(function(h){return h.status==='discrepancy';}).length;
     var approvedHO = handovers.filter(function(h){return h.status==='approved';}).length;
 
+    // Locked days for this manager
+    var mgrClosedDays=allDayClosures.filter(function(c){return c.userId===mgr.uid;}).sort(function(a,b){return b.date.localeCompare(a.date);});
+    var mgrLockedHtml='';
+    if(mgrClosedDays.length){
+      mgrLockedHtml='<div style="margin-top:8px;padding:9px 12px;background:#fff8f0;border:1px solid var(--warn-soft);border-radius:9px">'
+        +'<div style="font-size:11px;font-weight:700;color:var(--warn);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em">🔒 Locked Shifts</div>'
+        +mgrClosedDays.map(function(c){
+          return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)">'
+            +'<span style="font-size:12px;font-weight:600;color:var(--ink)">'+c.date+'</span>'
+            +'<button onclick="unlockDayWithNote(\''+esc(c.id)+'\',\''+esc(c.userId)+'\',\''+esc(c.date)+'\')" style="background:var(--blue);color:white;border:none;border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer">Unlock</button>'
+            +'</div>';
+        }).join('')
+        +'</div>';
+    }
+
     var isDisabled = mgr.active === false || mgr.deleted === true;
     return '<div class="section" style="margin-bottom:12px">'
       + '<div class="section-head">'
@@ -4865,7 +4924,7 @@ function renderAdmManagersFiltered() {
       + '<div>Handovers Approved: <strong style="color:var(--good)">'+approvedHO+'</strong></div>'
       + (pendingHO?'<div>Pending: <strong style="color:var(--warn)">'+pendingHO+'</strong></div>':'')
       + (discrepHO?'<div>Discrepancies: <strong style="color:var(--bad)">'+discrepHO+'</strong></div>':'')
-      + '</div></div></div>';
+      + '</div>'+mgrLockedHtml+'</div></div>';
   }).join('');
 }
 
@@ -5083,16 +5142,17 @@ function renderRiderEditReqStatus() {
   }
 }
 
-function renderMgrEditReqStatus() {
+function renderMgrEditReqStatus(forDate) {
   var statusEl = document.getElementById('mgrEditReqStatus');
   if(!statusEl) return;
-  var date = todayISO();
+  var date = forDate || (document.getElementById('mgrEditReqDate')||{}).value || todayISO();
+  if(!date){statusEl.innerHTML='';return;}
   var req = mgrEditRequests.find(function(r){return r.date===date&&(r.status==='pending'||r.status==='approved');});
   if(!req){statusEl.innerHTML='';return;}
   if(req.status==='pending'){
-    statusEl.innerHTML='<div class="req-approved-notice" style="background:var(--warn-soft);border-color:var(--warn);color:var(--warn)">⏳ Request sent — waiting for admin approval</div>';
+    statusEl.innerHTML='<div class="req-approved-notice" style="background:var(--warn-soft);border-color:var(--warn);color:var(--warn)">⏳ Request sent for '+date+' — waiting for admin approval</div>';
   } else if(req.status==='approved'){
-    statusEl.innerHTML='<div class="req-approved-notice">✅ Admin approved! Shift is unlocked. Edit your records and re-close when done.</div>';
+    statusEl.innerHTML='<div class="req-approved-notice">✅ Admin approved '+date+'! Shift is unlocked. Edit your records and re-close when done.</div>';
   }
 }
 
@@ -5142,10 +5202,11 @@ async function submitRiderEditRequest() {
 async function submitMgrEditRequest() {
   var reason = (document.getElementById('mgrEditReqReason')||{}).value||'';
   reason = reason.trim();
+  var date = (document.getElementById('mgrEditReqDate')||{}).value||'';
+  if(!date){showToast('Please select the locked date you want to edit','error');return;}
   if(!reason){showToast('Please describe what you want to edit','error');return;}
-  var date = todayISO();
   var existing = mgrEditRequests.find(function(r){return r.date===date&&r.status==='pending';});
-  if(existing){showToast('You already have a pending request for this date','error');return;}
+  if(existing){showToast('You already have a pending request for '+date,'error');return;}
   loading(true);
   try {
     var rec = {
@@ -5158,9 +5219,8 @@ async function submitMgrEditRequest() {
     var ref = await fsAddEditRequest(rec);
     mgrEditRequests.push(Object.assign({},rec,{id:ref.id}));
     document.getElementById('mgrEditReqReason').value = '';
-    showToast('Edit request sent to admin!','success');
-    renderMgrEditReqStatus();
-    if(userProfile && userProfile.role === 'admin') updateAdmReqBadge();
+    showToast('Edit request sent to admin for '+date+'!','success');
+    renderMgrEditReqStatus(date);
   } catch(e){showToast('Failed: '+e.message,'error');}
   loading(false);
 }
@@ -5168,6 +5228,16 @@ async function submitMgrEditRequest() {
 function showMgrEditReqSection() {
   var sec = document.getElementById('mgrEditReqSection');
   if(!sec) return;
+  // Populate date dropdown with ALL closed dates for this manager
+  var sel = document.getElementById('mgrEditReqDate');
+  if(sel) {
+    var closedForMgr = Object.keys(dayClosures)
+      .filter(function(k){ return dayClosures[k].userId===userProfile.uid; })
+      .map(function(k){ return dayClosures[k].date; })
+      .sort(function(a,b){ return b.localeCompare(a); });
+    sel.innerHTML = '<option value="">-- Select locked date --</option>'
+      + closedForMgr.map(function(d){ return '<option value="'+esc(d)+'">'+d+'</option>'; }).join('');
+  }
   sec.classList.remove('hidden');
   var btn = document.getElementById('mgrSendReqBtn');
   if(btn && !btn.dataset.bound) {
@@ -5253,18 +5323,23 @@ async function approveEditRequest(reqId, userId, date) {
   var note = prompt('Optional note to user (leave blank if none):') || '';
   loading(true);
   try {
-    // Delete the day closure (unlocks the day)
+    // Delete ALL day closures for this user+date from Firestore
     var closureSnap = await db.collection('dayClosures').where('userId','==',userId).where('date','==',date).get();
     for(var i=0;i<closureSnap.docs.length;i++){
       await closureSnap.docs[i].ref.delete();
-      delete dayClosures[userId+'_'+date];
     }
-    // Update edit request
+    // Update local allDayClosures and dayClosures map
+    allDayClosures = allDayClosures.filter(function(c){return !(c.userId===userId&&c.date===date);});
+    delete dayClosures[userId+'_'+date];
+    // Update edit request status
     await fsUpdateEditRequest(reqId,{status:'approved',processedAt:Date.now(),adminId:userProfile.uid,adminNote:note});
     var idx=allEditRequests.findIndex(function(r){return r.id===reqId;});
     if(idx>=0) Object.assign(allEditRequests[idx],{status:'approved',processedAt:Date.now(),adminNote:note});
-    showToast('Approved & day unlocked for '+userId.slice(0,8)+'…','success');
+    showToast('Approved! Day unlocked for user.','success');
     renderEditRequests();
+    // Re-render riders/managers so unlock buttons disappear
+    try{renderAdmRiders();}catch(e){}
+    try{renderAdmManagersFiltered();}catch(e){}
   } catch(e){showToast('Failed: '+e.message,'error');}
   loading(false);
 }
@@ -5287,24 +5362,31 @@ window.rejectEditRequest=rejectEditRequest;
 // Admin proactive unlock: enhanced unlockDay with note and optional notification
 async function unlockDayWithNote(closureId, userId, date) {
   if(userProfile.role!=='admin'){showToast('Admin only','error');return;}
-  var note = prompt('Add a note to the user about what to edit (optional):') || '';
-  if(!confirm('Unlock '+date+' for this user? They will be able to edit their records.')) return;
+  var note = prompt('Optional note for the user (what to edit):') || '';
+  if(!confirm('Unlock '+date+' for this user? They will be able to edit records for this date.')) return;
   loading(true);
   try {
     await fsDeleteDayClosure(closureId);
-    Object.keys(dayClosures).forEach(function(k){if(dayClosures[k].id===closureId)delete dayClosures[k];});
-    // Create admin_unlock notification
+    // Update local state
+    allDayClosures = allDayClosures.filter(function(c){return c.id!==closureId;});
+    delete dayClosures[userId+'_'+date];
+    // Create admin_unlock notification if note provided
     if(note) {
-      await fsAddEditRequest({
-        requesterId: userId, requesterName: '(Admin Unlock)',
-        requesterRole: 'admin_unlock', date: date,
-        reason: 'Admin proactively unlocked this day.',
-        adminNote: note, status: 'admin_unlock',
-        requestedAt: Date.now(), processedAt: Date.now(),
-        adminId: userProfile.uid
-      });
+      try {
+        await fsAddEditRequest({
+          requesterId: userId, requesterName: '(Admin Unlock)',
+          requesterRole: 'admin_unlock', date: date,
+          reason: 'Admin proactively unlocked this day.',
+          adminNote: note, status: 'admin_unlock',
+          requestedAt: Date.now(), processedAt: Date.now(),
+          adminId: userProfile.uid
+        });
+      } catch(ne){ console.warn('Note save failed:',ne); }
     }
-    showToast('Day unlocked'+(note?' · Note sent to user':''),'success');
+    showToast('Day unlocked for '+date+(note?' · Note saved':''),'success');
+    // Re-render so unlock buttons disappear
+    try{renderAdmRiders();}catch(e){}
+    try{renderAdmManagersFiltered();}catch(e){}
   } catch(e){showToast('Failed: '+e.message,'error');}
   loading(false);
 }
