@@ -1675,7 +1675,7 @@ let userProfile = null;
 let rOrders = [];
 let rViewDate = todayISO();
 let wizStep = null, wizHistory = [], wizData = {};
-let allSettlements = [], allDeposits = [], allUsers = [], allOrders = [], allHandovers = [], allTransfers = [], allEditRequests = [], allDayClosures = [];
+let allSettlements = [], allDeposits = [], allUsers = [], allOrders = [], allHandovers = [], allTransfers = [], allDayClosures = [];
 let settlFilter = { range:'today', rider:'', from:'', to:'' };
 let cpwTargetUid = null, cpwTargetEmail = null;
 let admFrom = '', admTo = '';
@@ -1845,23 +1845,10 @@ async function fsDisableUserViaREST(uid) {
 }
 
 /* ════════════════════════════════════════════════════════════
-   FIRESTORE — EDIT REQUESTS
+   FIRESTORE — EDIT REQUESTS (stored ON dayClosures docs — no new collection needed)
    ════════════════════════════════════════════════════════════ */
-async function fsAddEditRequest(data) {
-  return db.collection('editRequests').add(data);
-}
-async function fsGetEditRequestsFor(userId) {
-  var snap = await db.collection('editRequests').where('requesterId','==',userId).get();
-  var docs = snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
-  return docs.sort(function(a,b){return (b.requestedAt||0)-(a.requestedAt||0);});
-}
-async function fsGetAllEditRequests() {
-  var snap = await db.collection('editRequests').get();
-  var docs = snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
-  return docs.sort(function(a,b){return (b.requestedAt||0)-(a.requestedAt||0);});
-}
-async function fsUpdateEditRequest(reqId, update) {
-  return db.collection('editRequests').doc(reqId).update(update);
+async function fsUpdateDayClosure(closureId, update) {
+  return db.collection('dayClosures').doc(closureId).update(update);
 }
 
 /* ══════════════════════════
@@ -1896,7 +1883,7 @@ async function doLogout() {
   try { await auth.signOut(); } catch(e){ console.warn('Signout:',e); }
   fbUser=null; userProfile=null; rOrders=[];
   allSettlements=[]; allDeposits=[]; allUsers=[]; allOrders=[];
-  allHandovers=[]; allTransfers=[]; allEditRequests=[]; allDayClosures=[]; dayClosures={};
+  allHandovers=[]; allTransfers=[]; allDayClosures=[]; dayClosures={};
   ['riderPanel','managerPanel','adminPanel'].forEach(function(id){document.getElementById(id).classList.remove('active');});
   loading(false);
   showScreen('loginScreen');
@@ -2659,7 +2646,6 @@ async function initAdmin() {
     allOrders=riderIds.length?await fsGetOrdersForRiders(riderIds):[];
     try { allHandovers=await fsGetAllHandovers(); } catch(e2){ allHandovers=[]; }
     try { allTransfers=await fsGetAllTransfers(); } catch(e3){ allTransfers=[]; }
-    try { allEditRequests=await fsGetAllEditRequests(); } catch(e4){ allEditRequests=[]; }
     try {
       allDayClosures=await fsGetAllDayClosures();
       dayClosures={};
@@ -3904,7 +3890,6 @@ async function adminRefreshAll() {
     allDeposits=await fsGetDeposits(null);
     try{allHandovers=await fsGetAllHandovers();}catch(e){allHandovers=[];}
     try{allTransfers=await fsGetAllTransfers();}catch(e){allTransfers=[];}
-    try{allEditRequests=await fsGetAllEditRequests();}catch(e){allEditRequests=[];}
     try{
       allDayClosures=await fsGetAllDayClosures();
       dayClosures={};
@@ -4037,8 +4022,7 @@ async function doRefresh() {
       allOrders=rIds.length?await fsGetOrdersForRiders(rIds):[];
       try{allHandovers=await fsGetAllHandovers();}catch(e){allHandovers=[];}
       try{allTransfers=await fsGetAllTransfers();}catch(e){allTransfers=[];}
-      try{allEditRequests=await fsGetAllEditRequests();}catch(e){allEditRequests=[];}
-      try{
+        try{
         allDayClosures=await fsGetAllDayClosures();
         dayClosures={};
         allDayClosures.forEach(function(c){dayClosures[c.userId+'_'+c.date]=c;});
@@ -5112,20 +5096,16 @@ function buildMgrTransferSummary(mgrUid, from, to) {
 /* ════════════════════════════════════════════════════════════
    EDIT REQUEST SYSTEM — RIDER / MANAGER SEND REQUEST
    ════════════════════════════════════════════════════════════ */
-var riderEditRequests = [];
-var mgrEditRequests = [];
 
 async function loadRiderEditRequests() {
-  try {
-    riderEditRequests = await fsGetEditRequestsFor(userProfile.uid);
-  } catch(e){ riderEditRequests=[]; }
+  // Edit requests are stored ON the dayClosures document — no separate collection
+  // dayClosures is already loaded via loadRiderDayClosures()
+  // Just render the status based on current dayClosures state
   renderRiderEditReqStatus();
 }
 
 async function loadMgrEditRequests() {
-  try {
-    mgrEditRequests = await fsGetEditRequestsFor(userProfile.uid);
-  } catch(e){ mgrEditRequests=[]; }
+  // Same — edit requests are fields on dayClosures documents
   renderMgrEditReqStatus();
 }
 
@@ -5133,26 +5113,26 @@ function renderRiderEditReqStatus() {
   var statusEl = document.getElementById('riderEditReqStatus');
   if(!statusEl) return;
   var date = rViewDate || todayISO();
-  var req = riderEditRequests.find(function(r){return r.date===date&&(r.status==='pending'||r.status==='approved');});
-  if(!req){statusEl.innerHTML='';return;}
-  if(req.status==='pending'){
-    statusEl.innerHTML='<div class="req-approved-notice" style="background:var(--warn-soft);border-color:var(--warn);color:var(--warn)">⏳ Request sent — waiting for admin approval</div>';
-  } else if(req.status==='approved'){
-    statusEl.innerHTML='<div class="req-approved-notice">✅ Admin approved! Day is unlocked. Edit your records and re-close the day when done.</div>';
+  var closure = dayClosures[userProfile.uid+'_'+date];
+  if(!closure || !closure.editRequested){statusEl.innerHTML='';return;}
+  if(closure.editRequestStatus==='pending'){
+    statusEl.innerHTML='<div class="req-approved-notice" style="background:var(--warn-soft);border-color:var(--warn);color:var(--warn)">⏳ Request sent for '+date+' — waiting for admin approval</div>';
+  } else if(closure.editRequestStatus==='rejected'){
+    statusEl.innerHTML='<div class="req-approved-notice" style="background:var(--bad-soft);border-color:var(--bad);color:var(--bad)">❌ Request rejected'+(closure.adminNote?' · '+esc(closure.adminNote):'')+'</div>';
   }
 }
 
 function renderMgrEditReqStatus(forDate) {
   var statusEl = document.getElementById('mgrEditReqStatus');
   if(!statusEl) return;
-  var date = forDate || (document.getElementById('mgrEditReqDate')||{}).value || todayISO();
+  var date = forDate || (document.getElementById('mgrEditReqDate')||{}).value || '';
   if(!date){statusEl.innerHTML='';return;}
-  var req = mgrEditRequests.find(function(r){return r.date===date&&(r.status==='pending'||r.status==='approved');});
-  if(!req){statusEl.innerHTML='';return;}
-  if(req.status==='pending'){
+  var closure = dayClosures[userProfile.uid+'_'+date];
+  if(!closure || !closure.editRequested){statusEl.innerHTML='';return;}
+  if(closure.editRequestStatus==='pending'){
     statusEl.innerHTML='<div class="req-approved-notice" style="background:var(--warn-soft);border-color:var(--warn);color:var(--warn)">⏳ Request sent for '+date+' — waiting for admin approval</div>';
-  } else if(req.status==='approved'){
-    statusEl.innerHTML='<div class="req-approved-notice">✅ Admin approved '+date+'! Shift is unlocked. Edit your records and re-close when done.</div>';
+  } else if(closure.editRequestStatus==='rejected'){
+    statusEl.innerHTML='<div class="req-approved-notice" style="background:var(--bad-soft);border-color:var(--bad);color:var(--bad)">❌ Rejected'+(closure.adminNote?' · '+esc(closure.adminNote):'')+'</div>';
   }
 }
 
@@ -5176,25 +5156,35 @@ async function submitRiderEditRequest() {
   reason = reason.trim();
   if(!reason){showToast('Please describe what you want to edit','error');return;}
   var date = rViewDate || todayISO();
-  // Check if already pending for this date
-  var existing = riderEditRequests.find(function(r){return r.date===date&&r.status==='pending';});
-  if(existing){showToast('You already have a pending request for this date','error');return;}
+  // Get the existing day closure for this date
+  var closure = dayClosures[userProfile.uid+'_'+date];
+  if(!closure){showToast('No closed day found for '+date+'. Close the day first.','error');return;}
+  // Check if already pending
+  if(closure.editRequested && closure.editRequestStatus==='pending'){
+    showToast('You already have a pending request for '+date,'error');return;
+  }
   loading(true);
   try {
-    var rec = {
-      requesterId: userProfile.uid, requesterName: userProfile.name,
-      requesterRole: 'rider', date: date,
-      reason: reason, status: 'pending',
-      requestedAt: Date.now(), processedAt: null,
-      adminNote: '', adminId: null
-    };
-    var ref = await fsAddEditRequest(rec);
-    riderEditRequests.push(Object.assign({},rec,{id:ref.id}));
+    // Update the existing dayClosures document — no new collection needed
+    await fsUpdateDayClosure(closure.id, {
+      editRequested: true,
+      editReason: reason,
+      editRequestedAt: Date.now(),
+      editRequestStatus: 'pending',
+      editRequesterName: userProfile.name,
+      editRequesterRole: 'rider',
+      adminNote: '',
+      adminId: null
+    });
+    // Update local state
+    Object.assign(closure, {
+      editRequested: true, editReason: reason,
+      editRequestedAt: Date.now(), editRequestStatus: 'pending',
+      editRequesterName: userProfile.name, editRequesterRole: 'rider'
+    });
     document.getElementById('riderEditReqReason').value = '';
-    showToast('Edit request sent to admin!','success');
+    showToast('Edit request sent to admin for '+date,'success');
     renderRiderEditReqStatus();
-    // Only update badge if in admin context
-    if(userProfile && userProfile.role === 'admin') updateAdmReqBadge();
   } catch(e){showToast('Failed: '+e.message,'error');}
   loading(false);
 }
@@ -5205,19 +5195,28 @@ async function submitMgrEditRequest() {
   var date = (document.getElementById('mgrEditReqDate')||{}).value||'';
   if(!date){showToast('Please select the locked date you want to edit','error');return;}
   if(!reason){showToast('Please describe what you want to edit','error');return;}
-  var existing = mgrEditRequests.find(function(r){return r.date===date&&r.status==='pending';});
-  if(existing){showToast('You already have a pending request for '+date,'error');return;}
+  var closure = dayClosures[userProfile.uid+'_'+date];
+  if(!closure){showToast('No closed shift found for '+date,'error');return;}
+  if(closure.editRequested && closure.editRequestStatus==='pending'){
+    showToast('You already have a pending request for '+date,'error');return;
+  }
   loading(true);
   try {
-    var rec = {
-      requesterId: userProfile.uid, requesterName: userProfile.name,
-      requesterRole: 'manager', date: date,
-      reason: reason, status: 'pending',
-      requestedAt: Date.now(), processedAt: null,
-      adminNote: '', adminId: null
-    };
-    var ref = await fsAddEditRequest(rec);
-    mgrEditRequests.push(Object.assign({},rec,{id:ref.id}));
+    await fsUpdateDayClosure(closure.id, {
+      editRequested: true,
+      editReason: reason,
+      editRequestedAt: Date.now(),
+      editRequestStatus: 'pending',
+      editRequesterName: userProfile.name,
+      editRequesterRole: 'manager',
+      adminNote: '',
+      adminId: null
+    });
+    Object.assign(closure, {
+      editRequested: true, editReason: reason,
+      editRequestedAt: Date.now(), editRequestStatus: 'pending',
+      editRequesterName: userProfile.name, editRequesterRole: 'manager'
+    });
     document.getElementById('mgrEditReqReason').value = '';
     showToast('Edit request sent to admin for '+date+'!','success');
     renderMgrEditReqStatus(date);
@@ -5251,7 +5250,7 @@ function showMgrEditReqSection() {
    EDIT REQUEST SYSTEM — ADMIN PANEL
    ════════════════════════════════════════════════════════════ */
 function updateAdmReqBadge() {
-  var pending = allEditRequests.filter(function(r){return r.status==='pending';}).length;
+  var pending = allDayClosures.filter(function(c){return c.editRequested && c.editRequestStatus==='pending';}).length;
   var btn = document.getElementById('admRequestsTabBtn');
   if(btn){
     var existing = btn.querySelector('.count-pill');
@@ -5263,8 +5262,9 @@ function updateAdmReqBadge() {
 }
 
 function renderEditRequests() {
-  var pending = allEditRequests.filter(function(r){return r.status==='pending';});
-  var processed = allEditRequests.filter(function(r){return r.status!=='pending';});
+  // Edit requests are stored as fields on dayClosures documents
+  var pending   = allDayClosures.filter(function(c){return c.editRequested && c.editRequestStatus==='pending';});
+  var processed = allDayClosures.filter(function(c){return c.editRequested && c.editRequestStatus!=='pending';});
 
   var pb = document.getElementById('admReqPendingCount');
   if(pb) pb.textContent = pending.length;
@@ -5274,18 +5274,18 @@ function renderEditRequests() {
     if(!pending.length){
       pendingEl.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-edit"/></svg></div><div class="msg">No pending requests</div><div class="sub">Riders and managers will appear here when they request to edit a locked record</div></div>';
     } else {
-      pendingEl.innerHTML = pending.map(function(r){
-        var rolePill = r.requesterRole==='rider'
+      pendingEl.innerHTML = pending.map(function(c){
+        var rolePill = c.editRequesterRole==='rider'
           ?'<span class="badge" style="background:var(--grad-soft);color:var(--teal-deep);font-size:10px;padding:2px 8px">Rider</span>'
           :'<span class="badge" style="background:var(--blue-soft);color:var(--blue-deep);font-size:10px;padding:2px 8px">Manager</span>';
         return '<div class="edit-req-card">'
-          +'<div class="erc-head"><div><div class="erc-name">'+esc(r.requesterName)+' '+rolePill+'</div>'
-          +'<div class="erc-meta">Date: <strong>'+r.date+'</strong> · Requested '+fmtDateTime(r.requestedAt)+'</div></div>'
+          +'<div class="erc-head"><div><div class="erc-name">'+esc(c.editRequesterName||c.userId)+' '+rolePill+'</div>'
+          +'<div class="erc-meta">Date: <strong>'+c.date+'</strong> · Requested '+fmtDateTime(c.editRequestedAt)+'</div></div>'
           +'<span class="status-badge sb-pending">Pending</span></div>'
-          +'<div class="erc-reason">'+esc(r.reason)+'</div>'
+          +'<div class="erc-reason">'+esc(c.editReason||'—')+'</div>'
           +'<div class="erc-btns">'
-          +'<button class="erc-approve" onclick="approveEditRequest(\''+esc(r.id)+'\',\''+esc(r.requesterId)+'\',\''+esc(r.date)+'\')"><svg><use href="#i-circle-check"/></svg> Approve &amp; Unlock</button>'
-          +'<button class="erc-reject" onclick="rejectEditRequest(\''+esc(r.id)+'\')"><svg><use href="#i-x"/></svg> Reject</button>'
+          +'<button class="erc-approve" onclick="approveEditRequest(\''+esc(c.id)+'\',\''+esc(c.userId)+'\',\''+esc(c.date)+'\')"><svg><use href="#i-circle-check"/></svg> Approve &amp; Unlock</button>'
+          +'<button class="erc-reject" onclick="rejectEditRequest(\''+esc(c.id)+'\')"><svg><use href="#i-x"/></svg> Reject</button>'
           +'</div></div>';
       }).join('');
     }
@@ -5296,21 +5296,19 @@ function renderEditRequests() {
     if(!processed.length){
       processedEl.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No processed requests yet</div></div>';
     } else {
-      var sorted = processed.slice().sort(function(a,b){return b.requestedAt-a.requestedAt;});
-      processedEl.innerHTML = sorted.map(function(r){
-        var statusClass = r.status==='approved'?'sb-approved':r.status==='admin_unlock'?'sb-approved':'sb-discrepancy';
-        var statusLabel = r.status==='approved'?'Approved':r.status==='admin_unlock'?'Admin Unlock':'Rejected';
-        var rolePill = r.requesterRole==='rider'
+      var sorted = processed.slice().sort(function(a,b){return (b.editRequestedAt||0)-(a.editRequestedAt||0);});
+      processedEl.innerHTML = sorted.map(function(c){
+        var statusClass = c.editRequestStatus==='approved'?'sb-approved':'sb-discrepancy';
+        var statusLabel = c.editRequestStatus==='approved'?'Approved':'Rejected';
+        var rolePill = c.editRequesterRole==='rider'
           ?'<span class="badge" style="background:var(--grad-soft);color:var(--teal-deep);font-size:10px;padding:2px 8px">Rider</span>'
-          :r.requesterRole==='admin_unlock'
-          ?'<span class="badge" style="background:#f1f5f9;color:#334155;font-size:10px;padding:2px 8px">Admin</span>'
           :'<span class="badge" style="background:var(--blue-soft);color:var(--blue-deep);font-size:10px;padding:2px 8px">Manager</span>';
         return '<div class="edit-req-card" style="opacity:0.85">'
-          +'<div class="erc-head"><div><div class="erc-name">'+esc(r.requesterName)+' '+rolePill+'</div>'
-          +'<div class="erc-meta">Date: <strong>'+r.date+'</strong>'+(r.processedAt?' · '+fmtDateTime(r.processedAt):'')+'</div></div>'
+          +'<div class="erc-head"><div><div class="erc-name">'+esc(c.editRequesterName||c.userId)+' '+rolePill+'</div>'
+          +'<div class="erc-meta">Date: <strong>'+c.date+'</strong>'+(c.editProcessedAt?' · '+fmtDateTime(c.editProcessedAt):'')+'</div></div>'
           +'<span class="status-badge '+statusClass+'">'+statusLabel+'</span></div>'
-          +'<div class="erc-reason">'+esc(r.reason||'—')+'</div>'
-          +(r.adminNote?'<div style="font-size:11px;color:var(--ink-3);margin-top:4px">Admin note: '+esc(r.adminNote)+'</div>':'')
+          +'<div class="erc-reason">'+esc(c.editReason||'—')+'</div>'
+          +(c.adminNote?'<div style="font-size:11px;color:var(--ink-3);margin-top:4px">Admin note: '+esc(c.adminNote)+'</div>':'')
           +'</div>';
       }).join('');
     }
@@ -5319,25 +5317,18 @@ function renderEditRequests() {
   updateAdmReqBadge();
 }
 
-async function approveEditRequest(reqId, userId, date) {
-  var note = prompt('Optional note to user (leave blank if none):') || '';
+async function approveEditRequest(closureId, userId, date) {
+  var note = prompt('Optional note to user (what to edit):') || '';
+  if(!confirm('Approve and unlock '+date+' for '+userId.slice(0,8)+'…?')) return;
   loading(true);
   try {
-    // Delete ALL day closures for this user+date from Firestore
-    var closureSnap = await db.collection('dayClosures').where('userId','==',userId).where('date','==',date).get();
-    for(var i=0;i<closureSnap.docs.length;i++){
-      await closureSnap.docs[i].ref.delete();
-    }
+    // Deleting the day closure = unlocking the day (one operation, no separate editRequests collection)
+    await fsDeleteDayClosure(closureId);
     // Update local allDayClosures and dayClosures map
-    allDayClosures = allDayClosures.filter(function(c){return !(c.userId===userId&&c.date===date);});
+    allDayClosures = allDayClosures.filter(function(c){return c.id!==closureId;});
     delete dayClosures[userId+'_'+date];
-    // Update edit request status
-    await fsUpdateEditRequest(reqId,{status:'approved',processedAt:Date.now(),adminId:userProfile.uid,adminNote:note});
-    var idx=allEditRequests.findIndex(function(r){return r.id===reqId;});
-    if(idx>=0) Object.assign(allEditRequests[idx],{status:'approved',processedAt:Date.now(),adminNote:note});
-    showToast('Approved! Day unlocked for user.','success');
+    showToast('Approved! Day unlocked for '+date,'success');
     renderEditRequests();
-    // Re-render riders/managers so unlock buttons disappear
     try{renderAdmRiders();}catch(e){}
     try{renderAdmManagersFiltered();}catch(e){}
   } catch(e){showToast('Failed: '+e.message,'error');}
@@ -5345,13 +5336,24 @@ async function approveEditRequest(reqId, userId, date) {
 }
 window.approveEditRequest=approveEditRequest;
 
-async function rejectEditRequest(reqId) {
+async function rejectEditRequest(closureId) {
   var note = prompt('Reason for rejection (optional):') || '';
+  if(!confirm('Reject this edit request?')) return;
   loading(true);
   try {
-    await fsUpdateEditRequest(reqId,{status:'rejected',processedAt:Date.now(),adminId:userProfile.uid,adminNote:note});
-    var idx=allEditRequests.findIndex(function(r){return r.id===reqId;});
-    if(idx>=0) Object.assign(allEditRequests[idx],{status:'rejected',processedAt:Date.now(),adminNote:note});
+    // Keep the day locked but mark request as rejected
+    await fsUpdateDayClosure(closureId, {
+      editRequestStatus: 'rejected',
+      editProcessedAt: Date.now(),
+      adminId: userProfile.uid,
+      adminNote: note
+    });
+    // Update local allDayClosures state
+    var idx = allDayClosures.findIndex(function(c){return c.id===closureId;});
+    if(idx>=0) Object.assign(allDayClosures[idx], {editRequestStatus:'rejected', editProcessedAt:Date.now(), adminNote:note});
+    // Update dayClosures map
+    var closure = Object.values(dayClosures).find(function(c){return c.id===closureId;});
+    if(closure) Object.assign(closure, {editRequestStatus:'rejected', editProcessedAt:Date.now(), adminNote:note});
     showToast('Request rejected','success');
     renderEditRequests();
   } catch(e){showToast('Failed: '+e.message,'error');}
@@ -5370,20 +5372,7 @@ async function unlockDayWithNote(closureId, userId, date) {
     // Update local state
     allDayClosures = allDayClosures.filter(function(c){return c.id!==closureId;});
     delete dayClosures[userId+'_'+date];
-    // Create admin_unlock notification if note provided
-    if(note) {
-      try {
-        await fsAddEditRequest({
-          requesterId: userId, requesterName: '(Admin Unlock)',
-          requesterRole: 'admin_unlock', date: date,
-          reason: 'Admin proactively unlocked this day.',
-          adminNote: note, status: 'admin_unlock',
-          requestedAt: Date.now(), processedAt: Date.now(),
-          adminId: userProfile.uid
-        });
-      } catch(ne){ console.warn('Note save failed:',ne); }
-    }
-    showToast('Day unlocked for '+date+(note?' · Note saved':''),'success');
+    showToast('Day unlocked for '+date+(note?' · Note: '+note:''),'success');
     // Re-render so unlock buttons disappear
     try{renderAdmRiders();}catch(e){}
     try{renderAdmManagersFiltered();}catch(e){}
@@ -5478,7 +5467,7 @@ function setupTabBar(barId,prefix) {
       else if(tab==='recon')renderRecon();
       else if(tab==='orders')initAdmOrders();
       else if(tab==='users')renderUsersTab();
-      else if(tab==='requests'){loading(true);fsGetAllEditRequests().then(function(reqs){allEditRequests=reqs;renderEditRequests();loading(false);}).catch(function(){loading(false);renderEditRequests();});}
+      else if(tab==='requests'){ renderEditRequests(); updateAdmReqBadge(); }
     }
   });
 }
