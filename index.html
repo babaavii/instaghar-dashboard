@@ -750,6 +750,66 @@ select.fin{cursor:pointer}
 .ho-hi-right{text-align:right;flex-shrink:0}
 .ho-hi-amt{font-weight:800;font-size:15px;font-variant-numeric:tabular-nums;color:var(--good)}
 .ho-hi-status{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+/* ── RECONCILER ROLE BADGE ── */
+.role-badge.reconciler{background:#f3e8ff;color:#6b21a8;border:1px solid #d8b4fe}
+
+/* ── RECONCILER PANEL ── */
+.recon-hero{border-radius:var(--radius-lg);padding:22px 20px;color:white;margin-bottom:14px;background:linear-gradient(135deg,#1e1b4b,#4c1d95);position:relative;overflow:hidden;box-shadow:var(--shadow-lift)}
+.recon-hero::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;background:radial-gradient(circle,rgba(255,255,255,.15),transparent 60%);pointer-events:none}
+.recon-status-row{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+.rs-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.rsp-draft{background:rgba(255,255,255,.15);color:white}
+.rsp-pending{background:#fef3c7;color:#92400e}
+.rsp-approved{background:#d1fae5;color:#065f46}
+.rsp-rejected{background:#fee2e2;color:#991b1b}
+
+/* ── RECONCILIATION TABLE ── */
+.recon-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.recon-tbl th{background:var(--teal-dark);color:white;padding:8px 10px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.recon-tbl td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.recon-tbl tr:last-child td{border-bottom:none}
+.recon-tbl tr.row-ok{background:white}
+.recon-tbl tr.row-flagged{background:#fff8f0}
+.recon-tbl tr.row-fixed{background:#f0fdf4}
+.recon-tbl tr.row-missing{background:#fef2f2}
+
+/* ── STATUS CHIPS ── */
+.chip-ok{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;background:var(--good-soft);color:var(--good)}
+.chip-flagged{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;background:var(--warn-soft);color:var(--warn)}
+.chip-fixed{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;background:#d1fae5;color:#065f46}
+.chip-missing{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;background:var(--bad-soft);color:var(--bad)}
+
+/* ── RECON SUMMARY BAR ── */
+.recon-summary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:14px}
+@media(min-width:480px){.recon-summary-grid{grid-template-columns:repeat(4,1fr)}}
+.rsg-card{background:white;border:1px solid var(--line);border-radius:var(--radius);padding:13px 14px;box-shadow:var(--shadow)}
+.rsg-val{font-size:18px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.rsg-lbl{font-size:10px;color:var(--ink-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:3px}
+.rsg-diff-ok{color:var(--good)}
+.rsg-diff-bad{color:var(--bad)}
+
+/* ── FIX FORM ── */
+.fix-card{background:white;border:1.5px solid var(--warn-soft);border-radius:11px;padding:14px;margin-bottom:10px}
+.fix-card.fixed{border-color:var(--good-soft)}
+.fix-card.missing{border-color:var(--bad-soft)}
+.fix-order-id{font-weight:800;font-size:13px;color:var(--teal-dark)}
+.fix-meta{font-size:11px;color:var(--ink-3);margin-top:2px}
+.fix-flags{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0}
+.fix-flag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--warn-soft);color:var(--warn)}
+.fix-input-row{display:flex;gap:8px;align-items:flex-end;margin-top:8px;flex-wrap:wrap}
+.fix-input-row input{flex:1;min-width:100px}
+.fix-input-row textarea{flex:2;min-width:160px;height:52px;resize:none}
+.fix-apply-btn{padding:9px 16px;background:var(--teal-dark);color:white;border:none;border-radius:8px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;transition:background .15s}
+.fix-apply-btn:hover{background:var(--teal)}
+.fix-applied-note{background:var(--good-soft);color:var(--good);border-radius:8px;padding:7px 10px;font-size:11px;font-weight:600;margin-top:7px}
+
+/* ── RECON LOCKED ANALYTICS ── */
+.recon-locked-banner{background:linear-gradient(135deg,#1e1b4b,#4c1d95);color:white;border-radius:var(--radius-lg);padding:24px 20px;text-align:center;margin-bottom:14px}
+.recon-lock-icon{font-size:32px;margin-bottom:8px}
+.recon-analytics-section{border:2px solid #6b21a8;border-radius:var(--radius-lg);overflow:hidden;margin-bottom:14px}
+.recon-analytics-header{background:#f3e8ff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.recon-analytics-header h3{margin:0;font-size:14px;font-weight:800;color:#4c1d95}
+
 /* MOBILE RESPONSIVE */
 .tab-bar{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap}
 .tab-bar::-webkit-scrollbar{display:none}
@@ -1383,6 +1443,7 @@ service cloud.firestore {
       <button class="tab-btn" data-tab="recon"><svg><use href="#i-shield"/></svg> Recon</button>
       <button class="tab-btn" data-tab="orders"><svg><use href="#i-orders"/></svg> Orders</button>
       <button class="tab-btn" data-tab="requests" id="admRequestsTabBtn"><svg><use href="#i-edit"/></svg> Requests</button>
+      <button class="tab-btn" data-tab="reconapproval" id="admReconApprovalTabBtn"><svg><use href="#i-analytics"/></svg> Recon <span id="admReconPendingBadge" class="count-pill hidden" style="background:#6b21a8;color:white;font-size:9px;padding:1px 6px">0</span></button>
       <button class="tab-btn" data-tab="users"><svg><use href="#i-key"/></svg> Users</button>
     </div>
 
@@ -1420,6 +1481,44 @@ service cloud.firestore {
       <section class="section">
         <div class="section-head"><h2>Daily Summary</h2></div>
         <div class="section-body" style="overflow-x:auto"><div id="anlDailyTable"></div></div>
+      </section>
+      <!-- Reconciliation Analytics (locked until admin approves) -->
+      <div id="admReconAnalyticsWrap">
+        <div class="recon-locked-banner" id="admReconLockedBanner">
+          <div class="recon-lock-icon">🔒</div>
+          <div style="font-size:15px;font-weight:800;margin-bottom:4px">Reconciliation Analytics Locked</div>
+          <div style="font-size:12px;opacity:.8">Analytics will appear once you approve a reconciliation in the Recon tab</div>
+        </div>
+        <div id="admReconAnalyticsSection" class="hidden">
+          <!-- Date filter for recon analytics -->
+          <div style="margin-bottom:10px">
+            <div style="font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px">Reconciliation Period</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+              <button class="filter-pill active" data-reconperiod="today" id="admReconPeriodToday">Today</button>
+              <button class="filter-pill" data-reconperiod="yesterday" id="admReconPeriodYest">Yesterday</button>
+              <button class="filter-pill" data-reconperiod="week" id="admReconPeriodWeek">This Week</button>
+              <button class="filter-pill" data-reconperiod="custom" id="admReconPeriodCustom">Custom Date</button>
+              <input type="date" class="fin hidden" id="admReconCustomDate" style="flex:1;max-width:160px;padding:7px 10px;font-size:12px"/>
+            </div>
+          </div>
+          <div id="admReconAnalyticsBody"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECON APPROVAL TAB -->
+    <div class="tab-content" id="adm-tab-reconapproval">
+      <section class="section">
+        <div class="section-head"><h2>Pending Approvals</h2><span class="count-pill" id="admReconPendingCount">0</span></div>
+        <div class="section-body" id="admReconPendingList">
+          <div class="empty"><div class="empty-icon"><svg><use href="#i-analytics"/></svg></div><div class="msg">No pending reconciliations</div><div class="sub">Reconciler will submit sessions here for your approval</div></div>
+        </div>
+      </section>
+      <section class="section">
+        <div class="section-head"><h2>Approved / Rejected</h2></div>
+        <div class="section-body" id="admReconProcessedList">
+          <div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No processed reconciliations yet</div></div>
+        </div>
       </section>
     </div>
 
@@ -1567,7 +1666,7 @@ service cloud.firestore {
           </div>
           <div class="fin-row">
             <div class="lf"><label>Password</label><input type="password" class="fin" id="nuPass" placeholder="Min 6 characters"/></div>
-            <div class="lf"><label>Role</label><select class="fin" id="nuRole"><option value="rider">Rider</option><option value="manager">Manager</option></select></div>
+            <div class="lf"><label>Role</label><select class="fin" id="nuRole"><option value="rider">Rider</option><option value="manager">Manager</option><option value="reconciler">Reconciler</option></select></div>
           </div>
           <div id="nuRiderFields">
             <div class="fin-row">
@@ -1589,7 +1688,114 @@ service cloud.firestore {
   </div>
 </div>
 
-<!-- RIDER WIZARD -->
+<!-- ════════════════════════════════════════════════════════
+     RECONCILER PANEL
+     ════════════════════════════════════════════════════════ -->
+<div id="appShellRecon" class="hidden">
+<div id="reconcilerPanel" class="panel active" style="padding:14px">
+  <div class="panel-hero recon-hero">
+    <div style="font-size:11px;font-weight:700;opacity:.7;text-transform:uppercase;letter-spacing:.06em">Instaghar</div>
+    <div style="font-size:22px;font-weight:800;margin-top:4px">Reconciliation</div>
+    <div class="recon-status-row">
+      <span id="reconHeroStatusPill" class="rs-pill rsp-draft">No Active Session</span>
+      <span id="reconHeroDate" style="font-size:12px;opacity:.8"></span>
+    </div>
+  </div>
+  <!-- Nav bar reused for reconciler -->
+  <div class="top-nav" style="margin:0 -14px 10px;padding:0 14px 10px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:8px">
+    <div style="font-size:13px;font-weight:700" id="reconNavUser"></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="role-badge reconciler" id="reconNavBadge">Reconciler</span>
+      <button class="icon-btn" id="reconLogoutBtn" title="Logout"><svg width="18" height="18"><use href="#i-logout"/></svg></button>
+    </div>
+  </div>
+  <div class="tab-bar" id="reconTabBar">
+    <button class="tab-btn active" data-rectab="upload"><svg><use href="#i-download"/></svg> Upload</button>
+    <button class="tab-btn" data-rectab="results"><svg><use href="#i-list"/></svg> Results</button>
+    <button class="tab-btn" data-rectab="fix" id="reconFixTabBtn"><svg><use href="#i-edit"/></svg> Manual Fix <span id="reconFlagBadge" class="count-pill hidden" style="background:var(--bad);color:white;font-size:9px;padding:1px 6px">0</span></button>
+    <button class="tab-btn" data-rectab="submit"><svg><use href="#i-circle-check"/></svg> Submit</button>
+    <button class="tab-btn" data-rectab="analytics"><svg><use href="#i-analytics"/></svg> Analytics</button>
+  </div>
+
+  <!-- UPLOAD TAB -->
+  <div class="recon-tab active" id="recon-tab-upload">
+    <section class="section" style="margin-top:10px">
+      <div class="section-head"><h2>Step 1 — Select Date</h2></div>
+      <div class="section-body">
+        <input type="date" class="fin" id="reconDate" style="font-size:14px;padding:11px 14px"/>
+        <div style="font-size:11px;color:var(--ink-3);margin-top:6px">Select the delivery date you want to reconcile</div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section-head"><h2>Step 2 — Upload Reports</h2></div>
+      <div class="section-body">
+        <div style="margin-bottom:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--ink-2);margin-bottom:6px">📦 Order Sales Report (CSV)</div>
+          <input type="file" id="reconSalesFile" accept=".csv" class="fin" style="padding:9px"/>
+          <div id="reconSalesStatus" style="font-size:11px;margin-top:5px;color:var(--ink-3)">No file selected</div>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--ink-2);margin-bottom:6px">🛵 Delivery Agent Report (CSV)</div>
+          <input type="file" id="reconDeliveryFile" accept=".csv" class="fin" style="padding:9px"/>
+          <div id="reconDeliveryStatus" style="font-size:11px;margin-top:5px;color:var(--ink-3)">No file selected</div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section-head"><h2>Step 3 — Run</h2></div>
+      <div class="section-body">
+        <div class="info-box" style="margin-bottom:12px">System will match both CSVs with live rider dashboard data and flag every discrepancy automatically.</div>
+        <button class="end-day-btn" id="runReconBtn" style="background:linear-gradient(135deg,#1e1b4b,#4c1d95)"><svg><use href="#i-analytics"/></svg> Run Reconciliation</button>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section-head"><h2>Previous Sessions</h2></div>
+      <div class="section-body" id="prevReconList">
+        <div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No previous reconciliations</div></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- RESULTS TAB -->
+  <div class="recon-tab" id="recon-tab-results" style="display:none">
+    <div id="reconResultsBody" style="margin-top:10px">
+      <div class="empty"><div class="empty-icon"><svg><use href="#i-analytics"/></svg></div><div class="msg">Run reconciliation first</div></div>
+    </div>
+  </div>
+
+  <!-- MANUAL FIX TAB -->
+  <div class="recon-tab" id="recon-tab-fix" style="display:none">
+    <div id="reconFixBody" style="margin-top:10px">
+      <div class="empty"><div class="empty-icon"><svg><use href="#i-edit"/></svg></div><div class="msg">No flags to fix</div><div class="sub">All orders clean, or run reconciliation first</div></div>
+    </div>
+  </div>
+
+  <!-- SUBMIT TAB -->
+  <div class="recon-tab" id="recon-tab-submit" style="display:none">
+    <div id="reconSubmitBody" style="margin-top:10px">
+      <div class="empty"><div class="empty-icon"><svg><use href="#i-circle-check"/></svg></div><div class="msg">Nothing to submit yet</div></div>
+    </div>
+  </div>
+
+  <!-- ANALYTICS TAB -->
+  <div class="recon-tab" id="recon-tab-analytics" style="display:none">
+    <div style="margin-top:10px">
+      <div style="font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px">View Reconciliation By Business Date</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+        <button class="filter-pill active" data-reconaperiod="today" id="reconAPeriodToday">Today</button>
+        <button class="filter-pill" data-reconaperiod="yesterday" id="reconAPeriodYest">Yesterday</button>
+        <button class="filter-pill" data-reconaperiod="week" id="reconAPeriodWeek">This Week</button>
+        <button class="filter-pill" data-reconaperiod="custom" id="reconAPeriodCustom">Select Date</button>
+        <input type="date" class="fin hidden" id="reconACustomDate" style="flex:1;max-width:160px;padding:7px 10px;font-size:12px"/>
+      </div>
+      <div id="reconAnalyticsBody">
+        <div class="empty"><div class="empty-icon"><svg><use href="#i-analytics"/></svg></div><div class="msg">Select a date above to view</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
 <div class="wizard" id="wizard">
   <div class="wiz-top">
     <div class="wiz-top-row">
@@ -1732,6 +1938,7 @@ function showScreen(id) {
   ls.classList.add('hidden');
   // Hide app shell
   document.getElementById('appShell').classList.add('hidden');
+  document.getElementById('appShellRecon').classList.add('hidden');
   if(id === 'app') {
     document.getElementById('appShell').classList.remove('hidden');
   } else {
@@ -1951,6 +2158,13 @@ async function routeToRole() {
   if(userProfile.role==='rider')        { document.getElementById('riderPanel').classList.add('active');   await initRider(); }
   else if(userProfile.role==='manager') { document.getElementById('managerPanel').classList.add('active'); await initManager(); }
   else if(userProfile.role==='admin')   { document.getElementById('adminPanel').classList.add('active');   await initAdmin(); }
+  else if(userProfile.role==='reconciler') {
+    document.getElementById('appShell').classList.add('hidden');
+    document.getElementById('appShellRecon').classList.remove('hidden');
+    document.getElementById('reconNavUser').textContent = userProfile.name||userProfile.email;
+    document.getElementById('reconLogoutBtn').addEventListener('click', doLogout);
+    await initReconciler();
+  }
 }
 
 /* ══════════════════════════
@@ -2654,8 +2868,9 @@ async function initAdmin() {
   } catch(e) { console.warn('Admin data load failed:',e); showToast('Some data failed to load','error'); }
   finally { loading(false); }
   try { initAdmAnalytics(); } catch(e){ renderAdmAnalytics(); }
-  // Update requests badge
+  // Update request and recon badges
   try { updateAdmReqBadge(); } catch(e){}
+  try { loadAdmReconBadge(); } catch(e){}
   initRidersQuickFilter();
   applyDefaultTodayFilters();
   setupRealtimeListeners();
@@ -5094,8 +5309,766 @@ function buildMgrTransferSummary(mgrUid, from, to) {
 }
 
 /* ════════════════════════════════════════════════════════════
-   EDIT REQUEST SYSTEM — RIDER / MANAGER SEND REQUEST
+   FIRESTORE — RECONCILIATIONS COLLECTION
    ════════════════════════════════════════════════════════════ */
+async function fsSaveRecon(data) {
+  return db.collection('reconciliations').add(data);
+}
+async function fsUpdateRecon(reconId, update) {
+  return db.collection('reconciliations').doc(reconId).update(update);
+}
+async function fsGetReconsFor(userId) {
+  var snap = await db.collection('reconciliations').where('createdBy','==',userId).get();
+  return snap.docs.map(function(d){return Object.assign({id:d.id},d.data());}).sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);});
+}
+async function fsGetAllRecons() {
+  var snap = await db.collection('reconciliations').get();
+  return snap.docs.map(function(d){return Object.assign({id:d.id},d.data());}).sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0);});
+}
+async function fsGetAllOrdersForDate(date) {
+  var snap = await db.collection('orders').where('date','==',date).get();
+  return snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+}
+
+/* ════════════════════════════════════════════════════════════
+   RECONCILER STATE
+   ════════════════════════════════════════════════════════════ */
+var currentRecon = null; // active reconciliation session object
+var allRecons = [];
+
+/* ════════════════════════════════════════════════════════════
+   RECONCILER INIT
+   ════════════════════════════════════════════════════════════ */
+async function initReconciler() {
+  // Set today as default date
+  document.getElementById('reconDate').value = todayISO();
+  // Setup tab bar
+  document.querySelectorAll('#reconTabBar .tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('#reconTabBar .tab-btn').forEach(function(b){b.classList.remove('active');});
+      document.querySelectorAll('.recon-tab').forEach(function(t){t.style.display='none';});
+      btn.classList.add('active');
+      document.getElementById('recon-tab-'+btn.dataset.rectab).style.display='block';
+      // When analytics tab opened, auto-load today
+      if(btn.dataset.rectab==='analytics') renderReconAnalyticsTab('today');
+    });
+  });
+  // File upload status
+  document.getElementById('reconSalesFile').addEventListener('change', function(){
+    var f=this.files[0];
+    document.getElementById('reconSalesStatus').textContent=f?'✅ '+f.name+' ('+Math.round(f.size/1024)+' KB)':'No file selected';
+    document.getElementById('reconSalesStatus').style.color=f?'var(--good)':'var(--ink-3)';
+  });
+  document.getElementById('reconDeliveryFile').addEventListener('change', function(){
+    var f=this.files[0];
+    document.getElementById('reconDeliveryStatus').textContent=f?'✅ '+f.name+' ('+Math.round(f.size/1024)+' KB)':'No file selected';
+    document.getElementById('reconDeliveryStatus').style.color=f?'var(--good)':'var(--ink-3)';
+  });
+  // Run button
+  document.getElementById('runReconBtn').addEventListener('click', runReconciliation);
+  // Setup Reconciler Analytics tab filters
+  setupReconAnalyticsFilters();
+  // Load previous sessions
+  loading(true);
+  try {
+    allRecons = await fsGetReconsFor(userProfile.uid);
+    renderPrevRecons();
+    var draft = allRecons.find(function(r){return r.status==='draft';});
+    if(draft){ currentRecon=draft; renderReconResults(); renderManualFix(); renderReconSubmit(); updateReconHero(); }
+  } catch(e){ console.warn('Recon load failed:',e); }
+  loading(false);
+}
+
+function setupReconAnalyticsFilters() {
+  var periods = ['today','yesterday','week','custom'];
+  periods.forEach(function(p){
+    var btn = document.getElementById('reconAPeriod'+p.charAt(0).toUpperCase()+p.slice(1));
+    if(!btn) return;
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('#recon-tab-analytics .filter-pill').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');
+      var customInput = document.getElementById('reconACustomDate');
+      if(p==='custom'){
+        customInput.classList.remove('hidden');
+        customInput.focus();
+        customInput.onchange = function(){ renderReconAnalyticsTab('custom', this.value); };
+      } else {
+        customInput.classList.add('hidden');
+        renderReconAnalyticsTab(p);
+      }
+    });
+  });
+}
+
+async function renderReconAnalyticsTab(period, customDate) {
+  var el = document.getElementById('reconAnalyticsBody');
+  if(!el) return;
+  el.innerHTML='<div style="text-align:center;padding:20px;color:var(--ink-3)">Loading…</div>';
+  var dates = getReconDateRange(period, customDate);
+  try {
+    var recons = await fsGetReconsFor(userProfile.uid);
+    var matched = recons.filter(function(r){return r.date>=dates.from&&r.date<=dates.to&&(r.status==='approved'||r.status==='pending_approval'||r.status==='draft');});
+    matched.sort(function(a,b){return b.date.localeCompare(a.date);});
+    if(!matched.length){
+      el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-analytics"/></svg></div><div class="msg">No reconciliation found</div><div class="sub">No sessions exist for '+dates.label+'</div></div>';
+      return;
+    }
+    var html='';
+    matched.forEach(function(r){
+      var s=r.summary||{};
+      var statusClr=r.status==='approved'?'var(--good)':r.status==='pending_approval'?'var(--warn)':'var(--ink-3)';
+      var statusLbl=r.status==='approved'?'✅ Approved':r.status==='pending_approval'?'⏳ Pending':'Draft';
+      html+='<div class="recon-analytics-section" style="margin-bottom:12px">'
+        +'<div class="recon-analytics-header" style="cursor:pointer" onclick="loadReconSession(\''+esc(r.id)+'\')">'
+        +'<h3>📊 '+r.date+'</h3>'
+        +'<span style="font-size:11px;font-weight:700;color:'+statusClr+'">'+statusLbl+'</span>'
+        +'</div>'
+        +'<div style="padding:12px">'
+        +'<div class="recon-summary-grid">'
+        +'<div class="rsg-card"><div class="rsg-val">'+(s.totalOrders||0)+'</div><div class="rsg-lbl">Orders</div></div>'
+        +'<div class="rsg-card"><div class="rsg-val" style="color:var(--blue)">₹'+fmtM(s.totalDeliveryCharges||0)+'</div><div class="rsg-lbl">🚚 Delivery Charges</div></div>'
+        +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(s.platformCashExpected||0)+'</div><div class="rsg-lbl">Cash Expected</div></div>'
+        +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(s.dashboardCashCollected||0)+'</div><div class="rsg-lbl">Collected</div></div>'
+        +'<div class="rsg-card"><div class="rsg-val '+(( s.cashDiff||0)===0?'rsg-diff-ok':'rsg-diff-bad')+'">₹'+fmtM(Math.abs(s.cashDiff||0))+'</div><div class="rsg-lbl">'+(( s.cashDiff||0)===0?'Balanced ✅':'Difference')+'</div></div>'
+        +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(s.totalPlatformOnline||0)+'</div><div class="rsg-lbl">Prepaid</div></div>'
+        +'</div>'
+        +'</div></div>';
+    });
+    el.innerHTML=html;
+  } catch(e){el.innerHTML='<div class="empty"><div class="msg">Failed to load: '+esc(e.message)+'</div></div>';}
+}
+
+/* ════════════════════════════════════════════════════════════
+   CSV PARSERS
+   ════════════════════════════════════════════════════════════ */
+function parseCSV(text) {
+  var lines = text.trim().split('\n');
+  var headers = lines[0].split(',').map(function(h){return h.trim().replace(/^"|"$/g,'');});
+  return lines.slice(1).map(function(line){
+    var vals = [], cur='', inQ=false;
+    for(var i=0;i<line.length;i++){
+      if(line[i]==='"'){inQ=!inQ;}
+      else if(line[i]===','&&!inQ){vals.push(cur.trim());cur='';}
+      else{cur+=line[i];}
+    }
+    vals.push(cur.trim());
+    var obj={};
+    headers.forEach(function(h,i){obj[h]=vals[i]||'';});
+    return obj;
+  });
+}
+
+/* ════════════════════════════════════════════════════════════
+   MAIN RECONCILIATION ENGINE
+   ════════════════════════════════════════════════════════════ */
+async function runReconciliation() {
+  var date = document.getElementById('reconDate').value;
+  var salesFile = document.getElementById('reconSalesFile').files[0];
+  var deliveryFile = document.getElementById('reconDeliveryFile').files[0];
+  if(!date){showToast('Please select a date','error');return;}
+  if(!salesFile){showToast('Please upload Order Sales Report CSV','error');return;}
+  if(!deliveryFile){showToast('Please upload Delivery Agent Report CSV','error');return;}
+  loading(true);
+  try {
+    // Read files
+    var salesText = await readFileText(salesFile);
+    var deliveryText = await readFileText(deliveryFile);
+    var salesRows = parseCSV(salesText);
+    var deliveryRows = parseCSV(deliveryText);
+    // Build platform maps
+    var completedOrders = salesRows.filter(function(r){return r['Status']==='COMPLETED';});
+    var salesMap = {};
+    completedOrders.forEach(function(r){salesMap[r['Reference Number']]=r;});
+    var deliveryMap = {};
+    deliveryRows.forEach(function(r){deliveryMap[r['Order Number']]=r;});
+    // Fetch dashboard orders for this date
+    var dashOrders = await fsGetAllOrdersForDate(date);
+    var dashMap = {};
+    dashOrders.forEach(function(o){if(o.orderId)dashMap[o.orderId]=o;});
+    // Build order-level reconciliation
+    var orders = [];
+    completedOrders.forEach(function(sr){
+      var orderId = sr['Reference Number'];
+      var online = parseFloat(sr['Online Payment'])||0;
+      var wallet = parseFloat(sr['Wallet Payment'])||0;
+      var amount = parseFloat(sr['Amount'])||0;
+      var shipping = parseFloat(sr['Shipping Charges'])||0;
+      var invoice = parseFloat(sr['Invoice Amount'])||0;
+      if(invoice===0) invoice = amount+shipping; // fallback
+      var pType = online>0?'prepaid':(wallet>0?'wallet':'cod');
+      var platformCash = pType==='cod'?invoice:0; // cash expected from rider
+      var delivery = deliveryMap[orderId]||null;
+      var platformRider = delivery?delivery['Agent Name']:'Unknown';
+      var dash = dashMap[orderId]||null;
+      var flags = [];
+      if(!dash){ flags.push('missing'); }
+      else {
+        var dashCash = (parseFloat(dash.cashCollected)||0)+(parseFloat(dash.qrCollected)||0);
+        var dashType = dash.type||'cod';
+        if(pType==='cod'&&dashType!=='cod') flags.push('type_mismatch');
+        if(pType!=='cod'&&dashType==='cod') flags.push('type_mismatch');
+        if(pType==='cod'&&Math.abs(dashCash-invoice)>0.5) flags.push('cash_mismatch');
+        var dashRider = dash.riderName||'';
+        if(platformRider&&dashRider&&platformRider.toLowerCase().trim()!==dashRider.toLowerCase().trim()) flags.push('rider_mismatch');
+      }
+      var dashCashVal = dash?(parseFloat(dash.cashCollected)||0)+(parseFloat(dash.qrCollected)||0):0;
+      orders.push({
+        orderId: orderId,
+        platformRider: platformRider,
+        dashboardRider: dash?(dash.riderName||'—'):'—',
+        orderType: pType,
+        platformItemAmount: amount,
+        platformShipping: shipping,
+        platformInvoice: invoice,
+        platformCash: platformCash,
+        dashboardCash: dashCashVal,
+        dashboardType: dash?(dash.type||'—'):'—',
+        flags: flags,
+        status: flags.length>0?'flagged':'ok',
+        manualFix: null
+      });
+    });
+    // Build summary
+    var summary = buildReconSummary(orders, date);
+    // Create/update draft
+    var reconData = {
+      date: date,
+      status: 'draft',
+      createdBy: userProfile.uid,
+      createdByName: userProfile.name,
+      createdAt: Date.now(),
+      submittedAt: null,
+      approvedAt: null,
+      approvedBy: null,
+      approvedByName: null,
+      adminNote: '',
+      summary: summary,
+      orders: orders
+    };
+    // Delete existing draft for same date if any
+    var oldDraft = allRecons.find(function(r){return r.date===date&&r.status==='draft';});
+    if(oldDraft){ try{await db.collection('reconciliations').doc(oldDraft.id).delete();}catch(e){} allRecons=allRecons.filter(function(r){return r.id!==oldDraft.id;}); }
+    var ref = await fsSaveRecon(reconData);
+    currentRecon = Object.assign({id:ref.id},reconData);
+    allRecons.unshift(currentRecon);
+    renderPrevRecons();
+    renderReconResults();
+    renderManualFix();
+    renderReconSubmit();
+    updateReconHero();
+    // Auto-switch to results tab
+    document.querySelector('#reconTabBar .tab-btn[data-rectab="results"]').click();
+    showToast('Reconciliation complete for '+date,'success');
+  } catch(e){showToast('Failed: '+e.message,'error');console.error(e);}
+  loading(false);
+}
+
+function readFileText(file) {
+  return new Promise(function(resolve,reject){
+    var r=new FileReader();
+    r.onload=function(){resolve(r.result);};
+    r.onerror=function(){reject(new Error('File read failed'));};
+    r.readAsText(file);
+  });
+}
+
+function buildReconSummary(orders, date) {
+  var total=orders.length;
+  var ok=orders.filter(function(o){return o.status==='ok';}).length;
+  var flagged=orders.filter(function(o){return o.status==='flagged';}).length;
+  var fixed=orders.filter(function(o){return o.status==='manually_fixed';}).length;
+  var missing=orders.filter(function(o){return o.flags.indexOf('missing')>=0;}).length;
+  // Per rider
+  var riderMap={};
+  orders.forEach(function(o){
+    var r=o.platformRider||'Unknown';
+    if(!riderMap[r]) riderMap[r]={name:r,orders:0,platformCash:0,dashboardCash:0,flags:0};
+    riderMap[r].orders++;
+    riderMap[r].platformCash+=o.platformCash||0;
+    var effective=o.manualFix?o.manualFix.fixedCash:o.dashboardCash;
+    riderMap[r].dashboardCash+=effective||0;
+    if(o.flags.length>0) riderMap[r].flags++;
+  });
+  var totalPlatformCash=orders.reduce(function(s,o){return s+(o.platformCash||0);},0);
+  var totalDashCash=orders.reduce(function(s,o){return s+(o.manualFix?o.manualFix.fixedCash:o.dashboardCash)||0;},0);
+  var totalPlatformOnline=orders.filter(function(o){return o.orderType==='prepaid';}).reduce(function(s,o){return s+(o.platformInvoice||0);},0);
+  var totalWallet=orders.filter(function(o){return o.orderType==='wallet';}).reduce(function(s,o){return s+(o.platformInvoice||0);},0);
+  var totalDeliveryCharges=orders.reduce(function(s,o){return s+(o.platformShipping||0);},0);
+  var totalCodItems=orders.filter(function(o){return o.orderType==='cod';}).reduce(function(s,o){return s+(o.platformItemAmount||0);},0);
+  return {date:date,totalOrders:total,okOrders:ok,flaggedOrders:flagged,fixedOrders:fixed,missingOrders:missing,
+    platformCashExpected:totalPlatformCash,dashboardCashCollected:totalDashCash,
+    cashDiff:totalPlatformCash-totalDashCash,
+    totalPlatformOnline:totalPlatformOnline,totalWallet:totalWallet,
+    totalDeliveryCharges:totalDeliveryCharges,totalCodItems:totalCodItems,
+    perRider:Object.values(riderMap)};
+}
+
+/* ════════════════════════════════════════════════════════════
+   RENDER FUNCTIONS — RECONCILER
+   ════════════════════════════════════════════════════════════ */
+function updateReconHero() {
+  if(!currentRecon) return;
+  var pills = {draft:'rsp-draft',pending_approval:'rsp-pending',approved:'rsp-approved',rejected:'rsp-rejected'};
+  var labels = {draft:'Draft',pending_approval:'Pending Admin Approval',approved:'Approved ✅',rejected:'Rejected ❌'};
+  var pill = document.getElementById('reconHeroStatusPill');
+  pill.className='rs-pill '+(pills[currentRecon.status]||'rsp-draft');
+  pill.textContent=labels[currentRecon.status]||currentRecon.status;
+  document.getElementById('reconHeroDate').textContent=currentRecon.date||'';
+}
+
+function renderPrevRecons() {
+  var el = document.getElementById('prevReconList');
+  if(!el) return;
+  if(!allRecons.length){el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No previous reconciliations</div></div>';return;}
+  el.innerHTML = allRecons.map(function(r){
+    var clr = r.status==='approved'?'var(--good)':r.status==='rejected'?'var(--bad)':r.status==='pending_approval'?'var(--warn)':'var(--ink-3)';
+    return '<div class="ho-history-item" style="cursor:pointer" onclick="loadReconSession(\''+esc(r.id)+'\')">'
+      +'<div class="ho-hi-left"><div class="ho-hi-name">'+r.date+'</div><div class="ho-hi-meta">'+fmtDateTime(r.createdAt)+' · '+(r.summary?r.summary.totalOrders+' orders':'')+'</div></div>'
+      +'<div class="ho-hi-right"><div style="font-size:11px;font-weight:700;color:'+clr+'">'+r.status.replace('_',' ').toUpperCase()+'</div>'
+      +(r.summary?'<div style="font-size:11px">'+r.summary.flaggedOrders+' flags</div>':'')
+      +'</div></div>';
+  }).join('');
+}
+
+function loadReconSession(reconId) {
+  var rec = allRecons.find(function(r){return r.id===reconId;});
+  if(!rec){showToast('Session not found','error');return;}
+  currentRecon = rec;
+  renderReconResults();
+  renderManualFix();
+  renderReconSubmit();
+  updateReconHero();
+  document.querySelector('#reconTabBar .tab-btn[data-rectab="results"]').click();
+  showToast('Loaded reconciliation for '+rec.date,'success');
+}
+window.loadReconSession=loadReconSession;
+
+function renderReconResults() {
+  var el = document.getElementById('reconResultsBody');
+  if(!el) return;
+  if(!currentRecon||!currentRecon.orders){
+    el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-analytics"/></svg></div><div class="msg">Run reconciliation first</div></div>';
+    return;
+  }
+  var s = currentRecon.summary;
+  var orders = currentRecon.orders;
+  var diff = s.platformCashExpected - s.dashboardCashCollected;
+  var html = '';
+  // Summary cards
+  html += '<div class="recon-summary-grid">'
+    +'<div class="rsg-card"><div class="rsg-val">'+s.totalOrders+'</div><div class="rsg-lbl">Total Orders</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--good)">'+s.okOrders+'</div><div class="rsg-lbl">Clean ✅</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--warn)">'+s.flaggedOrders+'</div><div class="rsg-lbl">Flagged ⚠️</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:#6b21a8">'+s.fixedOrders+'</div><div class="rsg-lbl">Fixed 🔧</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(s.totalCodItems||0)+'</div><div class="rsg-lbl">COD Item Total</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--blue)">₹'+fmtM(s.totalDeliveryCharges||0)+'</div><div class="rsg-lbl">🚚 Delivery Charges</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(s.platformCashExpected)+'</div><div class="rsg-lbl">Total Cash Expected</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(s.dashboardCashCollected)+'</div><div class="rsg-lbl">Dashboard Cash</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val '+(diff===0?'rsg-diff-ok':'rsg-diff-bad')+'">₹'+fmtM(Math.abs(diff))+'</div><div class="rsg-lbl">'+(diff===0?'Balanced ✅':'Difference '+( diff>0?'↑ Short':'↓ Excess'))+'</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--ink-2)">₹'+fmtM(s.totalPlatformOnline)+'</div><div class="rsg-lbl">Prepaid/Online</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--ink-2)">₹'+fmtM(s.totalWallet||0)+'</div><div class="rsg-lbl">Wallet</div></div>'
+    +'</div>';
+  // Per Rider summary
+  html += '<section class="section"><div class="section-head"><h2>Per Rider</h2></div><div class="section-body">';
+  html += '<div style="overflow-x:auto"><table class="recon-tbl"><thead><tr><th>Rider</th><th>Orders</th><th>Platform Cash</th><th>Dashboard Cash</th><th>Difference</th><th>Flags</th></tr></thead><tbody>';
+  (s.perRider||[]).forEach(function(r){
+    var d=r.platformCash-r.dashboardCash;
+    html+='<tr class="'+(r.flags>0?'row-flagged':'row-ok')+'">'
+      +'<td style="font-weight:700">'+esc(r.name)+'</td>'
+      +'<td>'+r.orders+'</td>'
+      +'<td>₹'+fmtM(r.platformCash)+'</td>'
+      +'<td>₹'+fmtM(r.dashboardCash)+'</td>'
+      +'<td style="font-weight:700;color:'+(d===0?'var(--good)':'var(--bad)')+'">'+( d===0?'✅ Match':'₹'+fmtM(Math.abs(d))+( d>0?' Short':' Excess'))+'</td>'
+      +'<td>'+(r.flags>0?'<span class="chip-flagged">'+r.flags+' flag'+(r.flags>1?'s':'')+'</span>':'<span class="chip-ok">Clean</span>')+'</td>'
+      +'</tr>';
+  });
+  html += '</tbody></table></div></div></section>';
+  // Order-level table
+  html += '<section class="section"><div class="section-head"><h2>Order Level Detail</h2><div class="head-right" style="font-size:11px">'+orders.length+' orders</div></div><div class="section-body"><div style="overflow-x:auto"><table class="recon-tbl"><thead><tr><th>Order ID</th><th>Rider</th><th>Type</th><th>Platform Invoice</th><th>Dashboard Cash</th><th>Status</th></tr></thead><tbody>';
+  orders.forEach(function(o){
+    var rowCls = o.status==='ok'?'row-ok':o.status==='manually_fixed'?'row-fixed':o.flags.indexOf('missing')>=0?'row-missing':'row-flagged';
+    var statusChip = o.status==='ok'?'<span class="chip-ok">✅ OK</span>'
+      :o.status==='manually_fixed'?'<span class="chip-fixed">🔧 Fixed</span>'
+      :o.flags.indexOf('missing')>=0?'<span class="chip-missing">❌ Missing</span>'
+      :'<span class="chip-flagged">⚠️ '+o.flags.join(', ')+'</span>';
+    var effectiveCash = o.manualFix?o.manualFix.fixedCash:o.dashboardCash;
+    html+='<tr class="'+rowCls+'">'
+      +'<td style="font-weight:700">'+esc(o.orderId)+'</td>'
+      +'<td>'+esc(o.platformRider)+(o.flags.indexOf('rider_mismatch')>=0?'<br><span style="font-size:10px;color:var(--bad)">Dash: '+esc(o.dashboardRider)+'</span>':'')+'</td>'
+      +'<td><span style="font-size:11px;font-weight:700;text-transform:uppercase">'+o.orderType+'</span></td>'
+      +'<td>₹'+fmtM(o.platformInvoice)+'</td>'
+      +'<td>₹'+fmtM(effectiveCash)+(o.manualFix?'<span style="font-size:10px;color:#6b21a8;display:block">Fixed</span>':'')+'</td>'
+      +'<td>'+statusChip+'</td>'
+      +'</tr>';
+  });
+  html += '</tbody></table></div></div></section>';
+  el.innerHTML = html;
+}
+
+function renderManualFix() {
+  var el = document.getElementById('reconFixBody');
+  var badge = document.getElementById('reconFlagBadge');
+  if(!el) return;
+  if(!currentRecon||!currentRecon.orders){el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-edit"/></svg></div><div class="msg">Run reconciliation first</div></div>';return;}
+  var flagged = currentRecon.orders.filter(function(o){return o.flags.length>0;});
+  if(badge){ if(flagged.length>0){badge.classList.remove('hidden');badge.textContent=flagged.length;}else{badge.classList.add('hidden');} }
+  if(!flagged.length){el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-circle-check"/></svg></div><div class="msg">No flags — all orders are clean! ✅</div></div>';return;}
+  var html = '<div class="info-box" style="margin-bottom:12px">'+flagged.length+' order'+(flagged.length>1?'s are':'is')+' flagged. Fix each one by entering the correct cash amount and a note, then click Apply.</div>';
+  flagged.forEach(function(o){
+    var isMissing = o.flags.indexOf('missing')>=0;
+    var isFixed = o.status==='manually_fixed';
+    html += '<div class="fix-card'+(isFixed?' fixed':isMissing?' missing':'')+'" id="fixcard-'+esc(o.orderId)+'">'
+      +'<div class="fix-order-id">Order #'+esc(o.orderId)+'</div>'
+      +'<div class="fix-meta">Platform Rider: '+esc(o.platformRider)+' · Type: '+o.orderType.toUpperCase()+' · Platform Invoice: ₹'+fmtM(o.platformInvoice)+'</div>'
+      +'<div class="fix-flags">'
+      +o.flags.map(function(f){return '<span class="fix-flag">'+f.replace(/_/g,' ')+'</span>';}).join('')
+      +'</div>';
+    if(isFixed && o.manualFix){
+      html += '<div class="fix-applied-note">✅ Fixed: Cash set to ₹'+fmtM(o.manualFix.fixedCash)+' — '+esc(o.manualFix.note||'No note')
+        +'<button onclick="undoManualFix(\''+esc(o.orderId)+'\')" style="margin-left:10px;background:none;border:none;color:var(--bad);cursor:pointer;font-weight:700;font-size:11px">Undo</button></div>';
+    } else {
+      html += '<div class="fix-input-row">'
+        +'<div style="flex:1"><div style="font-size:10px;font-weight:700;color:var(--ink-3);margin-bottom:3px">CORRECTED CASH (₹)</div>'
+        +'<input type="number" class="fin" id="fixAmt-'+esc(o.orderId)+'" placeholder="'+o.platformInvoice+'" value="'+(isMissing?0:o.platformInvoice)+'"/></div>'
+        +'<div style="flex:2"><div style="font-size:10px;font-weight:700;color:var(--ink-3);margin-bottom:3px">NOTE / REASON</div>'
+        +'<input type="text" class="fin" id="fixNote-'+esc(o.orderId)+'" placeholder="e.g. Customer paid exact cash, dashboard entry error..."/></div>'
+        +'<button class="fix-apply-btn" onclick="applyManualFix(\''+esc(o.orderId)+'\')">Apply Fix</button>'
+        +'</div>';
+    }
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+window.applyManualFix = function(orderId) {
+  if(!currentRecon) return;
+  var order = currentRecon.orders.find(function(o){return o.orderId===orderId;});
+  if(!order) return;
+  var amtEl = document.getElementById('fixAmt-'+orderId);
+  var noteEl = document.getElementById('fixNote-'+orderId);
+  if(!amtEl) return;
+  var fixedCash = parseFloat(amtEl.value)||0;
+  var note = noteEl?noteEl.value.trim():'';
+  order.manualFix = {fixedCash:fixedCash, note:note, fixedAt:Date.now(), fixedBy:userProfile.uid};
+  order.status = 'manually_fixed';
+  // Rebuild summary with fix applied
+  currentRecon.summary = buildReconSummary(currentRecon.orders, currentRecon.date);
+  renderManualFix();
+  renderReconResults();
+  renderReconSubmit();
+  showToast('Fix applied for Order #'+orderId,'success');
+};
+window.undoManualFix = function(orderId) {
+  if(!currentRecon) return;
+  var order = currentRecon.orders.find(function(o){return o.orderId===orderId;});
+  if(!order) return;
+  order.manualFix = null;
+  order.status = order.flags.length>0?'flagged':'ok';
+  currentRecon.summary = buildReconSummary(currentRecon.orders, currentRecon.date);
+  renderManualFix();
+  renderReconResults();
+  renderReconSubmit();
+  showToast('Fix undone for Order #'+orderId,'success');
+};
+
+function renderReconSubmit() {
+  var el = document.getElementById('reconSubmitBody');
+  if(!el) return;
+  if(!currentRecon){el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-circle-check"/></svg></div><div class="msg">Nothing to submit yet</div></div>';return;}
+  var s = currentRecon.summary;
+  var canSubmit = currentRecon.status==='draft'||currentRecon.status==='rejected';
+  var isPending = currentRecon.status==='pending_approval';
+  var isApproved = currentRecon.status==='approved';
+  var html = '<section class="section"><div class="section-head"><h2>Reconciliation Summary — '+currentRecon.date+'</h2></div><div class="section-body">';
+  html += '<div class="recon-summary-grid">'
+    +'<div class="rsg-card"><div class="rsg-val">'+s.totalOrders+'</div><div class="rsg-lbl">Total Orders</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--good)">'+s.okOrders+'</div><div class="rsg-lbl">Clean</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--warn)">'+s.flaggedOrders+'</div><div class="rsg-lbl">Still Flagged</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:#6b21a8">'+s.fixedOrders+'</div><div class="rsg-lbl">Manually Fixed</div></div>'
+    +'</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px">'
+    +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(s.platformCashExpected)+'</div><div class="rsg-lbl">Platform Expected Cash</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(s.dashboardCashCollected)+'</div><div class="rsg-lbl">Dashboard Collected</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val '+(s.cashDiff===0?'rsg-diff-ok':'rsg-diff-bad')+'">₹'+fmtM(Math.abs(s.cashDiff))+'</div><div class="rsg-lbl">'+(s.cashDiff===0?'Balanced ✅':'Net Difference')+'</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(s.totalPlatformOnline)+'</div><div class="rsg-lbl">Online/Prepaid</div></div>'
+    +'</div>';
+  if(s.flaggedOrders>0){
+    html += '<div class="edit-req-banner" style="margin-bottom:12px">⚠️ <strong>'+s.flaggedOrders+' orders still flagged.</strong> You can still submit but admin will see the outstanding flags. Consider fixing them in the Manual Fix tab first.</div>';
+  }
+  if(isApproved){
+    html += '<div class="req-approved-notice">✅ This reconciliation was approved by admin'+(currentRecon.approvedByName?' ('+esc(currentRecon.approvedByName)+')':'')+' on '+fmtDateTime(currentRecon.approvedAt)+'</div>';
+    html += '<button onclick="startNewReconciliation()" style="margin-top:12px;width:100%;padding:12px;border:2px dashed var(--line-strong);background:white;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;color:var(--ink-2);cursor:pointer">＋ Start New Reconciliation for Another Date</button>';
+  } else if(isPending){
+    html += '<div class="req-approved-notice" style="background:var(--warn-soft);border-color:var(--warn);color:var(--warn)">⏳ Submitted for admin approval. Waiting for response.</div>';
+    html += '<button onclick="startNewReconciliation()" style="margin-top:12px;width:100%;padding:12px;border:2px dashed var(--line-strong);background:white;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;color:var(--ink-2);cursor:pointer">＋ Start New Reconciliation for Another Date</button>';
+  } else if(currentRecon.status==='rejected'){
+    html += '<div class="req-rejected-notice">❌ Rejected by admin'+(currentRecon.adminNote?' · Note: '+esc(currentRecon.adminNote):'')+'</div>';
+    html += '<div class="info-box" style="margin-top:8px">Make corrections and re-submit below.</div>';
+  }
+  if(canSubmit){
+    html += '<button class="end-day-btn" id="submitReconBtn" style="background:linear-gradient(135deg,#1e1b4b,#4c1d95);margin-top:10px"><svg><use href="#i-circle-check"/></svg> Submit for Admin Approval</button>';
+  }
+  html += '</div></section>';
+  el.innerHTML = html;
+  if(canSubmit){
+    document.getElementById('submitReconBtn').addEventListener('click', submitReconForApproval);
+  }
+}
+
+function startNewReconciliation() {
+  currentRecon = null;
+  // Reset form fields
+  document.getElementById('reconDate').value = todayISO();
+  document.getElementById('reconSalesFile').value = '';
+  document.getElementById('reconDeliveryFile').value = '';
+  document.getElementById('reconSalesStatus').textContent = 'No file selected';
+  document.getElementById('reconSalesStatus').style.color = 'var(--ink-3)';
+  document.getElementById('reconDeliveryStatus').textContent = 'No file selected';
+  document.getElementById('reconDeliveryStatus').style.color = 'var(--ink-3)';
+  // Reset hero
+  var pill = document.getElementById('reconHeroStatusPill');
+  if(pill){pill.className='rs-pill rsp-draft';pill.textContent='No Active Session';}
+  document.getElementById('reconHeroDate').textContent='';
+  // Reset result/fix/submit tabs
+  document.getElementById('reconResultsBody').innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-analytics"/></svg></div><div class="msg">Run reconciliation first</div></div>';
+  document.getElementById('reconFixBody').innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-edit"/></svg></div><div class="msg">Run reconciliation first</div></div>';
+  document.getElementById('reconSubmitBody').innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-circle-check"/></svg></div><div class="msg">Nothing to submit yet</div></div>';
+  // Switch to upload tab
+  document.querySelector('#reconTabBar .tab-btn[data-rectab="upload"]').click();
+  showToast('Ready for new reconciliation. Select a business date.','success');
+}
+window.startNewReconciliation = startNewReconciliation;
+
+function getReconDateRange(period, customDate) {
+  var today = todayISO();
+  var yest = yesterdayISO();
+  if(period==='today') return {from:today,to:today,label:'today ('+today+')'};
+  if(period==='yesterday') return {from:yest,to:yest,label:'yesterday ('+yest+')'};
+  if(period==='week'){
+    var d=new Date(); d.setDate(d.getDate()-6);
+    var from=d.toISOString().slice(0,10);
+    return {from:from,to:today,label:'this week'};
+  }
+  if(period==='custom'&&customDate) return {from:customDate,to:customDate,label:customDate};
+  return {from:today,to:today,label:'today'};
+}
+
+async function submitReconForApproval() {
+  if(!currentRecon){showToast('No active reconciliation','error');return;}
+  if(!confirm('Submit this reconciliation for admin approval?')) return;
+  loading(true);
+  try {
+    await fsUpdateRecon(currentRecon.id, {
+      status:'pending_approval',
+      submittedAt:Date.now(),
+      summary:currentRecon.summary,
+      orders:currentRecon.orders
+    });
+    currentRecon.status='pending_approval';
+    currentRecon.submittedAt=Date.now();
+    var idx=allRecons.findIndex(function(r){return r.id===currentRecon.id;});
+    if(idx>=0) Object.assign(allRecons[idx],{status:'pending_approval',submittedAt:Date.now()});
+    renderReconSubmit();
+    updateReconHero();
+    renderPrevRecons();
+    showToast('Submitted for admin approval!','success');
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  loading(false);
+}
+
+/* ════════════════════════════════════════════════════════════
+   ADMIN — RECON APPROVALS
+   ════════════════════════════════════════════════════════════ */
+async function loadAdmRecons() {
+  loading(true);
+  try {
+    var recons = await fsGetAllRecons();
+    var pending = recons.filter(function(r){return r.status==='pending_approval';});
+    var processed = recons.filter(function(r){return r.status!=='pending_approval'&&r.status!=='draft';});
+    // Update badge
+    var b = document.getElementById('admReconPendingBadge');
+    if(b){ if(pending.length>0){b.classList.remove('hidden');b.textContent=pending.length;}else{b.classList.add('hidden');} }
+    var pc = document.getElementById('admReconPendingCount');
+    if(pc) pc.textContent=pending.length;
+    renderAdmReconPending(pending);
+    renderAdmReconProcessed(processed);
+    // Check if latest approved recon exists for analytics
+    var latestApproved = recons.find(function(r){return r.status==='approved';});
+    updateAdmReconAnalytics(latestApproved||null);
+  } catch(e){console.warn('Recon load failed:',e);}
+  loading(false);
+}
+function renderAdmReconPending(pending) {
+  var el = document.getElementById('admReconPendingList');
+  if(!el) return;
+  if(!pending.length){el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-analytics"/></svg></div><div class="msg">No pending reconciliations</div><div class="sub">Reconciler will submit sessions here for your approval</div></div>';return;}
+  el.innerHTML = pending.map(function(r){
+    var s=r.summary||{};
+    return '<div class="edit-req-card">'
+      +'<div class="erc-head"><div><div class="erc-name">'+r.date+' <span class="badge" style="background:var(--blue-soft);color:var(--blue-deep);font-size:10px;padding:2px 8px">Reconciliation</span></div>'
+      +'<div class="erc-meta">By '+esc(r.createdByName||'—')+' · Submitted '+fmtDateTime(r.submittedAt)+'</div></div>'
+      +'<span class="status-badge sb-pending">Pending</span></div>'
+      +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0">'
+      +'<div style="text-align:center"><div style="font-size:16px;font-weight:800">'+( s.totalOrders||0)+'</div><div style="font-size:10px;color:var(--ink-3)">Orders</div></div>'
+      +'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:var(--good)">'+(s.okOrders||0)+'</div><div style="font-size:10px;color:var(--ink-3)">Clean</div></div>'
+      +'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:var(--warn)">'+(s.flaggedOrders||0)+'</div><div style="font-size:10px;color:var(--ink-3)">Flagged</div></div>'
+      +'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:#6b21a8">'+(s.fixedOrders||0)+'</div><div style="font-size:10px;color:var(--ink-3)">Fixed</div></div>'
+      +'</div>'
+      +'<div style="background:var(--bg);border-radius:8px;padding:10px;margin-bottom:10px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px">'
+      +'<div><div style="font-size:11px;color:var(--ink-3)">Platform Expected Cash</div><div style="font-weight:800;font-size:15px">₹'+fmtM(s.platformCashExpected||0)+'</div></div>'
+      +'<div><div style="font-size:11px;color:var(--ink-3)">Dashboard Collected</div><div style="font-weight:800;font-size:15px">₹'+fmtM(s.dashboardCashCollected||0)+'</div></div>'
+      +'<div><div style="font-size:11px;color:var(--ink-3)">Difference</div><div style="font-weight:800;font-size:15px;color:'+(s.cashDiff===0?'var(--good)':'var(--bad)')+'">₹'+fmtM(Math.abs(s.cashDiff||0))+'</div></div>'
+      +'</div>'
+      +'<div class="erc-btns">'
+      +'<button class="erc-approve" onclick="approveRecon(\''+esc(r.id)+'\')"><svg><use href="#i-circle-check"/></svg> Approve</button>'
+      +'<button class="erc-reject" onclick="rejectRecon(\''+esc(r.id)+'\')"><svg><use href="#i-x"/></svg> Reject</button>'
+      +'</div></div>';
+  }).join('');
+}
+function renderAdmReconProcessed(processed) {
+  var el = document.getElementById('admReconProcessedList');
+  if(!el) return;
+  if(!processed.length){el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No processed reconciliations yet</div></div>';return;}
+  el.innerHTML = processed.map(function(r){
+    var isApproved = r.status==='approved';
+    return '<div class="edit-req-card" style="opacity:0.9">'
+      +'<div class="erc-head"><div><div class="erc-name">'+r.date+'</div>'
+      +'<div class="erc-meta">'+esc(r.createdByName||'—')+' · '+(r.approvedAt?fmtDateTime(r.approvedAt):'')+'</div></div>'
+      +'<span class="status-badge '+(isApproved?'sb-approved':'sb-discrepancy')+'">'+(isApproved?'Approved':'Rejected')+'</span></div>'
+      +(r.adminNote?'<div style="font-size:11px;color:var(--ink-3);margin-top:5px">Note: '+esc(r.adminNote)+'</div>':'')
+      +'</div>';
+  }).join('');
+}
+async function approveRecon(reconId) {
+  if(!confirm('Approve this reconciliation? Analytics will be unlocked on your dashboard.')) return;
+  loading(true);
+  try {
+    await fsUpdateRecon(reconId,{status:'approved',approvedAt:Date.now(),approvedBy:userProfile.uid,approvedByName:userProfile.name});
+    showToast('Reconciliation approved! Analytics unlocked.','success');
+    await loadAdmRecons();
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  loading(false);
+}
+async function rejectRecon(reconId) {
+  var note = prompt('Reason for rejection (required):');
+  if(!note||!note.trim()){showToast('Please provide a rejection reason','error');return;}
+  loading(true);
+  try {
+    await fsUpdateRecon(reconId,{status:'rejected',approvedAt:Date.now(),adminNote:note.trim(),approvedBy:userProfile.uid,approvedByName:userProfile.name});
+    showToast('Reconciliation rejected.','success');
+    await loadAdmRecons();
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  loading(false);
+}
+window.approveRecon=approveRecon;
+window.rejectRecon=rejectRecon;
+
+function updateAdmReconAnalytics(recon) {
+  var lockBanner = document.getElementById('admReconLockedBanner');
+  var section = document.getElementById('admReconAnalyticsSection');
+  if(!lockBanner||!section) return;
+  if(!recon){
+    lockBanner.classList.remove('hidden');
+    section.classList.add('hidden');
+    return;
+  }
+  lockBanner.classList.add('hidden');
+  section.classList.remove('hidden');
+  // Wire up date filter buttons if not already bound
+  var periods = ['Today','Yest','Week','Custom'];
+  periods.forEach(function(p){
+    var btn = document.getElementById('admReconPeriod'+p);
+    if(btn&&!btn.dataset.bound){
+      btn.dataset.bound='1';
+      btn.addEventListener('click', function(){
+        document.querySelectorAll('#admReconAnalyticsSection .filter-pill').forEach(function(b){b.classList.remove('active');});
+        btn.classList.add('active');
+        var customInput = document.getElementById('admReconCustomDate');
+        var period = btn.dataset.reconperiod;
+        if(period==='custom'){
+          customInput.classList.remove('hidden');
+          customInput.focus();
+          customInput.onchange = function(){ renderAdmReconForPeriod('custom',this.value); };
+        } else {
+          customInput.classList.add('hidden');
+          renderAdmReconForPeriod(period);
+        }
+      });
+    }
+  });
+  // Show today's recon by default on first unlock
+  renderAdmReconForPeriod('today');
+}
+
+async function renderAdmReconForPeriod(period, customDate) {
+  var el = document.getElementById('admReconAnalyticsBody');
+  if(!el) return;
+  el.innerHTML='<div style="text-align:center;padding:20px;color:var(--ink-3)">Loading…</div>';
+  var dates = getReconDateRange(period, customDate);
+  try {
+    var snap = await db.collection('reconciliations').where('status','==','approved').get();
+    var recons = snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    var matched = recons.filter(function(r){return r.date>=dates.from&&r.date<=dates.to;});
+    matched.sort(function(a,b){return b.date.localeCompare(a.date);});
+    if(!matched.length){
+      el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-analytics"/></svg></div><div class="msg">No approved reconciliation for '+dates.label+'</div><div class="sub">Go to the Recon tab to approve one</div></div>';
+      return;
+    }
+    var html='';
+    matched.forEach(function(r){
+      html += buildAdmReconAnalyticsCard(r);
+    });
+    el.innerHTML=html;
+  } catch(e){el.innerHTML='<div class="empty"><div class="msg">Failed to load: '+esc(e.message)+'</div></div>';}
+}
+
+function buildAdmReconAnalyticsCard(recon) {
+  var s = recon.summary||{};
+  return '<div class="recon-analytics-section" style="margin-bottom:12px">'
+    +'<div class="recon-analytics-header">'
+    +'<h3>📊 '+recon.date+'</h3>'
+    +'<span class="status-badge sb-approved">Approved by '+esc(recon.approvedByName||'Admin')+'</span>'
+    +'</div>'
+    +'<div style="padding:14px">'
+    +'<div class="recon-summary-grid">'
+    +'<div class="rsg-card"><div class="rsg-val">'+(s.totalOrders||0)+'</div><div class="rsg-lbl">Total Orders</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--blue)">₹'+fmtM(s.totalDeliveryCharges||0)+'</div><div class="rsg-lbl">🚚 Delivery Charges</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(s.totalCodItems||0)+'</div><div class="rsg-lbl">COD Items</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(s.platformCashExpected||0)+'</div><div class="rsg-lbl">Cash Expected</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(s.dashboardCashCollected||0)+'</div><div class="rsg-lbl">Cash Collected</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val '+(( s.cashDiff||0)===0?'rsg-diff-ok':'rsg-diff-bad')+'">₹'+fmtM(Math.abs(s.cashDiff||0))+'</div><div class="rsg-lbl">'+(( s.cashDiff||0)===0?'Balanced ✅':'Difference')+'</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(s.totalPlatformOnline||0)+'</div><div class="rsg-lbl">Online/Prepaid</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(s.totalWallet||0)+'</div><div class="rsg-lbl">Wallet</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--good)">'+(s.okOrders||0)+'</div><div class="rsg-lbl">Clean</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--warn)">'+(s.flaggedOrders||0)+'</div><div class="rsg-lbl">Flagged</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:#6b21a8">'+(s.fixedOrders||0)+'</div><div class="rsg-lbl">Fixed</div></div>'
+    +'</div>'
+    +'<div style="overflow-x:auto;margin-top:6px"><table class="recon-tbl"><thead><tr><th>Rider</th><th>Orders</th><th>Platform Cash</th><th>Collected</th><th>Result</th></tr></thead><tbody>'
+    +(s.perRider||[]).map(function(r){
+      var d=r.platformCash-r.dashboardCash;
+      return '<tr class="'+(r.flags>0?'row-flagged':'row-ok')+'">'
+        +'<td style="font-weight:700">'+esc(r.name)+'</td><td>'+r.orders+'</td>'
+        +'<td>₹'+fmtM(r.platformCash)+'</td><td>₹'+fmtM(r.dashboardCash)+'</td>'
+        +'<td>'+(d===0?'<span class="chip-ok">✅ Match</span>':'<span class="chip-flagged">₹'+fmtM(Math.abs(d))+(d>0?' Short':' Excess')+'</span>')+'</td>'
+        +'</tr>';
+    }).join('')
+    +'</tbody></table></div>'
+    +'</div></div>';
+}
+
+async function loadAdmReconBadge() {
+  try {
+    var snap = await db.collection('reconciliations').where('status','==','pending_approval').get();
+    var count = snap.size;
+    var b = document.getElementById('admReconPendingBadge');
+    if(b){ if(count>0){b.classList.remove('hidden');b.textContent=count;}else{b.classList.add('hidden');} }
+    // Check for latest approved recon for analytics
+    var allSnap = await db.collection('reconciliations').where('status','==','approved').get();
+    if(!allSnap.empty){
+      var docs = allSnap.docs.map(function(d){return Object.assign({id:d.id},d.data());}).sort(function(a,b){return (b.approvedAt||0)-(a.approvedAt||0);});
+      updateAdmReconAnalytics(docs[0]);
+    }
+  } catch(e){ console.warn('Recon badge load:',e); }
+}
 
 async function loadRiderEditRequests() {
   // Edit requests are stored ON the dayClosures document — no separate collection
@@ -5467,6 +6440,7 @@ function setupTabBar(barId,prefix) {
       else if(tab==='recon')renderRecon();
       else if(tab==='orders')initAdmOrders();
       else if(tab==='users')renderUsersTab();
+      else if(tab==='reconapproval'){loadAdmRecons();}
       else if(tab==='requests'){ renderEditRequests(); updateAdmReqBadge(); }
     }
   });
