@@ -1897,6 +1897,12 @@ function yesterdayISO() {
   const d = new Date(); d.setDate(d.getDate()-1);
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
+function csvSafe(v) {
+  // Prevent CSV formula injection (=, +, -, @ at start are dangerous in Excel/Sheets)
+  var s = String(v||'').replace(/"/g,'""');
+  if(s.match(/^[=+\-@]/)) s = "'" + s;
+  return '"' + s + '"';
+}
 function fmtM(n) {
   n = Number(n)||0;
   if(Number.isInteger(n)) return n.toLocaleString('en-IN');
@@ -2115,6 +2121,14 @@ function friendlyError(code) {
 function boot() {
   loading(true);
   initFirebase();
+  // Auto-logout after 4 hours of inactivity
+  var _idleTimer;
+  function resetIdleTimer(){
+    clearTimeout(_idleTimer);
+    if(fbUser) _idleTimer=setTimeout(function(){showToast('Session expired due to inactivity','error');doLogout();},4*60*60*1000);
+  }
+  ['click','keypress','touchstart'].forEach(function(e){document.addEventListener(e,resetIdleTimer,{passive:true});});
+  resetIdleTimer();
   auth.onAuthStateChanged(async function(user) {
     try {
       if(!user) {
@@ -2162,7 +2176,8 @@ async function routeToRole() {
     document.getElementById('appShell').classList.add('hidden');
     document.getElementById('appShellRecon').classList.remove('hidden');
     document.getElementById('reconNavUser').textContent = userProfile.name||userProfile.email;
-    document.getElementById('reconLogoutBtn').addEventListener('click', doLogout);
+    var rlb = document.getElementById('reconLogoutBtn');
+    if(rlb && !rlb.dataset.bound){ rlb.dataset.bound='1'; rlb.addEventListener('click', doLogout); }
     await initReconciler();
   }
 }
@@ -2301,7 +2316,7 @@ function exportCSV() {
   const list=getOrdersForDate(rViewDate);
   if(!list.length){showToast('No orders','error');return;}
   let csv='#,Order ID,Time,Type,Amount,Cash,QR,Refund,Extra,KM\n';
-  list.forEach((o,i)=>{const ip=o.type==='prepaid';const es=getExtraSplit(o);const cash=(+o.cashCollected||0)+es.cash;const qr=(+o.qrCollected||0)+es.qr;csv+=(i+1)+','+o.orderId+','+fmtTime(o.timestamp)+','+(ip?'Prepaid':'COD')+','+(ip?(+o.orderAmount||0):(+o.totalCodAmount||0))+','+cash+','+qr+','+(+o.refund||0)+','+(+o.extraCollected||0)+','+(+o.distance||0).toFixed(1)+'\n';});
+  list.forEach((o,i)=>{const ip=o.type==='prepaid';const es=getExtraSplit(o);const cash=(+o.cashCollected||0)+es.cash;const qr=(+o.qrCollected||0)+es.qr;csv+=(i+1)+','+csvSafe(o.orderId)+','+fmtTime(o.timestamp)+','+(ip?'Prepaid':'COD')+','+(ip?(+o.orderAmount||0):(+o.totalCodAmount||0))+','+cash+','+qr+','+(+o.refund||0)+','+(+o.extraCollected||0)+','+(+o.distance||0).toFixed(1)+'\n';});
   const a=document.createElement('a');
   a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
   a.download='instaghar-'+(userProfile.name||'rider').replace(/\s+/g,'-').toLowerCase()+'-'+rViewDate+'.csv';
@@ -2467,6 +2482,16 @@ function wizNext() {
 }
 async function saveOrder() {
   var ip=wizData.type==='prepaid';
+  // Validation
+  var base = ip ? wizData.orderAmount : wizData.codAmount;
+  if(!wizData.orderId||!wizData.orderId.trim()){showToast('Order ID is required','error');return;}
+  if(base<=0){showToast('Amount must be greater than ₹0','error');return;}
+  if(base>500000){showToast('Amount seems too high. Please verify.','error');return;}
+  if(wizData.cashCollected<0||wizData.qrCollected<0){showToast('Payment amounts cannot be negative','error');return;}
+  if(wizData.distance<0||wizData.distance>500){showToast('Distance must be 0–500 km','error');return;}
+  // Duplicate orderId check for this rider on this date
+  var dup = rOrders.find(function(o){return o.orderId===wizData.orderId&&o.date===rViewDate;});
+  if(dup){showToast('Order '+wizData.orderId+' already exists for today','error');return;}
   var order={riderId:userProfile.uid,riderName:userProfile.name,riderEmail:userProfile.email,date:rViewDate,timestamp:Date.now(),orderId:wizData.orderId,type:wizData.type,orderAmount:ip?wizData.orderAmount:0,totalCodAmount:wizData.codAmount,cashCollected:wizData.cashCollected,qrCollected:wizData.qrCollected,refund:wizData.adjustmentType==='refund'?wizData.adjustmentAmount:0,extraCollected:wizData.adjustmentType==='extra'?wizData.adjustmentAmount:0,extraCash:wizData.extraCash,extraQr:wizData.extraQr,distance:wizData.distance};
   loading(true);
   try {
@@ -2998,8 +3023,9 @@ function renderAudit() {
   var colorMap={order:'var(--teal)',settlement:'var(--blue)',deposit:'var(--good)',handover:'var(--warn)'};
   var isAdmin=userProfile&&userProfile.role==='admin';
   c.innerHTML=entries.map(function(e){
-    var delBtn=isAdmin&&e.id?'<button class="tbl-btn danger" style="margin-left:6px;flex-shrink:0" onclick="adminDeleteRecord(\''+(e.type)+'\'\,\''+esc(e.id)+'\'\,\''+esc(e.title.substring(0,30))+'\')" title="Delete"><svg style="width:11px;height:11px"><use href="#i-trash"/></svg></button>':'';
-    return '<div class="audit-entry"><div class="ae-dot '+e.type+'"></div><div class="ae-body"><div class="ae-title">'+esc(e.title)+'</div><div class="ae-meta">'+esc(e.meta)+(e.extra?'<br><span style="color:var(--teal-deep);font-size:10px;font-weight:600">'+esc(e.extra)+'</span>':'')+(e.note?' · '+esc(e.note):'')+'</div></div><div style="display:flex;align-items:center"><div class="ae-amount" style="color:'+(colorMap[e.type]||'var(--ink)')+'">₹'+fmtM(e.amount)+'</div>'+delBtn+'</div></div>';
+    var safeType=['handover','settlement','deposit','transfer','order','incident','refund','extra'].indexOf(e.type)>=0?e.type:'other';
+    var delBtn=isAdmin&&e.id?'<button class="tbl-btn danger" style="margin-left:6px;flex-shrink:0" onclick="adminDeleteRecord(\''+esc(safeType)+'\',\''+esc(e.id)+'\',\''+esc((e.title||'').substring(0,30))+'\')" title="Delete"><svg style="width:11px;height:11px"><use href="#i-trash"/></svg></button>':'';
+    return '<div class="audit-entry"><div class="ae-dot '+safeType+'"></div><div class="ae-body"><div class="ae-title">'+esc(e.title)+'</div><div class="ae-meta">'+esc(e.meta)+(e.extra?'<br><span style="color:var(--teal-deep);font-size:10px;font-weight:600">'+esc(e.extra)+'</span>':'')+(e.note?' · '+esc(e.note):'')+'</div></div><div style="display:flex;align-items:center"><div class="ae-amount" style="color:'+(colorMap[safeType]||'var(--ink)')+'">₹'+fmtM(e.amount)+'</div>'+delBtn+'</div></div>';
   }).join('');
 }
 
@@ -4397,7 +4423,7 @@ function renderWalletTxLog() {
   var todayEntries=entries.filter(function(e){return e.date===today;});
   if(!todayEntries.length){c.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No transactions today</div></div>';return;}
   c.innerHTML=todayEntries.map(function(e){
-    return '<div class="tx-log-item"><div class="tx-dot '+e.type+'"></div><div class="tx-desc">'+e.desc+'<div style="font-size:10px;color:var(--ink-3);margin-top:2px">'+fmtDateTime(e.ts)+'</div></div><div class="tx-amt '+e.type+'">'+(e.type==='out'?'-':'+')+' ₹'+fmtM(e.amount)+'</div></div>';
+    return '<div class="tx-log-item"><div class="tx-dot '+(e.type==='out'||e.type==='in'?e.type:'in')+'"></div><div class="tx-desc">'+esc(e.desc)+'<div style="font-size:10px;color:var(--ink-3);margin-top:2px">'+fmtDateTime(e.ts)+'</div></div><div class="tx-amt '+(e.type==='out'||e.type==='in'?e.type:'in')+'">'+(e.type==='out'?'-':'+')+' ₹'+fmtM(e.amount)+'</div></div>';
   }).join('');
 }
 
@@ -5432,6 +5458,7 @@ async function renderReconAnalyticsTab(period, customDate) {
         +'<div class="rsg-card"><div class="rsg-val '+(( s.cashDiff||0)===0?'rsg-diff-ok':'rsg-diff-bad')+'">₹'+fmtM(Math.abs(s.cashDiff||0))+'</div><div class="rsg-lbl">'+(( s.cashDiff||0)===0?'Balanced ✅':'Difference')+'</div></div>'
         +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(s.totalPlatformOnline||0)+'</div><div class="rsg-lbl">Prepaid</div></div>'
         +'</div>'
+        +buildBreakdownHTML(s)
         +'</div></div>';
     });
     el.innerHTML=html;
@@ -5522,6 +5549,11 @@ async function runReconciliation() {
         platformInvoice: invoice,
         platformCash: platformCash,
         dashboardCash: dashCashVal,
+        // Granular dashboard fields for detailed breakdown
+        dashCashCollected: dash?(parseFloat(dash.cashCollected)||0):0,
+        dashQrCollected:   dash?(parseFloat(dash.qrCollected)||0):0,
+        dashExtra:         dash?(parseFloat(dash.extraCollected)||0):0,
+        dashRefund:        dash?(parseFloat(dash.refund)||0):0,
         dashboardType: dash?(dash.type||'—'):'—',
         flags: flags,
         status: flags.length>0?'flagged':'ok',
@@ -5573,11 +5605,48 @@ function readFileText(file) {
 }
 
 function buildReconSummary(orders, date) {
+  function sumF(arr, key){ return arr.reduce(function(s,o){return s+(o[key]||0);},0); }
   var total=orders.length;
   var ok=orders.filter(function(o){return o.status==='ok';}).length;
   var flagged=orders.filter(function(o){return o.status==='flagged';}).length;
   var fixed=orders.filter(function(o){return o.status==='manually_fixed';}).length;
   var missing=orders.filter(function(o){return o.flags.indexOf('missing')>=0;}).length;
+
+  // Segment orders
+  var codOrders      = orders.filter(function(o){return o.orderType==='cod';});
+  var prepaidOrders  = orders.filter(function(o){return o.orderType==='prepaid';});
+  var walletOrders   = orders.filter(function(o){return o.orderType==='wallet';});
+  var nonCodOrders   = prepaidOrders.concat(walletOrders);
+
+  // COD breakdown (from dashboard rider inputs)
+  var cod = {
+    count:         codOrders.length,
+    itemTotal:     sumF(codOrders,'platformItemAmount'),
+    cashCollected: sumF(codOrders,'dashCashCollected'),
+    qrCollected:   sumF(codOrders,'dashQrCollected'),
+    extra:         sumF(codOrders,'dashExtra'),
+    refunds:       sumF(codOrders,'dashRefund'),
+    deliveryCharges: sumF(codOrders,'platformShipping')
+  };
+  cod.netCollected = cod.cashCollected + cod.qrCollected + cod.extra - cod.refunds;
+
+  // Prepaid breakdown
+  var prepaid = {
+    count:         prepaidOrders.length,
+    value:         sumF(prepaidOrders,'platformInvoice'),
+    qrAtDelivery:  sumF(prepaidOrders,'dashQrCollected'),
+    extra:         sumF(prepaidOrders,'dashExtra'),
+    refunds:       sumF(prepaidOrders,'dashRefund'),
+    deliveryCharges: sumF(prepaidOrders,'platformShipping')
+  };
+
+  // Wallet breakdown
+  var wallet = {
+    count: walletOrders.length,
+    value: sumF(walletOrders,'platformInvoice'),
+    deliveryCharges: sumF(walletOrders,'platformShipping')
+  };
+
   // Per rider
   var riderMap={};
   orders.forEach(function(o){
@@ -5589,18 +5658,104 @@ function buildReconSummary(orders, date) {
     riderMap[r].dashboardCash+=effective||0;
     if(o.flags.length>0) riderMap[r].flags++;
   });
-  var totalPlatformCash=orders.reduce(function(s,o){return s+(o.platformCash||0);},0);
-  var totalDashCash=orders.reduce(function(s,o){return s+(o.manualFix?o.manualFix.fixedCash:o.dashboardCash)||0;},0);
-  var totalPlatformOnline=orders.filter(function(o){return o.orderType==='prepaid';}).reduce(function(s,o){return s+(o.platformInvoice||0);},0);
-  var totalWallet=orders.filter(function(o){return o.orderType==='wallet';}).reduce(function(s,o){return s+(o.platformInvoice||0);},0);
-  var totalDeliveryCharges=orders.reduce(function(s,o){return s+(o.platformShipping||0);},0);
-  var totalCodItems=orders.filter(function(o){return o.orderType==='cod';}).reduce(function(s,o){return s+(o.platformItemAmount||0);},0);
-  return {date:date,totalOrders:total,okOrders:ok,flaggedOrders:flagged,fixedOrders:fixed,missingOrders:missing,
-    platformCashExpected:totalPlatformCash,dashboardCashCollected:totalDashCash,
+
+  var totalPlatformCash  = sumF(codOrders,'platformInvoice');
+  var totalDashCash      = orders.reduce(function(s,o){return s+(o.manualFix?o.manualFix.fixedCash:o.dashboardCash)||0;},0);
+  var totalDeliveryCharges = sumF(orders,'platformShipping');
+  var totalCodItems      = cod.itemTotal;
+  var totalPlatformOnline = sumF(prepaidOrders,'platformInvoice');
+  var totalWalletVal     = sumF(walletOrders,'platformInvoice');
+
+  // Overall business summary
+  var totalTurnover = totalCodItems + totalPlatformOnline + totalWalletVal + totalDeliveryCharges;
+  var totalCashAll  = sumF(orders,'dashCashCollected');
+  var totalQrAll    = sumF(orders,'dashQrCollected');
+  var totalExtraAll = sumF(orders,'dashExtra');
+  var totalRefundAll= sumF(orders,'dashRefund');
+  var netCollection = totalCashAll + totalQrAll + totalExtraAll - totalRefundAll;
+
+  return {
+    date:date, totalOrders:total, okOrders:ok, flaggedOrders:flagged,
+    fixedOrders:fixed, missingOrders:missing,
+    platformCashExpected:totalPlatformCash,
+    dashboardCashCollected:totalDashCash,
     cashDiff:totalPlatformCash-totalDashCash,
-    totalPlatformOnline:totalPlatformOnline,totalWallet:totalWallet,
-    totalDeliveryCharges:totalDeliveryCharges,totalCodItems:totalCodItems,
-    perRider:Object.values(riderMap)};
+    totalPlatformOnline:totalPlatformOnline,
+    totalWallet:totalWalletVal,
+    totalDeliveryCharges:totalDeliveryCharges,
+    totalCodItems:totalCodItems,
+    // Detailed breakdowns
+    cod:cod, prepaid:prepaid, wallet:wallet,
+    // Business turnover
+    turnover:{
+      totalOrders:total,
+      totalTurnover:totalTurnover,
+      totalCash:totalCashAll,
+      totalQr:totalQrAll,
+      totalExtra:totalExtraAll,
+      totalRefunds:totalRefundAll,
+      totalPrepaid:totalPlatformOnline,
+      totalWallet:totalWalletVal,
+      totalDeliveryCharges:totalDeliveryCharges,
+      netCollection:netCollection
+    },
+    perRider:Object.values(riderMap)
+  };
+}
+
+/* ════════════════════════════════════════════════════════════
+   RECON BREAKDOWN HTML BUILDER (shared by reconciler + admin)
+   ════════════════════════════════════════════════════════════ */
+function buildBreakdownHTML(s) {
+  if(!s) return '';
+  var cod = s.cod||{};
+  var pre = s.prepaid||{};
+  var wal = s.wallet||{};
+  var trn = s.turnover||{};
+  var html = '';
+
+  // A — COD BREAKDOWN
+  html += '<section class="section" style="margin-top:10px"><div class="section-head"><h2>A · COD Orders Breakdown</h2><span class="count-pill" style="background:var(--teal-dark);color:white">'+(cod.count||0)+' orders</span></div><div class="section-body">';
+  html += '<div class="recon-summary-grid">'
+    +'<div class="rsg-card"><div class="rsg-val">'+(cod.count||0)+'</div><div class="rsg-lbl">COD Orders</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(cod.itemTotal||0)+'</div><div class="rsg-lbl">Total COD Value</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--good)">₹'+fmtM(cod.cashCollected||0)+'</div><div class="rsg-lbl">Cash Collected</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--teal)">₹'+fmtM(cod.qrCollected||0)+'</div><div class="rsg-lbl">QR Collected</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--blue)">₹'+fmtM(cod.extra||0)+'</div><div class="rsg-lbl">Extra Collected</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--bad)">₹'+fmtM(cod.refunds||0)+'</div><div class="rsg-lbl">Refunds Given</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--blue)">₹'+fmtM(cod.deliveryCharges||0)+'</div><div class="rsg-lbl">🚚 Delivery Charges</div></div>'
+    +'<div class="rsg-card" style="border:1.5px solid var(--good)"><div class="rsg-val rsg-diff-ok">₹'+fmtM(cod.netCollected||0)+'</div><div class="rsg-lbl">Net COD Collected</div></div>'
+    +'</div></div></section>';
+
+  // B — PREPAID BREAKDOWN
+  html += '<section class="section"><div class="section-head"><h2>B · Prepaid & Wallet Orders</h2><span class="count-pill" style="background:var(--blue);color:white">'+((pre.count||0)+(wal.count||0))+' orders</span></div><div class="section-body">';
+  html += '<div class="recon-summary-grid">'
+    +'<div class="rsg-card"><div class="rsg-val">'+(pre.count||0)+'</div><div class="rsg-lbl">Prepaid Orders</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(pre.value||0)+'</div><div class="rsg-lbl">Prepaid Value</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val">'+(wal.count||0)+'</div><div class="rsg-lbl">Wallet Orders</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(wal.value||0)+'</div><div class="rsg-lbl">Wallet Value</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--teal)">₹'+fmtM(pre.qrAtDelivery||0)+'</div><div class="rsg-lbl">QR at Delivery</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--blue)">₹'+fmtM(pre.extra||0)+'</div><div class="rsg-lbl">Extra Collected</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--bad)">₹'+fmtM(pre.refunds||0)+'</div><div class="rsg-lbl">Refunds Issued</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--blue)">₹'+fmtM((pre.deliveryCharges||0)+(wal.deliveryCharges||0))+'</div><div class="rsg-lbl">🚚 Delivery Charges</div></div>'
+    +'</div></div></section>';
+
+  // C — OVERALL BUSINESS TURNOVER
+  html += '<section class="section"><div class="section-head"><h2>C · Business Turnover Summary</h2></div><div class="section-body">';
+  html += '<div class="recon-summary-grid">'
+    +'<div class="rsg-card"><div class="rsg-val">'+(trn.totalOrders||0)+'</div><div class="rsg-lbl">Total Orders</div></div>'
+    +'<div class="rsg-card" style="border:1.5px solid #6b21a8"><div class="rsg-val" style="color:#6b21a8">₹'+fmtM(trn.totalTurnover||0)+'</div><div class="rsg-lbl">Total Turnover</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--good)">₹'+fmtM(trn.totalCash||0)+'</div><div class="rsg-lbl">Total Cash</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--teal)">₹'+fmtM(trn.totalQr||0)+'</div><div class="rsg-lbl">Total QR</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(trn.totalPrepaid||0)+'</div><div class="rsg-lbl">Total Prepaid</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val">₹'+fmtM(trn.totalWallet||0)+'</div><div class="rsg-lbl">Total Wallet</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--blue)">₹'+fmtM(trn.totalDeliveryCharges||0)+'</div><div class="rsg-lbl">🚚 Delivery Charges</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--bad)">₹'+fmtM(trn.totalRefunds||0)+'</div><div class="rsg-lbl">Total Refunds</div></div>'
+    +'<div class="rsg-card"><div class="rsg-val" style="color:var(--blue)">₹'+fmtM(trn.totalExtra||0)+'</div><div class="rsg-lbl">Total Extra</div></div>'
+    +'<div class="rsg-card" style="border:2px solid var(--good)"><div class="rsg-val rsg-diff-ok">₹'+fmtM(trn.netCollection||0)+'</div><div class="rsg-lbl">Net Collection</div></div>'
+    +'</div></div></section>';
+
+  return html;
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -5608,8 +5763,8 @@ function buildReconSummary(orders, date) {
    ════════════════════════════════════════════════════════════ */
 function updateReconHero() {
   if(!currentRecon) return;
-  var pills = {draft:'rsp-draft',pending_approval:'rsp-pending',approved:'rsp-approved',rejected:'rsp-rejected'};
-  var labels = {draft:'Draft',pending_approval:'Pending Admin Approval',approved:'Approved ✅',rejected:'Rejected ❌'};
+  var pills  = {draft:'rsp-draft',pending_approval:'rsp-pending',approved:'rsp-approved',rejected:'rsp-rejected',revision:'rsp-pending'};
+  var labels = {draft:'Draft',pending_approval:'Pending Admin Approval',approved:'Approved ✅',rejected:'Rejected ❌',revision:'Under Revision 🔧'};
   var pill = document.getElementById('reconHeroStatusPill');
   pill.className='rs-pill '+(pills[currentRecon.status]||'rsp-draft');
   pill.textContent=labels[currentRecon.status]||currentRecon.status;
@@ -5620,13 +5775,47 @@ function renderPrevRecons() {
   var el = document.getElementById('prevReconList');
   if(!el) return;
   if(!allRecons.length){el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No previous reconciliations</div></div>';return;}
+
+  var statusColors = {draft:'var(--ink-3)',pending_approval:'var(--warn)',approved:'var(--good)',rejected:'var(--bad)',revision:'var(--blue)'};
+  var statusLabels = {draft:'Draft',pending_approval:'Pending Approval',approved:'Approved ✅',rejected:'Rejected ❌',revision:'Under Revision 🔧'};
+
   el.innerHTML = allRecons.map(function(r){
-    var clr = r.status==='approved'?'var(--good)':r.status==='rejected'?'var(--bad)':r.status==='pending_approval'?'var(--warn)':'var(--ink-3)';
-    return '<div class="ho-history-item" style="cursor:pointer" onclick="loadReconSession(\''+esc(r.id)+'\')">'
-      +'<div class="ho-hi-left"><div class="ho-hi-name">'+r.date+'</div><div class="ho-hi-meta">'+fmtDateTime(r.createdAt)+' · '+(r.summary?r.summary.totalOrders+' orders':'')+'</div></div>'
-      +'<div class="ho-hi-right"><div style="font-size:11px;font-weight:700;color:'+clr+'">'+r.status.replace('_',' ').toUpperCase()+'</div>'
-      +(r.summary?'<div style="font-size:11px">'+r.summary.flaggedOrders+' flags</div>':'')
-      +'</div></div>';
+    var clr = statusColors[r.status]||'var(--ink-3)';
+    var lbl = statusLabels[r.status]||r.status;
+    var isDraft = r.status==='draft';
+    var isApproved = r.status==='approved';
+    var isRevision = r.status==='revision';
+    var hasPendingEditReq = r.editRequestStatus==='pending';
+
+    var actionBtns = '';
+    if(isDraft){
+      actionBtns = '<div style="display:flex;gap:6px;margin-top:8px">'
+        +'<button onclick="loadReconSession(\''+esc(r.id)+'\')" style="flex:1;padding:8px;border:1.5px solid var(--teal-dark);background:white;border-radius:8px;font-family:inherit;font-weight:700;font-size:11px;cursor:pointer;color:var(--teal-dark)">Load &amp; Edit</button>'
+        +'<button onclick="deleteReconDraft(\''+esc(r.id)+'\')" style="flex:0;padding:8px 12px;border:1.5px solid var(--bad);background:var(--bad-soft);border-radius:8px;font-family:inherit;font-weight:700;font-size:11px;cursor:pointer;color:var(--bad)">🗑 Delete</button>'
+        +'</div>';
+    } else if(isApproved) {
+      if(hasPendingEditReq){
+        actionBtns = '<div style="margin-top:8px;padding:8px 10px;background:var(--warn-soft);border-radius:8px;font-size:11px;color:var(--warn);font-weight:600">⏳ Edit access request sent — awaiting admin approval</div>';
+      } else {
+        actionBtns = '<div style="margin-top:8px">'
+          +'<button onclick="requestReconEdit(\''+esc(r.id)+'\')" style="width:100%;padding:9px;border:1.5px solid #6b21a8;background:#f3e8ff;border-radius:8px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer;color:#6b21a8">🔓 Request Edit Access</button>'
+          +'</div>';
+      }
+    } else if(isRevision){
+      actionBtns = '<div style="margin-top:8px;display:flex;gap:6px">'
+        +'<button onclick="loadReconSession(\''+esc(r.id)+'\')" style="flex:1;padding:9px;border:none;background:var(--blue);border-radius:8px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer;color:white">✏️ Edit &amp; Re-submit</button>'
+        +'</div>';
+    }
+
+    return '<div class="fix-card" style="margin-bottom:10px">'
+      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">'
+      +'<div><div class="fix-order-id">'+r.date+'</div>'
+      +'<div class="fix-meta">'+fmtDateTime(r.createdAt)+' · '+(r.summary?r.summary.totalOrders+' orders':'—')+(r.summary&&r.summary.flaggedOrders?' · '+r.summary.flaggedOrders+' flags':'')+'</div></div>'
+      +'<span style="font-size:11px;font-weight:700;color:'+clr+'">'+lbl+'</span>'
+      +'</div>'
+      +(r.adminNote?'<div style="font-size:11px;color:var(--ink-3);margin-top:5px">Admin note: '+esc(r.adminNote)+'</div>':'')
+      +actionBtns
+      +'</div>';
   }).join('');
 }
 
@@ -5684,7 +5873,7 @@ function renderReconResults() {
   });
   html += '</tbody></table></div></div></section>';
   // Order-level table
-  html += '<section class="section"><div class="section-head"><h2>Order Level Detail</h2><div class="head-right" style="font-size:11px">'+orders.length+' orders</div></div><div class="section-body"><div style="overflow-x:auto"><table class="recon-tbl"><thead><tr><th>Order ID</th><th>Rider</th><th>Type</th><th>Platform Invoice</th><th>Dashboard Cash</th><th>Status</th></tr></thead><tbody>';
+  html += '<section class="section"><div class="section-head"><h2>Order Level Detail</h2></div><div class="section-body"><div style="overflow-x:auto"><table class="recon-tbl"><thead><tr><th>Order ID</th><th>Rider</th><th>Type</th><th>Platform Invoice</th><th>Dashboard Cash</th><th>Status</th></tr></thead><tbody>';
   orders.forEach(function(o){
     var rowCls = o.status==='ok'?'row-ok':o.status==='manually_fixed'?'row-fixed':o.flags.indexOf('missing')>=0?'row-missing':'row-flagged';
     var statusChip = o.status==='ok'?'<span class="chip-ok">✅ OK</span>'
@@ -5702,6 +5891,8 @@ function renderReconResults() {
       +'</tr>';
   });
   html += '</tbody></table></div></div></section>';
+  // COD + Prepaid + Turnover breakdown
+  html += buildBreakdownHTML(s);
   el.innerHTML = html;
 }
 
@@ -5775,9 +5966,10 @@ function renderReconSubmit() {
   if(!el) return;
   if(!currentRecon){el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-circle-check"/></svg></div><div class="msg">Nothing to submit yet</div></div>';return;}
   var s = currentRecon.summary;
-  var canSubmit = currentRecon.status==='draft'||currentRecon.status==='rejected';
+  var canSubmit = currentRecon.status==='draft'||currentRecon.status==='rejected'||currentRecon.status==='revision';
   var isPending = currentRecon.status==='pending_approval';
   var isApproved = currentRecon.status==='approved';
+  var isRevision = currentRecon.status==='revision';
   var html = '<section class="section"><div class="section-head"><h2>Reconciliation Summary — '+currentRecon.date+'</h2></div><div class="section-body">';
   html += '<div class="recon-summary-grid">'
     +'<div class="rsg-card"><div class="rsg-val">'+s.totalOrders+'</div><div class="rsg-lbl">Total Orders</div></div>'
@@ -5795,11 +5987,13 @@ function renderReconSubmit() {
     html += '<div class="edit-req-banner" style="margin-bottom:12px">⚠️ <strong>'+s.flaggedOrders+' orders still flagged.</strong> You can still submit but admin will see the outstanding flags. Consider fixing them in the Manual Fix tab first.</div>';
   }
   if(isApproved){
-    html += '<div class="req-approved-notice">✅ This reconciliation was approved by admin'+(currentRecon.approvedByName?' ('+esc(currentRecon.approvedByName)+')':'')+' on '+fmtDateTime(currentRecon.approvedAt)+'</div>';
+    html += '<div class="req-approved-notice">✅ Approved by admin'+(currentRecon.approvedByName?' ('+esc(currentRecon.approvedByName)+')':'')+' on '+fmtDateTime(currentRecon.approvedAt)+'</div>';
     html += '<button onclick="startNewReconciliation()" style="margin-top:12px;width:100%;padding:12px;border:2px dashed var(--line-strong);background:white;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;color:var(--ink-2);cursor:pointer">＋ Start New Reconciliation for Another Date</button>';
   } else if(isPending){
     html += '<div class="req-approved-notice" style="background:var(--warn-soft);border-color:var(--warn);color:var(--warn)">⏳ Submitted for admin approval. Waiting for response.</div>';
     html += '<button onclick="startNewReconciliation()" style="margin-top:12px;width:100%;padding:12px;border:2px dashed var(--line-strong);background:white;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;color:var(--ink-2);cursor:pointer">＋ Start New Reconciliation for Another Date</button>';
+  } else if(isRevision){
+    html += '<div style="background:#dbeafe;border:1.5px solid var(--blue);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--blue);font-weight:600;margin-bottom:10px">🔧 <strong>Under Revision</strong> — Admin approved your edit request. Re-upload corrected files in the Upload tab, run reconciliation again, then re-submit below.</div>';
   } else if(currentRecon.status==='rejected'){
     html += '<div class="req-rejected-notice">❌ Rejected by admin'+(currentRecon.adminNote?' · Note: '+esc(currentRecon.adminNote):'')+'</div>';
     html += '<div class="info-box" style="margin-top:8px">Make corrections and re-submit below.</div>';
@@ -5876,69 +6070,184 @@ async function submitReconForApproval() {
 }
 
 /* ════════════════════════════════════════════════════════════
+   DRAFT MANAGEMENT & EDIT REQUEST WORKFLOW
+   ════════════════════════════════════════════════════════════ */
+async function deleteReconDraft(reconId) {
+  if(!confirm('Delete this draft reconciliation? This cannot be undone.')) return;
+  loading(true);
+  try {
+    await db.collection('reconciliations').doc(reconId).delete();
+    allRecons = allRecons.filter(function(r){return r.id!==reconId;});
+    if(currentRecon && currentRecon.id===reconId){
+      currentRecon=null;
+      startNewReconciliation();
+    }
+    renderPrevRecons();
+    showToast('Draft deleted','success');
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  loading(false);
+}
+window.deleteReconDraft = deleteReconDraft;
+
+async function requestReconEdit(reconId) {
+  var reasonMap = {
+    'wrong_file':'Wrong file uploaded',
+    'missing_orders':'Missing orders found',
+    'payment_mismatch':'Payment mismatch found',
+    'rider_correction':'Rider data correction needed',
+    'refund_error':'Refund / extra amount entered incorrectly',
+    'other':'Other reason'
+  };
+  var reason = prompt('Select reason for edit request:\n1. Wrong file uploaded\n2. Missing orders found\n3. Payment mismatch\n4. Rider data correction\n5. Refund/extra amount error\n6. Other\n\nType your reason:');
+  if(!reason||!reason.trim()){showToast('Reason is required to request edit access','error');return;}
+  loading(true);
+  try {
+    await fsUpdateRecon(reconId,{
+      editRequestStatus:'pending',
+      editRequestReason:reason.trim(),
+      editRequestedAt:Date.now(),
+      editRequestedBy:userProfile.uid,
+      editRequestedByName:userProfile.name
+    });
+    var idx=allRecons.findIndex(function(r){return r.id===reconId;});
+    if(idx>=0) Object.assign(allRecons[idx],{editRequestStatus:'pending',editRequestReason:reason.trim()});
+    renderPrevRecons();
+    showToast('Edit access request sent to admin','success');
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  loading(false);
+}
+window.requestReconEdit = requestReconEdit;
+
+async function approveReconEdit(reconId) {
+  if(!userProfile||userProfile.role!=='admin'){showToast('Admin access required','error');return;}
+  if(!confirm('Approve edit access? The reconciliation will be unlocked for revision.')) return;
+  loading(true);
+  try {
+    await fsUpdateRecon(reconId,{
+      status:'revision',
+      editRequestStatus:'approved',
+      editApprovedAt:Date.now(),
+      editApprovedBy:userProfile.uid
+    });
+    showToast('Edit access approved — report is now under revision','success');
+    await loadAdmRecons();
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  loading(false);
+}
+window.approveReconEdit = approveReconEdit;
+
+async function rejectReconEdit(reconId) {
+  if(!userProfile||userProfile.role!=='admin'){showToast('Admin access required','error');return;}
+  var note = prompt('Reason for rejecting edit request:');
+  if(!note||!note.trim()){showToast('Please provide a reason','error');return;}
+  loading(true);
+  try {
+    await fsUpdateRecon(reconId,{
+      editRequestStatus:'rejected',
+      editRejectedAt:Date.now(),
+      editRejectionNote:note.trim(),
+      editRejectedBy:userProfile.uid
+    });
+    showToast('Edit request rejected','success');
+    await loadAdmRecons();
+  } catch(e){showToast('Failed: '+e.message,'error');}
+  loading(false);
+}
+window.rejectReconEdit = rejectReconEdit;
+
+/* ════════════════════════════════════════════════════════════
    ADMIN — RECON APPROVALS
    ════════════════════════════════════════════════════════════ */
 async function loadAdmRecons() {
   loading(true);
   try {
     var recons = await fsGetAllRecons();
-    var pending = recons.filter(function(r){return r.status==='pending_approval';});
-    var processed = recons.filter(function(r){return r.status!=='pending_approval'&&r.status!=='draft';});
+    var pending   = recons.filter(function(r){return r.status==='pending_approval';});
+    var editReqs  = recons.filter(function(r){return r.editRequestStatus==='pending'&&r.status==='approved';});
+    var processed = recons.filter(function(r){return (r.status==='approved'||r.status==='rejected'||r.status==='revision')&&r.status!=='pending_approval';});
+    var totalPending = pending.length + editReqs.length;
     // Update badge
     var b = document.getElementById('admReconPendingBadge');
-    if(b){ if(pending.length>0){b.classList.remove('hidden');b.textContent=pending.length;}else{b.classList.add('hidden');} }
+    if(b){ if(totalPending>0){b.classList.remove('hidden');b.textContent=totalPending;}else{b.classList.add('hidden');} }
     var pc = document.getElementById('admReconPendingCount');
-    if(pc) pc.textContent=pending.length;
-    renderAdmReconPending(pending);
+    if(pc) pc.textContent=totalPending;
+    renderAdmReconPending(pending, editReqs);
     renderAdmReconProcessed(processed);
-    // Check if latest approved recon exists for analytics
+    // Check for latest approved recon for analytics
     var latestApproved = recons.find(function(r){return r.status==='approved';});
     updateAdmReconAnalytics(latestApproved||null);
   } catch(e){console.warn('Recon load failed:',e);}
   loading(false);
 }
-function renderAdmReconPending(pending) {
+function renderAdmReconPending(pending, editReqs) {
   var el = document.getElementById('admReconPendingList');
   if(!el) return;
-  if(!pending.length){el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-analytics"/></svg></div><div class="msg">No pending reconciliations</div><div class="sub">Reconciler will submit sessions here for your approval</div></div>';return;}
-  el.innerHTML = pending.map(function(r){
-    var s=r.summary||{};
-    return '<div class="edit-req-card">'
-      +'<div class="erc-head"><div><div class="erc-name">'+r.date+' <span class="badge" style="background:var(--blue-soft);color:var(--blue-deep);font-size:10px;padding:2px 8px">Reconciliation</span></div>'
-      +'<div class="erc-meta">By '+esc(r.createdByName||'—')+' · Submitted '+fmtDateTime(r.submittedAt)+'</div></div>'
-      +'<span class="status-badge sb-pending">Pending</span></div>'
-      +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0">'
-      +'<div style="text-align:center"><div style="font-size:16px;font-weight:800">'+( s.totalOrders||0)+'</div><div style="font-size:10px;color:var(--ink-3)">Orders</div></div>'
-      +'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:var(--good)">'+(s.okOrders||0)+'</div><div style="font-size:10px;color:var(--ink-3)">Clean</div></div>'
-      +'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:var(--warn)">'+(s.flaggedOrders||0)+'</div><div style="font-size:10px;color:var(--ink-3)">Flagged</div></div>'
-      +'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:#6b21a8">'+(s.fixedOrders||0)+'</div><div style="font-size:10px;color:var(--ink-3)">Fixed</div></div>'
-      +'</div>'
-      +'<div style="background:var(--bg);border-radius:8px;padding:10px;margin-bottom:10px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px">'
-      +'<div><div style="font-size:11px;color:var(--ink-3)">Platform Expected Cash</div><div style="font-weight:800;font-size:15px">₹'+fmtM(s.platformCashExpected||0)+'</div></div>'
-      +'<div><div style="font-size:11px;color:var(--ink-3)">Dashboard Collected</div><div style="font-weight:800;font-size:15px">₹'+fmtM(s.dashboardCashCollected||0)+'</div></div>'
-      +'<div><div style="font-size:11px;color:var(--ink-3)">Difference</div><div style="font-weight:800;font-size:15px;color:'+(s.cashDiff===0?'var(--good)':'var(--bad)')+'">₹'+fmtM(Math.abs(s.cashDiff||0))+'</div></div>'
-      +'</div>'
-      +'<div class="erc-btns">'
-      +'<button class="erc-approve" onclick="approveRecon(\''+esc(r.id)+'\')"><svg><use href="#i-circle-check"/></svg> Approve</button>'
-      +'<button class="erc-reject" onclick="rejectRecon(\''+esc(r.id)+'\')"><svg><use href="#i-x"/></svg> Reject</button>'
-      +'</div></div>';
-  }).join('');
+  editReqs = editReqs||[];
+  if(!pending.length&&!editReqs.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-analytics"/></svg></div><div class="msg">No pending reconciliations</div><div class="sub">Reconciler will submit sessions here for your approval</div></div>';
+    return;
+  }
+  var html='';
+  if(editReqs.length){
+    html+='<div style="font-size:11px;font-weight:700;color:#6b21a8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">🔓 Edit Access Requests</div>';
+    html+=editReqs.map(function(r){
+      return '<div class="edit-req-card" style="border-color:#6b21a8;margin-bottom:10px">'
+        +'<div class="erc-head"><div><div class="erc-name">'+r.date+' <span class="badge" style="background:#f3e8ff;color:#6b21a8;font-size:10px;padding:2px 8px">Edit Request</span></div>'
+        +'<div class="erc-meta">By '+esc(r.createdByName||'—')+' · '+fmtDateTime(r.editRequestedAt||r.createdAt)+'</div></div>'
+        +'<span class="status-badge" style="background:#f3e8ff;color:#6b21a8">Pending</span></div>'
+        +'<div class="erc-reason">Reason: '+esc(r.editRequestReason||'—')+'</div>'
+        +'<div class="erc-btns">'
+        +'<button class="erc-approve" onclick="approveReconEdit(\''+esc(r.id)+'\')"><svg><use href="#i-circle-check"/></svg> Approve Edit Access</button>'
+        +'<button class="erc-reject" onclick="rejectReconEdit(\''+esc(r.id)+'\')"><svg><use href="#i-x"/></svg> Reject</button>'
+        +'</div></div>';
+    }).join('');
+  }
+  if(pending.length){
+    if(editReqs.length) html+='<div style="font-size:11px;font-weight:700;color:var(--teal-dark);text-transform:uppercase;letter-spacing:.05em;margin:12px 0 8px">📋 Pending Approval</div>';
+    html+=pending.map(function(r){
+      var s=r.summary||{};
+      return '<div class="edit-req-card">'
+        +'<div class="erc-head"><div><div class="erc-name">'+r.date+' <span class="badge" style="background:var(--blue-soft);color:var(--blue-deep);font-size:10px;padding:2px 8px">Reconciliation</span></div>'
+        +'<div class="erc-meta">By '+esc(r.createdByName||'—')+' · Submitted '+fmtDateTime(r.submittedAt)+'</div></div>'
+        +'<span class="status-badge sb-pending">Pending</span></div>'
+        +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0">'
+        +'<div style="text-align:center"><div style="font-size:16px;font-weight:800">'+(s.totalOrders||0)+'</div><div style="font-size:10px;color:var(--ink-3)">Orders</div></div>'
+        +'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:var(--good)">'+(s.okOrders||0)+'</div><div style="font-size:10px;color:var(--ink-3)">Clean</div></div>'
+        +'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:var(--warn)">'+(s.flaggedOrders||0)+'</div><div style="font-size:10px;color:var(--ink-3)">Flagged</div></div>'
+        +'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:#6b21a8">'+(s.fixedOrders||0)+'</div><div style="font-size:10px;color:var(--ink-3)">Fixed</div></div>'
+        +'</div>'
+        +'<div style="background:var(--bg);border-radius:8px;padding:10px;margin-bottom:10px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px">'
+        +'<div><div style="font-size:11px;color:var(--ink-3)">Cash Expected</div><div style="font-weight:800;font-size:15px">₹'+fmtM(s.platformCashExpected||0)+'</div></div>'
+        +'<div><div style="font-size:11px;color:var(--ink-3)">Collected</div><div style="font-weight:800;font-size:15px">₹'+fmtM(s.dashboardCashCollected||0)+'</div></div>'
+        +'<div><div style="font-size:11px;color:var(--ink-3)">Diff</div><div style="font-weight:800;font-size:15px;color:'+((s.cashDiff||0)===0?'var(--good)':'var(--bad)')+'">₹'+fmtM(Math.abs(s.cashDiff||0))+'</div></div>'
+        +'<div><div style="font-size:11px;color:var(--ink-3)">🚚 Delivery</div><div style="font-weight:800;font-size:15px;color:var(--blue)">₹'+fmtM(s.totalDeliveryCharges||0)+'</div></div>'
+        +'</div>'
+        +'<div class="erc-btns">'
+        +'<button class="erc-approve" onclick="approveRecon(\''+esc(r.id)+'\')"><svg><use href="#i-circle-check"/></svg> Approve</button>'
+        +'<button class="erc-reject" onclick="rejectRecon(\''+esc(r.id)+'\')"><svg><use href="#i-x"/></svg> Reject</button>'
+        +'</div></div>';
+    }).join('');
+  }
+  el.innerHTML=html;
 }
 function renderAdmReconProcessed(processed) {
   var el = document.getElementById('admReconProcessedList');
   if(!el) return;
   if(!processed.length){el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-list"/></svg></div><div class="msg">No processed reconciliations yet</div></div>';return;}
+  var statusMap={approved:{cls:'sb-approved',lbl:'Approved'},rejected:{cls:'sb-discrepancy',lbl:'Rejected'},revision:{cls:'',lbl:'Under Revision 🔧',style:'background:#dbeafe;color:var(--blue)'}};
   el.innerHTML = processed.map(function(r){
-    var isApproved = r.status==='approved';
+    var sm = statusMap[r.status]||{cls:'sb-pending',lbl:r.status};
     return '<div class="edit-req-card" style="opacity:0.9">'
       +'<div class="erc-head"><div><div class="erc-name">'+r.date+'</div>'
       +'<div class="erc-meta">'+esc(r.createdByName||'—')+' · '+(r.approvedAt?fmtDateTime(r.approvedAt):'')+'</div></div>'
-      +'<span class="status-badge '+(isApproved?'sb-approved':'sb-discrepancy')+'">'+(isApproved?'Approved':'Rejected')+'</span></div>'
+      +'<span class="status-badge '+sm.cls+'" style="'+(sm.style||'')+'">'+sm.lbl+'</span></div>'
       +(r.adminNote?'<div style="font-size:11px;color:var(--ink-3);margin-top:5px">Note: '+esc(r.adminNote)+'</div>':'')
+      +(r.editRequestStatus==='rejected'?'<div style="font-size:11px;color:var(--bad);margin-top:4px">Edit request rejected: '+esc(r.editRejectionNote||'—')+'</div>':'')
       +'</div>';
   }).join('');
 }
 async function approveRecon(reconId) {
+  if(!userProfile||userProfile.role!=='admin'){showToast('Admin access required','error');return;}
   if(!confirm('Approve this reconciliation? Analytics will be unlocked on your dashboard.')) return;
   loading(true);
   try {
@@ -5949,6 +6258,7 @@ async function approveRecon(reconId) {
   loading(false);
 }
 async function rejectRecon(reconId) {
+  if(!userProfile||userProfile.role!=='admin'){showToast('Admin access required','error');return;}
   var note = prompt('Reason for rejection (required):');
   if(!note||!note.trim()){showToast('Please provide a rejection reason','error');return;}
   loading(true);
@@ -6052,6 +6362,7 @@ function buildAdmReconAnalyticsCard(recon) {
         +'</tr>';
     }).join('')
     +'</tbody></table></div>'
+    +buildBreakdownHTML(s)
     +'</div></div>';
 }
 
