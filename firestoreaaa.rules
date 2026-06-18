@@ -1,0 +1,149 @@
+rules_version = '2';
+
+// ════════════════════════════════════════════════════════════════════
+// Instaghar Operations Platform — Firestore Security Rules
+// Enforces the role model server-side (UI already enforces it too):
+//   rider       → creates own operational data
+//   manager     → approves handovers, records deposits/transfers (read-only on analytics)
+//   reconciler  → SOLE correction authority (edit/delete/add orders, settlements, etc.)
+//   admin       → approval & oversight ONLY — cannot write operational records
+// auditLog is append-only. Roles are read from users/{uid}.role
+// ════════════════════════════════════════════════════════════════════
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---- helpers ----
+    function signedIn() {
+      return request.auth != null;
+    }
+    function profile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function role() {
+      return signedIn() ? profile().role : '';
+    }
+    function isAdmin()      { return role() == 'admin'; }
+    function isReconciler() { return role() == 'reconciler'; }
+    function isManager()    { return role() == 'manager'; }
+    function isRider()      { return role() == 'rider'; }
+
+    // ---- users ----
+    // Everyone signed in can read (role resolution, rider/manager pickers).
+    // Only admin can create/modify user records.
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---- orders ----
+    // Read: any signed-in role (cross-role dashboards).
+    // Create: a rider for their OWN orders, or a reconciler (add missing order).
+    // Update/Delete: RECONCILER only (corrections) or the owning rider.
+    //   NOTE: day-lock (no edits after End Day) is enforced in the UI. To enforce
+    //   it server-side too, give dayClosures a deterministic id "{uid}_{date}" and
+    //   add: && !exists(.../dayClosures/$(resource.data.riderId + '_' + resource.data.date))
+    // Admin is intentionally excluded from all order writes (MASTERADMIN-001).
+    match /orders/{id} {
+      allow read: if signedIn();
+      allow create: if isReconciler()
+                    || (isRider() && request.resource.data.riderId == request.auth.uid);
+      allow update, delete: if isReconciler()
+                    || (isRider() && resource.data.riderId == request.auth.uid);
+    }
+
+    // ---- handovers (rider cash submissions) ----
+    // Create: rider for own. Update: rider (own resubmit), manager (approve/reject),
+    // or reconciler. Delete: reconciler only.
+    match /handovers/{id} {
+      allow read: if signedIn();
+      allow create: if isRider() && request.resource.data.riderId == request.auth.uid;
+      allow update: if isReconciler()
+                    || isManager()
+                    || (isRider() && resource.data.riderId == request.auth.uid);
+      allow delete: if isReconciler();
+    }
+
+    // ---- settlements (created when a manager confirms a handover) ----
+    match /settlements/{id} {
+      allow read: if signedIn();
+      allow create: if isManager() || isReconciler();
+      allow update, delete: if isReconciler();   // corrections only
+    }
+
+    // ---- deposits (manager → bank) ----
+    match /deposits/{id} {
+      allow read: if signedIn();
+      allow create: if isManager() && request.resource.data.managerId == request.auth.uid;
+      allow update, delete: if isReconciler();
+    }
+
+    // ---- manager-to-manager transfers ----
+    match /managerTransfers/{id} {
+      allow read: if signedIn();
+      allow create, update: if isManager();
+      allow delete: if isReconciler();
+    }
+    match /transfers/{id} {
+      allow read: if signedIn();
+      allow create, update: if isManager();
+      allow delete: if isReconciler();
+    }
+
+    // ---- day closures (End Day / End Shift) ----
+    // A rider/manager closes their OWN day. Reconciler may reopen (delete) if a
+    // correction needs it. Admin cannot (operations vs approval separation).
+    match /dayClosures/{id} {
+      allow read: if signedIn();
+      allow create: if (isRider() || isManager())
+                    && request.resource.data.userId == request.auth.uid;
+      allow delete: if isReconciler();
+      allow update: if false;
+    }
+
+    // ---- audit log (APPEND-ONLY — never edited or deleted) ----
+    // Any signed-in user may append (actor identity is taken from their session),
+    // but no one may modify or remove an entry. This is the integrity backbone.
+    match /auditLog/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+                    && request.resource.data.actorUid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // ---- fuel reimbursements ----
+    // Reconciler records & advances status. Rider may update ONLY their own record
+    // (to acknowledge receipt). Admin read-only.
+    match /fuelReimbursements/{id} {
+      allow read: if signedIn();
+      allow create: if isReconciler();
+      allow update: if isReconciler()
+                    || (isRider() && resource.data.riderId == request.auth.uid);
+      allow delete: if isReconciler();
+    }
+
+    // ---- reconciliation submissions (reconciler → master admin) ----
+    // Reconciler submits; ADMIN approves/returns/rejects (admin's allowed write).
+    match /reconSubmissions/{id} {
+      allow read: if signedIn();
+      allow create: if isReconciler()
+                    && request.resource.data.reconcilerUid == request.auth.uid;
+      allow update: if isAdmin() || isReconciler();
+      allow delete: if false;
+    }
+
+    // ---- ancillary operational collections ----
+    // Kept permissive for signed-in users to avoid breaking existing flows;
+    // tighten per-collection later if needed.
+    match /notifications/{id}   { allow read, write: if signedIn(); }
+    match /incidents/{id}       { allow read: if signedIn(); allow write: if !isAdmin() && signedIn(); }
+    match /cashSessions/{id}    { allow read: if signedIn(); allow write: if !isAdmin() && signedIn(); }
+    match /shiftHandovers/{id}  { allow read: if signedIn(); allow write: if !isAdmin() && signedIn(); }
+    match /recons/{id}          { allow read: if signedIn(); allow write: if isReconciler(); }
+
+    // default: deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
