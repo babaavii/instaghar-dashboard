@@ -7552,6 +7552,7 @@ function renderMgrSettlementOverview(){
   }).join('');
   host.innerHTML='<section class="section"><div class="section-head"><h2>Settlement Overview</h2><div class="head-right">Read-only</div></div><div class="section-body">'
     +'<div style="display:flex;gap:6px;margin-bottom:10px"><input type="date" class="fin" id="mgrSoFrom" value="'+from+'" style="flex:1;padding:8px"/><input type="date" class="fin" id="mgrSoTo" value="'+to+'" style="flex:1;padding:8px"/><button class="filter-pill active" id="mgrSoApply">Go</button></div>'
+    +((pendingApproval+rejected)>0?'<div class="day-closed-banner" style="background:var(--bad-soft);border-color:var(--bad);color:var(--bad);margin-bottom:10px"><svg><use href="#i-receipt"/></svg><div style="flex:1"><div style="font-weight:800;font-size:16px">₹'+fmtM(pendingApproval+rejected)+' unsettled</div><div style="font-size:11px;font-weight:600;opacity:.9">Pending approval ₹'+fmtM(pendingApproval)+' · Rejected ₹'+fmtM(rejected)+'</div></div></div>':'')
     +'<div class="ho-status-bar"><div class="ho-stat"><div class="ho-stat-val warn">₹'+fmtM(pendingApproval)+'</div><div class="ho-stat-lbl">Pending Approval</div></div>'
     +'<div class="ho-stat"><div class="ho-stat-val ok">₹'+fmtM(approved)+'</div><div class="ho-stat-lbl">Approved</div></div>'
     +'<div class="ho-stat"><div class="ho-stat-val" style="color:var(--bad)">₹'+fmtM(rejected)+'</div><div class="ho-stat-lbl">Rejected</div></div></div>'
@@ -7954,6 +7955,281 @@ if(typeof resubmitHandover === 'function'){
   };
 }
 /* ▓▓▓ END QA FIXES ▓▓▓ */
+
+/* ════════════════════════════════════════════════════════════════════
+   ▓▓▓ PHASE 2 ▓▓▓  (remaining gaps — additive, non-breaking)
+   1 RIDER-008 hardening · 3 MANAGER-003 red flag · 4 MANAGER-001 analytics
+   5 settlement tracking · 6 RECONCILER over manager records · 7 ADMIN analytics
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── 1 · RIDER-008: belt-and-suspenders — riders can never export/report ── */
+if(typeof openReport === 'function'){
+  var _p2openReport = openReport;
+  openReport = function(){ if(userProfile && userProfile.role==='rider'){ showToast('Reports are disabled for riders','error'); return; } return _p2openReport.apply(this, arguments); };
+  window.openReport = openReport;
+}
+if(typeof exportCSV === 'function'){
+  var _p2exportCSV = exportCSV;
+  exportCSV = function(){ if(userProfile && userProfile.role==='rider'){ showToast('Export is disabled for riders','error'); return; } return _p2exportCSV.apply(this, arguments); };
+  window.exportCSV = exportCSV;
+}
+
+/* ── shared audit fetch by manager ── */
+async function fsGetAuditForManager(uid){
+  try{ var s=await db.collection('auditLog').where('affectedManagerId','==',uid).get(); return s.docs.map(function(d){return Object.assign({id:d.id},d.data());}); }
+  catch(e){ return []; }
+}
+
+/* ══════════════ 4 · MANAGER-001 — Rider Analytics + Daily Summary (read-only) ══════════════ */
+var mgrAnalyticsLogs = [];
+function renderMgrRiderAnalytics(){
+  var host=document.getElementById('mgrRiderAnalytics'); if(!host) return;
+  var from=(document.getElementById('mraFrom')||{}).value||todayISO();
+  var to=(document.getElementById('mraTo')||{}).value||todayISO();
+  var ords=(allOrders||[]).filter(function(o){return o.date>=from && o.date<=to;});
+  var riders=(allUsers||[]).filter(function(u){return u.role==='rider';});
+  // Section B — daily summary totals
+  var tot=calcSummary(ords);
+  var totQr=ords.reduce(function(a,o){var es=getExtraSplit(o);return a+(+o.qrCollected||0)+es.qr;},0);
+  // Section A — per rider
+  var rows=riders.map(function(r){
+    var ro=ords.filter(function(o){return o.riderId===r.uid;});
+    if(!ro.length) return null;
+    var s=calcSummary(ro);
+    return {name:r.name||r.email, orders:ro.length, cod:s.totalCod, cash:s.cash, net:s.netCash, dist:s.distance};
+  }).filter(Boolean).sort(function(a,b){return b.net-a.net;});
+  host.innerHTML='<section class="section"><div class="section-head"><h2>Rider Analytics</h2><div class="head-right">Read-only</div></div><div class="section-body">'
+    +'<div style="display:flex;gap:6px;margin-bottom:10px"><input type="date" class="fin" id="mraFrom" value="'+from+'" style="flex:1;padding:8px"/><input type="date" class="fin" id="mraTo" value="'+to+'" style="flex:1;padding:8px"/><button class="filter-pill active" id="mraApply">Go</button></div>'
+    +'<div class="ho-status-bar" style="flex-wrap:wrap"><div class="ho-stat"><div class="ho-stat-val">₹'+fmtM(tot.totalCod)+'</div><div class="ho-stat-lbl">COD</div></div>'
+    +'<div class="ho-stat"><div class="ho-stat-val ok">₹'+fmtM(tot.cash)+'</div><div class="ho-stat-lbl">Cash</div></div>'
+    +'<div class="ho-stat"><div class="ho-stat-val">₹'+fmtM(totQr)+'</div><div class="ho-stat-lbl">QR</div></div>'
+    +'<div class="ho-stat"><div class="ho-stat-val">'+tot.distance.toFixed(1)+'</div><div class="ho-stat-lbl">Distance km</div></div>'
+    +'<div class="ho-stat"><div class="ho-stat-val warn">₹'+fmtM(tot.netCash)+'</div><div class="ho-stat-lbl">Net Cash</div></div></div>'
+    +(rows.length?'<table class="order-tbl" style="margin-top:10px"><thead><tr><th>Rider</th><th>Orders</th><th>COD</th><th>Cash</th><th>Net</th><th>KM</th></tr></thead><tbody>'
+       +rows.map(function(r){return '<tr><td style="font-weight:600;white-space:nowrap">'+esc(r.name)+'</td><td style="text-align:right">'+r.orders+'</td><td style="text-align:right">₹'+fmtM(r.cod)+'</td><td style="text-align:right;color:var(--good)">₹'+fmtM(r.cash)+'</td><td style="text-align:right">₹'+fmtM(r.net)+'</td><td style="text-align:right">'+r.dist.toFixed(1)+'</td></tr>';}).join('')
+       +'</tbody></table>':'<div class="info-box" style="margin-top:10px">No orders in this range.</div>')
+    +'</div></section>';
+  var ap=document.getElementById('mraApply'); if(ap) ap.addEventListener('click',renderMgrRiderAnalytics);
+}
+/* manager view of reconciler corrections affecting manager records */
+function renderMgrCorrectionLog(){
+  var host=document.getElementById('mgrCorrectionLog'); if(!host) return;
+  var mine=(mgrAnalyticsLogs||[]).slice().sort(function(a,b){return b.timestamp-a.timestamp;});
+  if(!mine.length){ host.innerHTML=''; return; }
+  host.innerHTML='<section class="section"><div class="section-head"><h2>Corrections to Your Records</h2><div class="head-right">by Reconciler</div></div><div class="section-body">'
+    +mine.slice(0,50).map(function(l){
+      var chips=(l.changes||[]).map(function(c){return '<div style="font-size:11px;color:var(--ink-2)"><b>'+esc(c.field)+':</b> <span style="color:var(--bad);text-decoration:line-through">'+esc(String(c.old))+'</span> → <span style="color:var(--good);font-weight:700">'+esc(String(c.new))+'</span></div>';}).join('');
+      return '<div class="audit-entry"><div class="ae-dot order"></div><div class="ae-body"><div class="ae-title">'+esc((l.action||'').toUpperCase())+' · '+esc(l.recordType)+' '+esc(l.recordLabel||'')+'</div>'
+        +'<div class="ae-meta">By '+esc(l.actorName)+' · '+fmtDateTime(l.timestamp)+'</div>'+chips
+        +'<div style="font-size:11px;margin-top:3px"><b>Reason:</b> '+esc(l.reason||'—')+'</div></div></div>';
+    }).join('')+'</div></section>';
+}
+if(typeof initManager === 'function'){
+  var _p2initMgr = initManager;
+  initManager = async function(){
+    await _p2initMgr();
+    loading(true);
+    try{
+      if(!allUsers || !allUsers.length) allUsers = await fsGetAllUsers();
+      var rIds=(allUsers||[]).filter(function(u){return u.role==='rider';}).map(function(u){return u.uid;});
+      allOrders = rIds.length ? await fsGetOrdersForRiders(rIds) : [];
+      try{ allSettlements = await fsGetSettlements(null); }catch(e){}
+      mgrAnalyticsLogs = await fsGetAuditForManager(userProfile.uid);
+    }catch(e){ console.warn('mgr analytics load',e); }
+    loading(false);
+    try{
+      var panel=document.getElementById('managerPanel');
+      if(panel){
+        if(!document.getElementById('mgrRiderAnalytics')){ var a=document.createElement('div'); a.id='mgrRiderAnalytics'; panel.appendChild(a); }
+        if(!document.getElementById('mgrCorrectionLog')){ var c=document.createElement('div'); c.id='mgrCorrectionLog'; panel.appendChild(c); }
+      }
+      renderMgrRiderAnalytics();
+      renderMgrCorrectionLog();
+      if(typeof renderMgrSettlementOverview==='function') renderMgrSettlementOverview();
+    }catch(e){ console.warn('mgr analytics render',e); }
+  };
+}
+
+/* ══════════════ 6 · RECONCILER authority over MANAGER records ══════════════ */
+function reconEditSettlement(id){
+  if(!can('editRecord')){ showToast('Reconciler only','error'); return; }
+  var s=(allSettlements||[]).find(function(x){return x.id===id;});
+  if(!s){ showToast('Settlement not found','error'); return; }
+  editTarget={type:'settlement', id:id, data:s};
+  document.getElementById('editModalTitle').textContent='Correct Settlement';
+  document.getElementById('editModalErr').style.display='none';
+  document.getElementById('editModalBody').innerHTML=
+     '<div class="lf"><label>Rider</label><input type="text" class="fin" value="'+esc(s.riderName||'')+'" disabled/></div>'
+    +'<div class="lf"><label>Date</label><input type="date" class="fin" id="em_date" value="'+esc(s.date||'')+'"/></div>'
+    +'<div class="lf"><label>Received Amount</label><input type="number" class="fin" id="em_recv" value="'+(+s.receivedAmount||0)+'"/></div>'
+    +'<div class="lf"><label>Remarks</label><input type="text" class="fin" id="em_remarks" value="'+esc(s.remarks||'')+'"/></div>'
+    +'<div class="lf" style="border-top:1px dashed var(--line);padding-top:10px"><label>Reason <span style="color:var(--bad)">*</span></label><input type="text" class="fin" id="em_reason" placeholder="Why this correction?"/></div>';
+  document.getElementById('adminEditModal').classList.add('open');
+}
+async function reconDeleteSettlement(id){
+  if(!can('deleteRecord')){ showToast('Reconciler only','error'); return; }
+  var s=(allSettlements||[]).find(function(x){return x.id===id;})||{};
+  var reason=prompt('Reason for deleting this settlement? (required)'); if(reason===null) return;
+  reason=(reason||'').trim(); if(!reason){ showToast('Reason required','error'); return; }
+  loading(true);
+  try{
+    await db.collection('settlements').doc(id).delete();
+    allSettlements=(allSettlements||[]).filter(function(x){return x.id!==id;});
+    await logAudit({action:'delete',recordType:'settlement',recordId:id,recordLabel:(s.riderName||'')+' '+(s.date||''),affectedManagerId:s.managerId||'',affectedRiderId:s.riderId||'',changes:[{field:'Settlement',old:'₹'+fmtM(s.receivedAmount)+' ('+(s.date||'')+')',new:'DELETED'}],reason:reason});
+    showToast('Settlement deleted · logged','success'); renderReconMgrRecords();
+  }catch(e){ showToast('Failed: '+e.message,'error'); }
+  loading(false);
+}
+function reconEditHandover(id){
+  if(!can('editRecord')){ showToast('Reconciler only','error'); return; }
+  var h=(allHandovers||[]).find(function(x){return x.id===id;});
+  if(!h){ showToast('Handover not found','error'); return; }
+  editTarget={type:'handover', id:id, data:h};
+  document.getElementById('editModalTitle').textContent='Correct Handover';
+  document.getElementById('editModalErr').style.display='none';
+  document.getElementById('editModalBody').innerHTML=
+     '<div class="lf"><label>Rider → Manager</label><input type="text" class="fin" value="'+esc((h.riderName||'')+' → '+(h.managerName||''))+'" disabled/></div>'
+    +'<div class="lf"><label>Business Date</label><input type="date" class="fin" id="em_date" value="'+esc(h.businessDate||'')+'"/></div>'
+    +'<div class="lf"><label>Submitted Amount</label><input type="number" class="fin" id="em_sub" value="'+(+h.submittedAmount||0)+'"/></div>'
+    +'<div class="lf"><label>Received Amount</label><input type="number" class="fin" id="em_recv" value="'+(+h.receivedAmount||0)+'"/></div>'
+    +'<div class="lf"><label>Status</label><select class="fin" id="em_status"><option value="pending"'+(h.status==='pending'?' selected':'')+'>pending</option><option value="approved"'+(h.status==='approved'?' selected':'')+'>approved</option><option value="rejected"'+(h.status==='rejected'?' selected':'')+'>rejected</option><option value="discrepancy"'+(h.status==='discrepancy'?' selected':'')+'>discrepancy</option></select></div>'
+    +'<div class="lf" style="border-top:1px dashed var(--line);padding-top:10px"><label>Reason <span style="color:var(--bad)">*</span></label><input type="text" class="fin" id="em_reason" placeholder="Why this correction?"/></div>';
+  document.getElementById('adminEditModal').classList.add('open');
+}
+async function reconDeleteHandover(id){
+  if(!can('deleteRecord')){ showToast('Reconciler only','error'); return; }
+  var h=(allHandovers||[]).find(function(x){return x.id===id;})||{};
+  var reason=prompt('Reason for deleting this handover? (required)'); if(reason===null) return;
+  reason=(reason||'').trim(); if(!reason){ showToast('Reason required','error'); return; }
+  loading(true);
+  try{
+    await db.collection('handovers').doc(id).delete();
+    allHandovers=(allHandovers||[]).filter(function(x){return x.id!==id;});
+    await logAudit({action:'delete',recordType:'handover',recordId:id,recordLabel:(h.riderName||'')+'→'+(h.managerName||''),affectedManagerId:h.managerId||'',affectedRiderId:h.riderId||'',changes:[{field:'Handover',old:'₹'+fmtM(h.submittedAmount)+' ('+h.status+')',new:'DELETED'}],reason:reason});
+    showToast('Handover deleted · logged','success'); renderReconMgrRecords();
+  }catch(e){ showToast('Failed: '+e.message,'error'); }
+  loading(false);
+}
+window.reconEditSettlement=reconEditSettlement; window.reconDeleteSettlement=reconDeleteSettlement;
+window.reconEditHandover=reconEditHandover; window.reconDeleteHandover=reconDeleteHandover;
+
+/* extend saveEditModal to persist settlement/handover corrections */
+if(typeof saveEditModal === 'function'){
+  var _p2save = saveEditModal;
+  saveEditModal = async function(){
+    if(!(editTarget && (editTarget.type==='settlement' || editTarget.type==='handover'))){ return _p2save.apply(this, arguments); }
+    if(!can('editRecord')){ showToast('Reconciler only','error'); return; }
+    var errEl=document.getElementById('editModalErr'); errEl.style.display='none';
+    var reason=((document.getElementById('em_reason')||{}).value||'').trim();
+    if(!reason){ errEl.textContent='A reason is required.'; errEl.style.display='block'; return; }
+    loading(true);
+    try{
+      var old=editTarget.data;
+      if(editTarget.type==='settlement'){
+        var upd={date:document.getElementById('em_date').value, receivedAmount:+document.getElementById('em_recv').value||0, remarks:document.getElementById('em_remarks').value||'', editedAt:Date.now(), editedBy:userProfile.uid, editedByRole:'reconciler'};
+        var ch=auditDiff(old, Object.assign({},old,upd), [{k:'date',label:'Date'},{k:'receivedAmount',label:'Received'},{k:'remarks',label:'Remarks'}]);
+        await db.collection('settlements').doc(editTarget.id).update(upd);
+        var i=(allSettlements||[]).findIndex(function(x){return x.id===editTarget.id;}); if(i>=0) Object.assign(allSettlements[i],upd);
+        await logAudit({action:'edit',recordType:'settlement',recordId:editTarget.id,recordLabel:(old.riderName||'')+' '+(old.date||''),affectedManagerId:old.managerId||'',affectedRiderId:old.riderId||'',changes:ch,reason:reason});
+      } else {
+        var upd2={businessDate:document.getElementById('em_date').value, submittedAmount:+document.getElementById('em_sub').value||0, receivedAmount:+document.getElementById('em_recv').value||0, status:document.getElementById('em_status').value, editedAt:Date.now(), editedBy:userProfile.uid, editedByRole:'reconciler'};
+        var ch2=auditDiff(old, Object.assign({},old,upd2), [{k:'businessDate',label:'Date'},{k:'submittedAmount',label:'Submitted'},{k:'receivedAmount',label:'Received'},{k:'status',label:'Status'}]);
+        await db.collection('handovers').doc(editTarget.id).update(upd2);
+        var j=(allHandovers||[]).findIndex(function(x){return x.id===editTarget.id;}); if(j>=0) Object.assign(allHandovers[j],upd2);
+        await logAudit({action:'edit',recordType:'handover',recordId:editTarget.id,recordLabel:(old.riderName||'')+'→'+(old.managerName||''),affectedManagerId:old.managerId||'',affectedRiderId:old.riderId||'',changes:ch2,reason:reason});
+      }
+      showToast('Correction saved · logged','success');
+      document.getElementById('adminEditModal').classList.remove('open'); editTarget=null;
+      renderReconMgrRecords();
+    }catch(e){ errEl.textContent='Save failed: '+e.message; errEl.style.display='block'; }
+    finally{ loading(false); }
+  };
+}
+
+/* Manager-Records tab for reconciler */
+var rmrFilter={from:'',to:''};
+function injectReconMgrRecordsTab(){
+  var bar=document.getElementById('reconTabBar'); var panel=document.getElementById('reconcilerPanel');
+  if(!bar||!panel||document.getElementById('recon-tab-mgrrec')) return;
+  var b=document.createElement('button'); b.className='tab-btn'; b.setAttribute('data-rectab','mgrrec'); b.innerHTML='<svg><use href="#i-transfer"/></svg> Mgr Records';
+  bar.appendChild(b);
+  var d=document.createElement('div'); d.className='recon-tab'; d.id='recon-tab-mgrrec'; d.style.display='none';
+  d.innerHTML='<section class="section" style="margin-top:10px"><div class="section-head"><h2>Manager Records</h2></div><div class="section-body">'
+    +'<div class="info-box" style="margin-bottom:10px">Correct manager-generated settlements & cash handovers. Every change is logged and shown to the affected manager.</div>'
+    +'<div style="display:flex;gap:6px;margin-bottom:10px"><input type="date" class="fin" id="rmrFrom" style="flex:1;padding:8px"/><input type="date" class="fin" id="rmrTo" style="flex:1;padding:8px"/><button class="filter-pill active" id="rmrApply">Go</button></div>'
+    +'<div id="rmrBody"></div></div></section>';
+  panel.appendChild(d);
+}
+function renderReconMgrRecords(){
+  var body=document.getElementById('rmrBody'); if(!body) return;
+  var from=rmrFilter.from||todayISO(), to=rmrFilter.to||todayISO();
+  var setts=(allSettlements||[]).filter(function(s){return (s.date||'')>=from && (s.date||'')<=to;});
+  var hos=(allHandovers||[]).filter(function(h){return (h.businessDate||'')>=from && (h.businessDate||'')<=to;});
+  var settHtml=setts.length?('<table class="order-tbl"><thead><tr><th>Rider</th><th>Date</th><th>Received</th><th>Manager</th><th>Fix</th></tr></thead><tbody>'
+    +setts.map(function(s){return '<tr><td style="white-space:nowrap">'+esc(s.riderName||'')+'</td><td>'+esc(s.date||'')+'</td><td style="text-align:right">₹'+fmtM(s.receivedAmount)+'</td><td>'+esc(s.managerName||'')+'</td>'
+      +'<td style="white-space:nowrap"><button class="tbl-btn edit" onclick="reconEditSettlement(\''+esc(s.id)+'\')" style="margin-right:3px"><svg><use href="#i-edit"/></svg></button><button class="tbl-btn danger" onclick="reconDeleteSettlement(\''+esc(s.id)+'\')"><svg><use href="#i-trash"/></svg></button></td></tr>';}).join('')+'</tbody></table>'):'<div class="info-box">No settlements in range.</div>';
+  var hoHtml=hos.length?('<table class="order-tbl"><thead><tr><th>Rider→Mgr</th><th>Date</th><th>Submitted</th><th>Status</th><th>Fix</th></tr></thead><tbody>'
+    +hos.map(function(h){return '<tr><td style="white-space:nowrap">'+esc((h.riderName||'')+'→'+(h.managerName||''))+'</td><td>'+esc(h.businessDate||'')+'</td><td style="text-align:right">₹'+fmtM(h.submittedAmount)+'</td><td>'+esc(h.status||'')+'</td>'
+      +'<td style="white-space:nowrap"><button class="tbl-btn edit" onclick="reconEditHandover(\''+esc(h.id)+'\')" style="margin-right:3px"><svg><use href="#i-edit"/></svg></button><button class="tbl-btn danger" onclick="reconDeleteHandover(\''+esc(h.id)+'\')"><svg><use href="#i-trash"/></svg></button></td></tr>';}).join('')+'</tbody></table>'):'<div class="info-box">No handovers in range.</div>';
+  body.innerHTML='<div style="font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;margin:4px 0 6px">Settlements</div>'+settHtml
+    +'<div style="font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;margin:14px 0 6px">Cash Handovers</div>'+hoHtml;
+}
+if(typeof initReconciler === 'function'){
+  var _p2initRecon = initReconciler;
+  initReconciler = async function(){
+    injectReconMgrRecordsTab();
+    await _p2initRecon();
+    var ap=document.getElementById('rmrApply');
+    if(ap && !ap.dataset.b){ ap.dataset.b='1'; ap.addEventListener('click',function(){ rmrFilter.from=(document.getElementById('rmrFrom')||{}).value||''; rmrFilter.to=(document.getElementById('rmrTo')||{}).value||''; renderReconMgrRecords(); }); }
+    // wire tab activation render + default dates
+    document.querySelectorAll('#reconTabBar .tab-btn').forEach(function(btn){
+      if(btn.dataset.p2) return; btn.dataset.p2='1';
+      btn.addEventListener('click',function(){ if(btn.dataset.rectab==='mgrrec'){ var f=document.getElementById('rmrFrom'),t=document.getElementById('rmrTo'); if(f&&!f.value)f.value=todayISO(); if(t&&!t.value)t.value=todayISO(); renderReconMgrRecords(); } });
+    });
+  };
+}
+
+/* ══════════════ 7 · MASTER ADMIN — Manager + Settlement analytics ══════════════ */
+function renderAdmExtraAnalytics(){
+  var host=document.getElementById('admExtraAnalytics'); if(!host) return;
+  var d=(typeof getAnalyticsDates==='function')?getAnalyticsDates():{from:todayISO(),to:todayISO()};
+  var from=d.from, to=d.to;
+  var hos=(allHandovers||[]).filter(function(h){return (h.businessDate||'')>=from && (h.businessDate||'')<=to;});
+  var setts=(allSettlements||[]).filter(function(s){return (s.date||'')>=from && (s.date||'')<=to;});
+  // Settlement analytics
+  var settled=setts.reduce(function(a,s){return a+(+s.receivedAmount||0);},0);
+  var pending=hos.filter(function(h){return h.status==='pending';}).reduce(function(a,h){return a+(+h.submittedAmount||0);},0);
+  var rejected=hos.filter(function(h){return h.status==='rejected';}).reduce(function(a,h){return a+(+h.submittedAmount||0);},0);
+  var approved=hos.filter(function(h){return h.status==='approved';}).reduce(function(a,h){return a+(+h.receivedAmount||0);},0);
+  // Manager analytics (per manager)
+  var mgrs=(allUsers||[]).filter(function(u){return u.role==='manager';});
+  var mrows=mgrs.map(function(m){
+    var mh=hos.filter(function(h){return h.managerId===m.uid;});
+    return {name:m.name||m.email, total:mh.length, approved:mh.filter(function(h){return h.status==='approved';}).length, pending:mh.filter(function(h){return h.status==='pending';}).length, rejected:mh.filter(function(h){return h.status==='rejected';}).length, amt:mh.filter(function(h){return h.status==='approved';}).reduce(function(a,h){return a+(+h.receivedAmount||0);},0)};
+  }).filter(function(m){return m.total>0;}).sort(function(a,b){return b.amt-a.amt;});
+  function kpi(l,v,c){ return '<div class="metric-card"><div class="mc-val" style="color:'+(c||'var(--ink-1)')+'"><span class="cur">₹</span>'+fmtM(v)+'</div><div class="mc-lbl">'+l+'</div></div>'; }
+  host.innerHTML='<section class="section" style="margin-top:12px"><div class="section-head"><h2>Settlement Analytics</h2><div class="head-right">'+from+(from!==to?' → '+to:'')+'</div></div><div class="section-body">'
+    +'<div class="metric-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">'
+    +kpi('Settled',settled,'var(--good)')+kpi('Pending Approval',pending,'var(--warn)')+kpi('Rejected',rejected,'var(--bad)')+kpi('Approved (mgr-confirmed)',approved,'var(--teal-deep)')+'</div></div></section>'
+    +'<section class="section" style="margin-top:12px"><div class="section-head"><h2>Manager Analytics</h2></div><div class="section-body">'
+    +(mrows.length?'<table class="order-tbl"><thead><tr><th>Manager</th><th>Handovers</th><th>Approved</th><th>Pending</th><th>Rejected</th><th>Amount</th></tr></thead><tbody>'
+      +mrows.map(function(m){return '<tr><td style="font-weight:600;white-space:nowrap">'+esc(m.name)+'</td><td style="text-align:right">'+m.total+'</td><td style="text-align:right;color:var(--good)">'+m.approved+'</td><td style="text-align:right;color:var(--warn)">'+m.pending+'</td><td style="text-align:right;color:var(--bad)">'+m.rejected+'</td><td style="text-align:right">₹'+fmtM(m.amt)+'</td></tr>';}).join('')
+      +'</tbody></table>':'<div class="info-box">No manager activity in this period.</div>')
+    +'</div></section>';
+}
+if(typeof renderAdmAnalytics === 'function'){
+  var _p2admAnl = renderAdmAnalytics;
+  renderAdmAnalytics = function(){
+    _p2admAnl.apply(this, arguments);
+    try{
+      var tab=document.getElementById('adm-tab-analytics');
+      if(tab && !document.getElementById('admExtraAnalytics')){ var x=document.createElement('div'); x.id='admExtraAnalytics'; tab.appendChild(x); }
+      renderAdmExtraAnalytics();
+    }catch(e){ console.warn('adm extra analytics',e); }
+  };
+}
+/* ▓▓▓ END PHASE 2 ▓▓▓ */
+
 
 
 </script>
