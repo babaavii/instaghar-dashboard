@@ -8230,6 +8230,213 @@ if(typeof renderAdmAnalytics === 'function'){
 }
 /* ▓▓▓ END PHASE 2 ▓▓▓ */
 
+/* ════════════════════════════════════════════════════════════════════
+   ▓▓▓ PHASE 3 ▓▓▓  date-centric nav · pending traceability · aging · drill-down
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── 1 · RIDER export removal: never RENDER export UI in a rider view ── */
+(function(){
+  var st=document.createElement('style');
+  st.textContent='#riderPanel .export-btn,#riderPanel .day-report-btn,#riderPanel .export-bar,#riderPanel .report-actions,#riderPanel #dayReportBtn,#riderPanel #exportBtn{display:none !important}';
+  document.head.appendChild(st);
+})();
+
+/* ── shared date helpers ── */
+function daysSince(dateStr){
+  if(!dateStr) return 0;
+  var d=new Date(dateStr+'T00:00:00'); var t=new Date(todayISO()+'T00:00:00');
+  return Math.max(0, Math.round((t-d)/86400000));
+}
+function pendingStatusColor(s){
+  return s==='Settled'?'var(--good)':s==='Partially Settled'?'var(--warn)':s==='Pending Approval'?'var(--teal-deep)':s==='Rejected'?'var(--bad)':'var(--bad)';
+}
+
+/* ── pending settlement engine ── */
+function pendingRecordsForRider(){
+  var dates={};
+  (rOrders||[]).forEach(function(o){ dates[o.date]=true; });
+  (riderHandovers||[]).forEach(function(h){ dates[h.businessDate]=true; });
+  var out=[];
+  Object.keys(dates).forEach(function(d){
+    var p=calcRiderDatePosition(d);
+    if(p.remaining>0){ out.push({date:d, amount:p.remaining, status:p.status==='Settled'?'Partially Settled':p.status, ageDays:daysSince(d)}); }
+  });
+  return out.sort(function(a,b){return b.ageDays-a.ageDays;});
+}
+function pendingRecordsAll(){
+  var map={};
+  (allOrders||[]).forEach(function(o){ var k=o.riderId+'|'+o.date; if(!map[k]) map[k]={riderId:o.riderId,riderName:o.riderName||'',date:o.date,orders:[]}; map[k].orders.push(o); });
+  var out=[];
+  Object.keys(map).forEach(function(k){
+    var g=map[k]; var s=calcSummary(g.orders); if(s.netCash<=0) return;
+    var hos=(allHandovers||[]).filter(function(h){return h.riderId===g.riderId && h.businessDate===g.date;});
+    var approved=hos.filter(function(h){return h.status==='approved'||h.status==='discrepancy';}).reduce(function(a,h){return a+(+h.receivedAmount||0);},0);
+    var pendingApproval=hos.filter(function(h){return h.status==='pending';}).reduce(function(a,h){return a+(+h.submittedAmount||0);},0);
+    var amount=s.netCash-approved; if(amount<=0) return;
+    var rejected=hos.some(function(h){return h.status==='rejected';});
+    var status= approved>0?'Partially Settled': pendingApproval>0?'Pending Approval': rejected?'Rejected':'Unsubmitted';
+    var mgr=hos.length?(hos[hos.length-1].managerName||''):'';
+    out.push({riderId:g.riderId,riderName:g.riderName,date:g.date,amount:amount,status:status,managerName:mgr,ageDays:daysSince(g.date)});
+  });
+  return out.sort(function(a,b){return b.ageDays-a.ageDays;});
+}
+function agingBuckets(records){
+  var b={'0-3':{amt:0,cnt:0},'4-7':{amt:0,cnt:0},'8-15':{amt:0,cnt:0},'15+':{amt:0,cnt:0}};
+  (records||[]).forEach(function(r){ var d=r.ageDays; var k=d<=3?'0-3':d<=7?'4-7':d<=15?'8-15':'15+'; b[k].amt+=r.amount; b[k].cnt++; });
+  return b;
+}
+
+/* ── drill-down modal (shared) ── */
+function ensurePendingModal(){
+  if(document.getElementById('pendingDrillOverlay')) return;
+  var o=document.createElement('div'); o.id='pendingDrillOverlay';
+  o.style.cssText='position:fixed;inset:0;background:rgba(8,20,18,.55);z-index:9999;display:none;align-items:flex-end;justify-content:center';
+  o.innerHTML='<div style="background:var(--bg,#fff);width:100%;max-width:640px;max-height:88vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><h2 id="pdTitle" style="font-size:17px;margin:0">Pending Settlements</h2>'
+    +'<button id="pdClose" style="background:var(--line,#eee);border:none;border-radius:9px;width:34px;height:34px;font-size:18px;cursor:pointer">×</button></div>'
+    +'<div id="pdAging"></div><div id="pdBody"></div></div>';
+  document.body.appendChild(o);
+  o.addEventListener('click',function(e){ if(e.target===o) o.style.display='none'; });
+  document.getElementById('pdClose').addEventListener('click',function(){ o.style.display='none'; });
+}
+function openPendingDrill(title, records, columns){
+  ensurePendingModal();
+  document.getElementById('pdTitle').textContent=title;
+  var b=agingBuckets(records);
+  function chip(lbl,o){ return '<div class="metric-card" style="padding:8px"><div class="mc-val" style="font-size:15px"><span class="cur">₹</span>'+fmtM(o.amt)+'</div><div class="mc-lbl">'+lbl+' · '+o.cnt+' day'+(o.cnt===1?'':'s')+'</div></div>'; }
+  document.getElementById('pdAging').innerHTML='<div style="font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;margin-bottom:6px">Aging</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:12px">'
+    +chip('0–3 days',b['0-3'])+chip('4–7 days',b['4-7'])+chip('8–15 days',b['8-15'])+chip('15+ days',b['15+'])+'</div>';
+  var body=document.getElementById('pdBody');
+  if(!records.length){ body.innerHTML='<div class="info-box">Nothing pending. All settled 🎉</div>'; document.getElementById('pendingDrillOverlay').style.display='flex'; return; }
+  var heads=columns.map(function(c){return '<th>'+c.label+'</th>';}).join('');
+  var rows=records.map(function(r){
+    return '<tr>'+columns.map(function(c){
+      if(c.key==='amount') return '<td style="text-align:right;font-weight:700">₹'+fmtM(r.amount)+'</td>';
+      if(c.key==='status') return '<td><span class="status-badge" style="background:'+pendingStatusColor(r.status)+';color:#fff">'+esc(r.status)+'</span></td>';
+      if(c.key==='ageDays') return '<td style="text-align:right">'+r.ageDays+'d</td>';
+      return '<td style="white-space:nowrap">'+esc(r[c.key]||'—')+'</td>';
+    }).join('')+'</tr>';
+  }).join('');
+  body.innerHTML='<table class="order-tbl"><thead><tr>'+heads+'</tr></thead><tbody>'+rows+'</tbody></table>';
+  document.getElementById('pendingDrillOverlay').style.display='flex';
+}
+
+/* ══════════════ 2 · DATE-CENTRIC NAV — replace rider day-pill strip ══════════════ */
+/* kill the historical day-pill scroll; add Today / Yesterday / Custom quick-select */
+if(typeof renderDayStrip === 'function'){
+  renderDayStrip = function(){ var w=document.getElementById('dayHistoryWrap'); if(w){ w.classList.add('hidden'); w.style.display='none'; } };
+}
+function ensureRiderDateNav(){
+  if(document.getElementById('riderDateNav')) return;
+  var topbar=document.querySelector('#riderPanel .topbar-r'); if(!topbar) return;
+  var nav=document.createElement('div'); nav.id='riderDateNav';
+  nav.style.cssText='display:flex;gap:6px;padding:0 0 4px;flex-wrap:wrap';
+  nav.innerHTML='<button class="filter-pill" data-rdn="today">Today</button>'
+    +'<button class="filter-pill" data-rdn="yesterday">Yesterday</button>'
+    +'<button class="filter-pill" data-rdn="custom">Custom</button>';
+  topbar.parentNode.insertBefore(nav, topbar.nextSibling);
+  nav.querySelectorAll('[data-rdn]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var t=todayISO();
+      if(b.dataset.rdn==='today') rViewDate=t;
+      else if(b.dataset.rdn==='yesterday'){ var d=new Date(t+'T00:00:00'); d.setDate(d.getDate()-1); rViewDate=d.toISOString().slice(0,10); }
+      else { var el=document.getElementById('rViewDate'); if(el){ el.showPicker?el.showPicker():el.focus(); } return; }
+      var el2=document.getElementById('rViewDate'); if(el2) el2.value=rViewDate;
+      renderRider();
+    });
+  });
+}
+
+/* ══════════════ 3+4+5 · PENDING cards (clickable) per role ══════════════ */
+/* RIDER — enhance cumulative banner: total + pending days + click→drill */
+if(typeof renderRiderCumulativePending === 'function'){
+  renderRiderCumulativePending = function(){
+    var host=document.getElementById('riderCumPendingBanner'); if(!host) return;
+    var recs=pendingRecordsForRider();
+    var total=recs.reduce(function(a,r){return a+r.amount;},0);
+    if(total<=0){ host.innerHTML=''; host.classList.add('hidden'); return; }
+    host.classList.remove('hidden');
+    host.innerHTML='<div class="day-closed-banner" id="riderPendingCard" style="background:var(--bad-soft);border-color:var(--bad);color:var(--bad);cursor:pointer">'
+      +'<svg><use href="#i-receipt"/></svg>'
+      +'<div style="flex:1"><div style="font-weight:800;font-size:16px">Pending Settlement · ₹'+fmtM(total)+'</div>'
+      +'<div style="font-size:11px;font-weight:600;opacity:.9">'+recs.length+' pending day'+(recs.length===1?'':'s')+' · tap for breakdown ›</div></div></div>';
+    document.getElementById('riderPendingCard').addEventListener('click',function(){
+      openPendingDrill('Your Pending Settlements', recs, [{key:'date',label:'Date'},{key:'amount',label:'Amount'},{key:'ageDays',label:'Age'},{key:'status',label:'Status'}]);
+    });
+  };
+}
+
+/* MANAGER — pending card with rider-wise drill */
+function renderMgrPendingCard(){
+  var host=document.getElementById('mgrPendingCard'); if(!host) return;
+  var recs=pendingRecordsAll();
+  var total=recs.reduce(function(a,r){return a+r.amount;},0);
+  host.innerHTML='<section class="section"><div class="section-body" style="padding-top:14px">'
+    +'<div class="day-closed-banner" id="mgrPendingClick" style="background:'+(total>0?'var(--bad-soft);border-color:var(--bad);color:var(--bad)':'var(--card);border-color:var(--line);color:var(--ink-2)')+';cursor:pointer;margin:0">'
+    +'<svg><use href="#i-receipt"/></svg><div style="flex:1"><div style="font-weight:800;font-size:16px">Pending Settlement · ₹'+fmtM(total)+'</div>'
+    +'<div style="font-size:11px;font-weight:600;opacity:.9">'+recs.length+' pending rider-day'+(recs.length===1?'':'s')+' · tap for rider-wise breakdown ›</div></div></div>'
+    +'</div></section>';
+  var c=document.getElementById('mgrPendingClick');
+  if(c) c.addEventListener('click',function(){
+    openPendingDrill('Pending Settlements — Rider-wise', recs, [{key:'riderName',label:'Rider'},{key:'date',label:'Date'},{key:'amount',label:'Amount'},{key:'ageDays',label:'Age'},{key:'status',label:'Status'}]);
+  });
+}
+if(typeof initManager === 'function'){
+  var _p3initMgr = initManager;
+  initManager = async function(){
+    await _p3initMgr();
+    try{ allHandovers = await fsGetAllHandovers(); }catch(e){}
+    try{
+      var panel=document.getElementById('managerPanel');
+      if(panel && !document.getElementById('mgrPendingCard')){
+        var d=document.createElement('div'); d.id='mgrPendingCard';
+        panel.insertBefore(d, panel.firstChild);
+      }
+      renderMgrPendingCard();
+    }catch(e){ console.warn('mgr pending card',e); }
+  };
+}
+
+/* MASTER ADMIN — pending card with manager→rider→date drill */
+function renderAdmPendingCard(){
+  var host=document.getElementById('admPendingCard'); if(!host) return;
+  var recs=pendingRecordsAll();
+  var total=recs.reduce(function(a,r){return a+r.amount;},0);
+  host.innerHTML='<div class="day-closed-banner" id="admPendingClick" style="background:'+(total>0?'var(--bad-soft);border-color:var(--bad);color:var(--bad)':'var(--card);border-color:var(--line);color:var(--ink-2)')+';cursor:pointer;margin:12px 0 0">'
+    +'<svg><use href="#i-receipt"/></svg><div style="flex:1"><div style="font-weight:800;font-size:16px">Pending Settlement · ₹'+fmtM(total)+'</div>'
+    +'<div style="font-size:11px;font-weight:600;opacity:.9">'+recs.length+' pending rider-day'+(recs.length===1?'':'s')+' · trace every rupee ›</div></div></div>';
+  var c=document.getElementById('admPendingClick');
+  if(c) c.addEventListener('click',function(){
+    openPendingDrill('Pending Settlements — full trace', recs, [{key:'managerName',label:'Manager'},{key:'riderName',label:'Rider'},{key:'date',label:'Date'},{key:'amount',label:'Amount'},{key:'ageDays',label:'Age'},{key:'status',label:'Status'}]);
+  });
+}
+if(typeof initAdmin === 'function'){
+  var _p3initAdmin = initAdmin;
+  initAdmin = async function(){
+    await _p3initAdmin();
+    try{
+      var ov=document.getElementById('adm-tab-analytics');
+      if(ov && !document.getElementById('admPendingCard')){
+        var d=document.createElement('div'); d.id='admPendingCard';
+        ov.insertBefore(d, ov.firstChild);
+      }
+      renderAdmPendingCard();
+    }catch(e){ console.warn('adm pending card',e); }
+  };
+}
+
+/* wire rider date-nav + refresh pending card on every rider render */
+if(typeof refreshRiderPhase === 'function'){
+  var _p3refreshRider = refreshRiderPhase;
+  refreshRiderPhase = function(){
+    _p3refreshRider.apply(this, arguments);
+    try{ ensureRiderDateNav(); }catch(e){}
+  };
+}
+/* ▓▓▓ END PHASE 3 ▓▓▓ */
+
+
 
 
 </script>
